@@ -1,0 +1,7 @@
+.DS_Store
+*.pyc
+__pycache__
+env2
+env3
+dist
+build
