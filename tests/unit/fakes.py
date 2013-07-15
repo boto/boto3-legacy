@@ -9,11 +9,8 @@ from boto3.utils import json
 
 
 FAKE_JSON = {
-    "objects": [
-        "TestObject",
-    ],
-    "mappings": {
-        "TestObject": {
+    "TestObject": {
+        "mappings": {
             "create": {
                 "client_method": "CreateTestObject",
                 "client_parameters": {

@@ -22,10 +22,10 @@ class BotoObject(object):
         cls._loaded = False
 
     def _get_objects_json(self):
-        return self.__class__._json.get('objects', [])
+        return list(self.__class__._json.keys())
 
     def _get_mappings_json(self):
-        return self.__class__._json.get('mappings', {}).get(self._json_name)
+        return self.__class__._json.get(self._json_name).get('mappings', {})
 
     def _get_json(self):
         return self.session.load_json_for(self.service_name)
