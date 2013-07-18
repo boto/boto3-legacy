@@ -1,8 +1,8 @@
-from boto3.constants import NOTHING_PROVIDED, NOTHING_RECEIVED
-from boto3.exceptions import NoSuchObject
+from boto3.core.constants import NOTHING_PROVIDED, NOTHING_RECEIVED
+from boto3.core.exceptions import NoSuchObject
 
 
-class BotoObject(object):
+class Service(object):
     service_name = 'UnknownService'
     _json_name = 'Unknown'
     _json = {}

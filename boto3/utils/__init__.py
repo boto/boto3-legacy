@@ -4,3 +4,5 @@ try:
 except ImportError:
     # Fall back to the built-in ``json`` module.
     import json
+
+from botocore.compat import OrderedDict
