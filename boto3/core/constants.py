@@ -19,12 +19,3 @@ class NOTHING_PROVIDED(object):
     Never meant to be instantiated.
     """
     pass
-
-
-class NOTHING_RECEIVED(object):
-    """
-    A identifier for no data received.
-
-    Never meant to be instantiated.
-    """
-    pass

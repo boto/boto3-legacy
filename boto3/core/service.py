@@ -1,154 +1,151 @@
-from boto3.core.constants import NOTHING_PROVIDED, NOTHING_RECEIVED
-from boto3.core.exceptions import NoSuchObject
+import botocore.session
+
+from boto3.core.constants import NOTHING_PROVIDED
+from boto3.core.introspection import Introspection
+
+
+class ServiceDetails(object):
+    service_name = 'unknown'
+    default_session = None
+
+    def __str__(self):
+        return 'ServiceDetails: {0}'.format(self.service_name)
+
+
+class ServiceMetaclass(type):
+    def __new__(cls, name, bases, attrs):
+        if not 'service_name' in attrs:
+            # Because ``six`` lies to us. Bail out if it's not an actual
+            # ``Service``-like class.
+            return super(ServiceMetaclass, cls).__new__(
+                cls, name, bases, attrs
+            )
+
+        details = ServiceDetails()
+        details.service_name = attrs.pop('service_name')
+        attrs['_details'] = details
+
+        # Create the class.
+        klass = super(ServiceMetaclass, cls).__new__(cls, name, bases, attrs)
+
+        # We're not done yet. Assign the session first.
+        details.session = klass._get_session()
+
+        # Construct what the class ought to have on it.
+        klass._build_methods()
+        return klass
 
 
 class Service(object):
-    service_name = 'UnknownService'
-    _json_name = 'Unknown'
-    _json = {}
-    _loaded = False
-
-    def __init__(self, session, lazy=False):
-        self.session = session
-        # FIXME: This may need to be altered to be lazier.
-        self.client = session.get_client(self.service_name)
-
-        if not lazy:
-            self._construct_object()
+    # All ``Service`` objects must add a ``service_name`` class variable, which
+    # should be the name of the service.
+    # service_name = '...'
 
     @classmethod
-    def _reset(cls):
-        cls._json = {}
-        cls._loaded = False
+    def _get_session(cls):
+        # FIXME: This is a **HUGE** unanswered question. How, at import time,
+        #        can we supply the correct ``Session`` object? :/
+        #        For now, hack it & move on.
+        return botocore.session.get_session()
 
-    def _get_objects_json(self):
-        return list(self.__class__._json.keys())
+    @classmethod
+    def _build_methods(cls):
+        # The big, nasty integration method that stitches this all together.
+        # For sanity (& testing), this should be the only method that changes
+        # class-state.
+        service_data = cls._introspect_service(
+            cls._details.session,
+            cls._details.service_name
+        )
 
-    def _get_mappings_json(self):
-        return self.__class__._json.get(self._json_name).get('mappings', {})
+        for method_name, op_data in service_data.items():
+            # First we make expand then we defense it.
+            # Construct a brand-new method & assign it on the class.
+            setattr(
+                cls,
+                method_name,
+                cls._create_operation_method(method_name, op_data)
+            )
 
-    def _get_json(self):
-        return self.session.load_json_for(self.service_name)
+    @classmethod
+    def _introspect_service(cls, session, service_name):
+        # Yes, we could lean on ``cls._details.session|.service_name`` here,
+        # but this makes testing/composability easier.
+        intro = Introspection(session)
+        return intro.introspect_service(service_name)
 
-    def _construct_object(self):
-        klass = self.__class__
+    @classmethod
+    def _create_operation_method(cls, method_name, op_data):
+        def _new_method(self, **kwargs):
+            klass = self.__class__
 
-        if klass._loaded:
-            return True
+            # Check the parameters.
+            klass._check_method_params(op_data['params'], **kwargs)
 
-        klass._json = self._get_json()
-        objects = self._get_objects_json()
-        mappings = self._get_mappings_json()
+            # Prep the service's parameters.
+            service_params = klass._build_service_params(
+                op_data['params'],
+                **kwargs
+            )
 
-        if not self._json_name in objects:
-            err = "Service '{0}' has no object named '{1}'."
-            raise NoSuchObject(err.format(self.service_name, self._json_name))
+            # Actually call the service.
+            service = self._details.session.get_service(
+                self._details.service_name
+            )
+            # FIXME: This likely needs changing.
+            endpoint = service.get_endpoint()
+            op = service.get_operation(op_data['api_name'])
+            results = op.call(endpoint, **service_params)
 
-        self._add_methods(mappings)
-        klass._loaded = True
-        return True
+            # Post-process results here
+            post_processed = klass._post_process_results(
+                method_name,
+                op_data['output'],
+                results
+            )
+            return post_processed
 
-    def _get_endpoint(self):
-        # FIXME: This is hardcoded & can't stay.
-        return self.client.get_endpoint('us-west-2')
+        # Swap the name, so it looks right.
+        _new_method.__name__ = method_name
+        # Assign docstring.
+        _new_method.__doc__ = op_data['docs']
+        # Return the newly constructed method.
+        return _new_method
 
-    def _get_operation(self, op_name):
-        return self.client.get_operation(op_name)
+    @classmethod
+    def _check_method_params(cls, op_params, **kwargs):
+        # For now, we don't type-check or anything, just check for required
+        # params.
+        for param in op_params:
+            if param['required'] is True:
+                if not param['var_name'] in kwargs:
+                    err = "Missing required parameter: '{0}'".format(
+                        param['var_name']
+                    )
+                    raise TypeError(err)
 
-    def _check_required(self, mapping, kwargs):
-        # TODO: Caching this list might be beneficial for performance.
-        for param, param_info in mapping['parameters'].items():
-            if param_info.get('required', False):
-                if not param in kwargs:
-                    err = "Missing required parameter '{0}'."
-                    raise AttributeError(err.format(param))
+    @classmethod
+    def _build_service_params(cls, op_params, **kwargs):
+        # TODO: Maybe build in an extension mechanism (like
+        #      ``build_<op_name>_params``)?
+        service_params = {}
 
-        return True
-
-    def _build_client_parameters(self, mapping, kwargs):
-        data_to_send = {}
-
-        for actual_name, meta in mapping['client_parameters'].items():
-            source_from = meta.get('source_from', 'parameter')
-            required = meta.get('required', False)
-            variable = meta['variable']
-
-            if source_from == 'instance':
-                value = getattr(self, variable, NOTHING_PROVIDED)
-            elif source_from == 'parameter':
-                value = kwargs.get(variable, NOTHING_PROVIDED)
+        for param in op_params:
+            value = kwargs.get(param['var_name'], NOTHING_PROVIDED)
 
             if value is NOTHING_PROVIDED:
-                # If it's not provided & not required, we don't care.
-                if required:
-                    err = "No value provided required parameter '{0}'."
-                    raise AttributeError(err.format(variable))
-            else:
-                data_to_send[actual_name] = value
-
-        return data_to_send
-
-    def _handle_result(self, mapping, result):
-        ret_vals = {}
-
-        for key, meta in mapping['result'].items():
-            behavior = meta.get('behavior', 'store_instance')
-            data = result[1]
-            value = NOTHING_RECEIVED
-
-            if '.' in key:
-                # It's a path-alike.
-                # FIXME: Ignore for now, but this needs a recursive lookup
-                #        eventually.
-                pass
-            else:
-                value = data.get(key, NOTHING_RECEIVED)
-
-            if value is NOTHING_RECEIVED:
-                # FIXME: Maybe this is an error?
+                # They didn't give us a value. We should've already checked
+                # "required-ness", so just give it a pass & move on.
                 continue
 
-            if behavior == 'store_instance':
-                store_as = meta['store_as']
-                setattr(self, store_as, value)
-            elif behavior == 'return_value':
-                return_key = meta['return_key']
-                ret_vals[return_key] = value
-            else:
-                err = "Hey! Implement me for {0}!"
-                raise NotImplementedError(err.format(behavior))
+            service_params[param['api_name']] = value
 
-        return ret_vals
+        return service_params
 
-    @staticmethod
-    def _create_method(name, mapping):
-        def _method(self, *args, **kwargs):
-            mapping = self._get_mappings_json()
-
-            # Check the supplied parameters for missing data.
-            self._check_required(kwargs, mapping)
-            # Build the arguments we're going to send down to the client.
-            data_to_send = self._build_client_parameters(mapping, kwargs)
-
-            endpoint = self._get_endpoint()
-            operation = self._get_operation(mapping['client_method'])
-            # FIXME: This is in sore need of some error handling.
-            result = operation.call(endpoint, **data_to_send)
-
-            # Update any instance data & get return values.
-            ret_vals = self._handle_result(mapping, result)
-            return ret_vals
-
-        _method.__name__ = name
-        return _method
-
-    def _add_methods(self, mappings=None):
-        klass = self.__class__
-
-        if mappings is None:
-            mappings = {}
-
-        for method_name, mapping in mappings.get(self._json_name, {}).items():
-            klass.method = klass._create_method(method_name, mapping)
-
-        return True
+    @classmethod
+    def _post_process_results(cls, method_name, output, results):
+        # TODO: Maybe build in an extension mechanism (like
+        #      ``post_process_<op_name>_results``)?
+        # FIXME: For now, just return what we get. This is a touch leaky, but
+        #        will have to do for now.
+        return results
