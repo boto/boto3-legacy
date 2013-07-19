@@ -34,7 +34,6 @@ class ServiceMetaclass(type):
         details.session = klass._get_session()
 
         # Construct what the class ought to have on it.
-        import pdb; pdb.set_trace()
         klass._build_methods()
         return klass
 
