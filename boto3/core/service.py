@@ -1,3 +1,5 @@
+import six
+
 import botocore.session
 
 from boto3.core.constants import NOTHING_PROVIDED
@@ -32,6 +34,7 @@ class ServiceMetaclass(type):
         details.session = klass._get_session()
 
         # Construct what the class ought to have on it.
+        import pdb; pdb.set_trace()
         klass._build_methods()
         return klass
 
@@ -76,6 +79,9 @@ class Service(object):
 
     @classmethod
     def _create_operation_method(cls, method_name, op_data):
+        if not six.PY3:
+            method_name = str(method_name)
+
         def _new_method(self, **kwargs):
             klass = self.__class__
 
