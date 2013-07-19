@@ -92,8 +92,8 @@ class Service(object):
             service = self._details.session.get_service(
                 self._details.service_name
             )
-            # FIXME: This likely needs changing.
-            endpoint = service.get_endpoint()
+            # FIXME: This can't stay hard-coded & needs changing.
+            endpoint = service.get_endpoint('us-east-1')
             op = service.get_operation(op_data['api_name'])
             results = op.call(endpoint, **service_params)
 
@@ -138,7 +138,10 @@ class Service(object):
                 # "required-ness", so just give it a pass & move on.
                 continue
 
-            service_params[param['api_name']] = value
+            # FIXME: This is weird. I was expecting this to be
+            #        ``param['api_name']`` to pass to ``botocore``, but
+            #        evidently it expects snake_case here?!
+            service_params[param['var_name']] = value
 
         return service_params
 
@@ -146,6 +149,6 @@ class Service(object):
     def _post_process_results(cls, method_name, output, results):
         # TODO: Maybe build in an extension mechanism (like
         #      ``post_process_<op_name>_results``)?
-        # FIXME: For now, just return what we get. This is a touch leaky, but
-        #        will have to do for now.
-        return results
+        # FIXME: For now, just return the data we get back from ``botocore``.
+        #        This is a touch leaky, but will have to do for now.
+        return results[1]

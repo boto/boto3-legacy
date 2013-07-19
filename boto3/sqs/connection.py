@@ -1,11 +1,7 @@
-from boto3.base import BotoObject
+import six
+
+from boto3.core.service import ServiceMetaclass, Service
 
 
-class Queue(BotoObject):
+class SQSConnection(six.with_metaclass(ServiceMetaclass, Service)):
     service_name = 'sqs'
-    _json_name = 'Queue'
-
-
-class Message(BotoObject):
-    service_name = 'sqs'
-    _json_name = 'Message'

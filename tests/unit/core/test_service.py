@@ -142,14 +142,14 @@ class TestServiceConstructionTestCase(unittest.TestCase):
 
     def test__post_process_results(self):
         ppr = TestService._post_process_results
-        self.assertEqual(ppr('whatever', {}, True), True)
-        self.assertEqual(ppr('whatever', {}, False), False)
-        self.assertEqual(ppr('whatever', {}, 'abc'), 'abc')
-        self.assertEqual(ppr('whatever', {}, ['abc', 1]), [
+        self.assertEqual(ppr('whatever', {}, (None, True)), True)
+        self.assertEqual(ppr('whatever', {}, (None, False)), False)
+        self.assertEqual(ppr('whatever', {}, (None, 'abc')), 'abc')
+        self.assertEqual(ppr('whatever', {}, (None, ['abc', 1])), [
             'abc',
             1
         ])
-        self.assertEqual(ppr('whatever', {}, {'abc': 1}), {
+        self.assertEqual(ppr('whatever', {}, (None, {'abc': 1})), {
             'abc': 1,
         })
 
