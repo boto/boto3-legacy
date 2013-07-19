@@ -4,7 +4,7 @@
    contain the root `toctree` directive.
 
 Welcome to boto3
-===================
+================
 
 Boto3 is a high-level interface to a growing number of Amazon Web
 Services.
@@ -14,13 +14,24 @@ Requirements
 ------------
 
 * Python 2.6+ or Python 3.3+
+* botocore>=0.12.0
 
 
-Contents:
+Tutorials
+---------
 
 .. toctree::
    :maxdepth: 2
 
+   tutorial/sqs
+
+API References
+--------------
+
+.. toctree::
+   :maxdepth: 2
+
+   reference/sqs
 
 
 
