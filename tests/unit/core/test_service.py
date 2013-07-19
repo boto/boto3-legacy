@@ -26,9 +26,9 @@ class TestCoreService(FakeService):
                     },
                 },
             },
-            result={
+            result=(None, {
                 'QueueUrl': 'http://example.com',
-            }
+            })
         ),
         FakeOperation(
             'DeleteQueue',
@@ -37,7 +37,7 @@ class TestCoreService(FakeService):
                 FakeParam('QueueName', required=True, ptype='string'),
             ],
             output=True,
-            result=True
+            result=(None, True)
         ),
     ]
 
@@ -122,11 +122,11 @@ class TestServiceConstructionTestCase(unittest.TestCase):
             },
         ]
         self.assertEqual(_bsp(op_params, queue_name='boo'), {
-            'QueueName': 'boo',
+            'queue_name': 'boo',
         })
         self.assertEqual(_bsp(op_params, queue_name='boo', attributes=1), {
-            'QueueName': 'boo',
-            'Attributes': 1,
+            'queue_name': 'boo',
+            'attributes': 1,
         })
 
     def test__create_operation_method(self):
