@@ -1,6 +1,6 @@
 import time
 
-from boto3.sqs.connection import SQSConnection
+from boto3.core.session import Session
 
 from tests import unittest
 
@@ -8,7 +8,8 @@ from tests import unittest
 class SQSConnectionTestCase(unittest.TestCase):
     def setUp(self):
         super(SQSConnectionTestCase, self).setUp()
-        self.sqs = SQSConnection()
+        self.sqs_class = Session().get_service('sqs')
+        self.sqs = self.sqs_class()
 
     def test_op_methods(self):
         self.assertTrue(hasattr(self.sqs, 'add_permission'))

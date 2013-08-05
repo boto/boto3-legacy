@@ -1,6 +1,5 @@
-import six
-
-from boto3.core.service import ServiceMetaclass, Service
+from boto3.core.service import ServiceFactory
+from boto3.core.session import Session
 
 from tests import unittest
 from tests.unit.fakes import FakeParam, FakeOperation, FakeService, FakeSession
@@ -42,38 +41,18 @@ class TestCoreService(FakeService):
     ]
 
 
-class TestService(six.with_metaclass(ServiceMetaclass, Service)):
-    service_name = 'to'
-
-    @classmethod
-    def _get_session(cls):
-        # Patch over how we get the session, so that we have something concrete
-        # to work with.
-        return FakeSession(TestCoreService())
-
-
-class ServiceMetaclassTestCase(unittest.TestCase):
+class ServiceFactoryTestCase(unittest.TestCase):
     def setUp(self):
-        super(ServiceMetaclassTestCase, self).setUp()
-
-    def test_its_too_late_for_that_now(self):
-        # By now, the ``TestService`` has either been constructed or has failed.
-        # All we can do is assert about its state, post-setup.
-        self.assertFalse(hasattr(TestService, 'service_name'))
-        self.assertEqual(TestService._details.service_name, 'to')
-        self.assertTrue(isinstance(TestService._details.session, FakeSession))
-
-
-class TestServiceConstructionTestCase(unittest.TestCase):
-    def setUp(self):
-        super(TestServiceConstructionTestCase, self).setUp()
-        self.session = TestService._get_session()
-
-    def test__get_session(self):
-        self.assertTrue(isinstance(TestService._get_session(), FakeSession))
+        super(ServiceFactoryTestCase, self).setUp()
+        self.session = Session(FakeSession(TestCoreService()))
+        self.sf = ServiceFactory(session=self.session)
+        self.test_service_class = self.sf.construct_for('test')
 
     def test__introspect_service(self):
-        service_data = TestService._introspect_service(self.session, 'to')
+        service_data = self.sf._introspect_service(
+            self.session.core_session,
+            'test'
+        )
         # We test the introspected data elsewhere, so it's enough that we
         # just check the necessary method names are here.
         self.assertEqual(sorted(list(service_data.keys())), [
@@ -82,7 +61,7 @@ class TestServiceConstructionTestCase(unittest.TestCase):
         ])
 
     def test__check_method_params(self):
-        _cmp = TestService._check_method_params
+        _cmp = self.test_service_class()._check_method_params
         op_params = [
             {
                 'var_name': 'queue_name',
@@ -106,7 +85,7 @@ class TestServiceConstructionTestCase(unittest.TestCase):
         self.assertEqual(_cmp(op_params, queue_name='boo', attributes=1), None)
 
     def test__build_service_params(self):
-        _bsp = TestService._build_service_params
+        _bsp = self.test_service_class()._build_service_params
         op_params = [
             {
                 'var_name': 'queue_name',
@@ -130,7 +109,7 @@ class TestServiceConstructionTestCase(unittest.TestCase):
         })
 
     def test__create_operation_method(self):
-        func = TestService._create_operation_method('test', {
+        func = self.sf._create_operation_method('test', {
             'method_name': 'test',
             'api_name': 'Test',
             'docs': 'This is a test.',
@@ -141,7 +120,7 @@ class TestServiceConstructionTestCase(unittest.TestCase):
         self.assertEqual(func.__doc__, 'This is a test.')
 
     def test__post_process_results(self):
-        ppr = TestService._post_process_results
+        ppr = self.test_service_class()._post_process_results
         self.assertEqual(ppr('whatever', {}, (None, True)), True)
         self.assertEqual(ppr('whatever', {}, (None, False)), False)
         self.assertEqual(ppr('whatever', {}, (None, 'abc')), 'abc')
@@ -157,10 +136,10 @@ class TestServiceConstructionTestCase(unittest.TestCase):
         # Essentially testing ``_build_methods``.
         # This is a painful integration test. If the other methods don't work,
         # this will certainly fail.
-        self.assertTrue(hasattr(TestService, 'create_queue'))
-        self.assertTrue(hasattr(TestService, 'delete_queue'))
+        self.assertTrue(hasattr(self.test_service_class, 'create_queue'))
+        self.assertTrue(hasattr(self.test_service_class, 'delete_queue'))
 
-        ts = TestService()
+        ts = self.test_service_class()
 
         # Missing required parameters.
         self.assertRaises(TypeError, ts, 'create_queue')
