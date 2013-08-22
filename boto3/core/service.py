@@ -24,6 +24,32 @@ class Connection(object):
         super(Connection, self).__init__()
         self.region_name = region_name
 
+    @classmethod
+    def connect_to_region(cls, **kwargs):
+        return cls(**kwargs)
+
+
+class ServiceMethod(object):
+    def __init__(self, service_name, method_name, op_data):
+        super(ServiceMethod, self).__init__()
+        self.service_name = service_name
+        self.method_name = method_name
+        self.op_data = op_data
+
+    @classmethod
+    def construct_from_op_data(cls, service_name, method_name, op_data):
+        method = cls(
+            service_name=service_name,
+            method_name=method_name,
+            op_data=op_data
+        )
+
+        # Swap the name, so it looks right.
+        method.__name__ = method_name
+        # Assign docstring.
+        method.__doc__ = op_data['docs']
+        return method
+
     def _check_method_params(self, op_params, **kwargs):
         # For now, we don't type-check or anything, just check for required
         # params.
@@ -60,9 +86,31 @@ class Connection(object):
         #      ``post_process_<op_name>_results``)?
         return results[1]
 
-    @classmethod
-    def connect_to_region(cls, **kwargs):
-        return cls(**kwargs)
+    def __call__(self, **kwargs):
+        # Check the parameters.
+        self._check_method_params(self.op_data['params'], **kwargs)
+
+        # Prep the service's parameters.
+        service_params = self._build_service_params(
+            self.op_data['params'],
+            **kwargs
+        )
+
+        # Actually call the service.
+        service = self._details.session.get_core_service(
+            self._details.service_name
+        )
+        endpoint = service.get_endpoint(self.region_name)
+        op = service.get_operation(self.op_data['api_name'])
+        results = op.call(endpoint, **service_params)
+
+        # Post-process results here
+        post_processed = self._post_process_results(
+            method_name,
+            self.op_data['output'],
+            results
+        )
+        return post_processed
 
 
 class ServiceFactory(object):
@@ -104,7 +152,7 @@ class ServiceFactory(object):
         for method_name, op_data in service_data.items():
             # First we make expand then we defense it.
             # Construct a brand-new method & assign it on the class.
-            attrs[method_name] = self._create_operation_method(method_name, op_data)
+            attrs[method_name] = self._create_operation_method(service_name, method_name, op_data)
 
         return attrs
 
@@ -118,35 +166,9 @@ class ServiceFactory(object):
         if not six.PY3:
             method_name = str(method_name)
 
-        def _new_method(new_self, **kwargs):
-            # Check the parameters.
-            new_self._check_method_params(op_data['params'], **kwargs)
-
-            # Prep the service's parameters.
-            service_params = new_self._build_service_params(
-                op_data['params'],
-                **kwargs
-            )
-
-            # Actually call the service.
-            service = new_self._details.session.get_core_service(
-                new_self._details.service_name
-            )
-            endpoint = service.get_endpoint(new_self.region_name)
-            op = service.get_operation(op_data['api_name'])
-            results = op.call(endpoint, **service_params)
-
-            # Post-process results here
-            post_processed = new_self._post_process_results(
-                method_name,
-                op_data['output'],
-                results
-            )
-            return post_processed
-
-        # Swap the name, so it looks right.
-        _new_method.__name__ = method_name
-        # Assign docstring.
-        _new_method.__doc__ = op_data['docs']
-        # Return the newly constructed method.
+        _new_method = ServiceMethod.construct_from_op_data(
+            method_name,
+            op_data
+        )
+        # Return the newly constructed "method".
         return _new_method
