@@ -25,6 +25,7 @@ class FakeOperation(object):
 
 class FakeService(object):
     operations = []
+    api_version = 'fake'
 
     def __init__(self, endpoint=None):
         self.endpoint = endpoint

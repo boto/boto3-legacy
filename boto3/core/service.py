@@ -12,6 +12,7 @@ class ServiceDetails(object):
         super(ServiceDetails, self).__init__()
         self.service_name = service_name
         self.session = session
+        self._api_version = None
         self._loaded_service_data = None
 
     @property
@@ -27,13 +28,33 @@ class ServiceDetails(object):
             self.session.core_session,
             self.service_name
         )
+        # Clear out the API version, just in case.
+        self._api_version = None
         return self._loaded_service_data
+
+    @property
+    def api_version(self):
+        # Lean on the cache first.
+        if self._api_version is not None:
+            return self._api_version
+
+        # We don't have a cache. Build it.
+        self._api_version = self._introspect_api_version(
+            self.session.core_session,
+            self.service_name
+        )
+        return self._api_version
 
     def _introspect_service(self, core_session, service_name):
         # Yes, we could lean on ``self.session|.service_name`` here,
         # but this makes testing/composability easier.
         intro = Introspection(core_session)
         return intro.introspect_service(service_name)
+
+    def _introspect_api_version(self, core_session, service_name):
+        intro = Introspection(core_session)
+        service = intro.get_service(service_name)
+        return service.api_version
 
     def reload_service_data(self):
         self._loaded_service_data = None

@@ -6,6 +6,7 @@ from tests.unit.fakes import FakeParam, FakeOperation, FakeService, FakeSession
 
 
 class TestCoreService(FakeService):
+    api_version = '2013-08-23'
     operations = [
         FakeOperation(
             'CreateQueue',
@@ -53,6 +54,7 @@ class ServiceDetailsTestCase(unittest.TestCase):
     def test_init(self):
         self.assertEqual(self.sd.service_name, 'test')
         self.assertEqual(self.sd.session, self.session)
+        self.assertEqual(self.sd._api_version, None)
         self.assertEqual(self.sd._loaded_service_data, None)
 
     def test_service_data(self):
@@ -62,6 +64,16 @@ class ServiceDetailsTestCase(unittest.TestCase):
         self.assertEqual(len(self.sd.service_data), 2)
 
         self.assertNotEqual(self.sd._loaded_service_data, None)
+        # Ensure the API version was cleared out as well.
+        self.assertNotEqual(self.sd._api_version, None)
+
+    def test_api_version(self):
+        self.assertEqual(self.sd._api_version, None)
+
+        # Access the property. It should load the data, cache it & return it.
+        self.assertEqual(self.sd.api_version, '2013-08-23')
+
+        self.assertNotEqual(self.sd._api_version, '2013-08-23')
 
     def test__introspect_service(self):
         service_data = self.sd._introspect_service(
