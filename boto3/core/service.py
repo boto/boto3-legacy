@@ -1,5 +1,4 @@
 import six
-import weakref
 
 from boto3.core.constants import NOTHING_PROVIDED
 from boto3.core.introspection import Introspection
@@ -12,8 +11,33 @@ class ServiceDetails(object):
     def __init__(self, service_name, session):
         super(ServiceDetails, self).__init__()
         self.service_name = service_name
-        # Use a weakref, so that GC isn't held up.
-        self.session = weakref.ref(session)
+        self.session = session
+        self._loaded_service_data = None
+
+    @property
+    def service_data(self):
+        # Lean on the cache first.
+        if self._loaded_service_data is not None:
+            return self._loaded_service_data
+
+        # We don't have a cache. Build it.
+        self._loaded_service_data = self._introspect_service(
+            # We care about the ``botocore.session`` here, not the
+            # ``boto3.session``.
+            self.session.core_session,
+            self.service_name
+        )
+        return self._loaded_service_data
+
+    def _introspect_service(self, core_session, service_name):
+        # Yes, we could lean on ``self.session|.service_name`` here,
+        # but this makes testing/composability easier.
+        intro = Introspection(core_session)
+        return intro.introspect_service(service_name)
+
+    def reload_service_data(self):
+        self._loaded_service_data = None
+        return self.service_data
 
 
 class Connection(object):
@@ -64,23 +88,40 @@ class Connection(object):
     def connect_to_region(cls, **kwargs):
         return cls(**kwargs)
 
+    def _get_operation_data(self, method_name):
+        """
+        Returns all the introspected operation data for a given method.
+        """
+        return self._details.service_data[method_name]
+
+    # TODO: Implement further convenience methods for accessing param info
+    #       & whatnot. (For the Resource layer to use.)
+
+
 
 class ServiceFactory(object):
-    def __init__(self, session, base_service=Connection):
+    def __init__(self, session, base_service=Connection,
+                 details_class=ServiceDetails):
         super(ServiceFactory, self).__init__()
         self.session = session
         self.base_service = base_service
+        self.details_class = ServiceDetails
 
     def construct_for(self, service_name):
+        # Construct a new ``ServiceDetails`` (or similar class) for storing
+        # the relevant details about the service & its operations.
+        details = self.details_class(service_name, self.session)
+        # Make sure the new class gets that ``ServiceDetails`` instance as a
+        # ``cls._details`` attribute.
         attrs = {
-            '_details': ServiceDetails(service_name, self.session),
+            '_details': details,
         }
 
         # Determine what we should call it.
         klass_name = self._build_class_name(service_name)
 
         # Construct what the class ought to have on it.
-        attrs.update(self._build_methods(service_name))
+        attrs.update(self._build_methods(details))
 
         # Create the class.
         return type(
@@ -92,52 +133,48 @@ class ServiceFactory(object):
     def _build_class_name(self, service_name):
         return '{0}Connection'.format(service_name.capitalize())
 
-    def _build_methods(self, service_name):
-        service_data = self._introspect_service(
-            # We care about the ``botocore.session`` here, not the
-            # ``boto3.session``.
-            self.session.core_session,
-            service_name
-        )
+    def _build_methods(self, details):
         attrs = {}
 
-        for method_name, op_data in service_data.items():
+        for method_name, op_data in details.service_data.items():
             # First we make expand then we defense it.
             # Construct a brand-new method & assign it on the class.
             attrs[method_name] = self._create_operation_method(method_name, op_data)
 
         return attrs
 
-    def _introspect_service(self, core_session, service_name):
-        # Yes, we could lean on ``self.session|.service_name`` here,
-        # but this makes testing/composability easier.
-        intro = Introspection(core_session)
-        return intro.introspect_service(service_name)
-
-    def _create_operation_method(self, method_name, op_data):
+    def _create_operation_method(factory_self, method_name, orig_op_data):
         if not six.PY3:
             method_name = str(method_name)
 
-        def _new_method(new_self, **kwargs):
+        def _new_method(self, **kwargs):
+            # Fetch the information about the operation.
+            op_data = self._get_operation_data(method_name)
+
             # Check the parameters.
-            new_self._check_method_params(op_data['params'], **kwargs)
+            self._check_method_params(
+                op_data['params'],
+                **kwargs
+            )
 
             # Prep the service's parameters.
-            service_params = new_self._build_service_params(
+            service_params = self._build_service_params(
                 op_data['params'],
                 **kwargs
             )
 
             # Actually call the service.
-            service = new_self._details.session.get_core_service(
-                new_self._details.service_name
+            service = self._details.session.get_core_service(
+                self._details.service_name
             )
-            endpoint = service.get_endpoint(new_self.region_name)
-            op = service.get_operation(op_data['api_name'])
+            endpoint = service.get_endpoint(self.region_name)
+            op = service.get_operation(
+                op_data['api_name']
+            )
             results = op.call(endpoint, **service_params)
 
             # Post-process results here
-            post_processed = new_self._post_process_results(
+            post_processed = self._post_process_results(
                 method_name,
                 op_data['output'],
                 results
@@ -147,6 +184,6 @@ class ServiceFactory(object):
         # Swap the name, so it looks right.
         _new_method.__name__ = method_name
         # Assign docstring.
-        _new_method.__doc__ = op_data['docs']
+        _new_method.__doc__ = orig_op_data['docs']
         # Return the newly constructed method.
         return _new_method

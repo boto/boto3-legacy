@@ -1,4 +1,4 @@
-from boto3.core.service import ServiceFactory
+from boto3.core.service import ServiceDetails, ServiceFactory
 from boto3.core.session import Session
 
 from tests import unittest
@@ -41,15 +41,30 @@ class TestCoreService(FakeService):
     ]
 
 
-class ServiceFactoryTestCase(unittest.TestCase):
+class ServiceDetailsTestCase(unittest.TestCase):
     def setUp(self):
-        super(ServiceFactoryTestCase, self).setUp()
+        super(ServiceDetailsTestCase, self).setUp()
         self.session = Session(FakeSession(TestCoreService()))
-        self.sf = ServiceFactory(session=self.session)
-        self.test_service_class = self.sf.construct_for('test')
+        self.sd = ServiceDetails(
+            service_name='test',
+            session=self.session
+        )
+
+    def test_init(self):
+        self.assertEqual(self.sd.service_name, 'test')
+        self.assertEqual(self.sd.session, self.session)
+        self.assertEqual(self.sd._loaded_service_data, None)
+
+    def test_service_data(self):
+        self.assertEqual(self.sd._loaded_service_data, None)
+
+        # Access the property. It should load the data, cache it & return it.
+        self.assertEqual(len(self.sd.service_data), 2)
+
+        self.assertNotEqual(self.sd._loaded_service_data, None)
 
     def test__introspect_service(self):
-        service_data = self.sf._introspect_service(
+        service_data = self.sd._introspect_service(
             self.session.core_session,
             'test'
         )
@@ -59,6 +74,14 @@ class ServiceFactoryTestCase(unittest.TestCase):
             'create_queue',
             'delete_queue'
         ])
+
+
+class ServiceFactoryTestCase(unittest.TestCase):
+    def setUp(self):
+        super(ServiceFactoryTestCase, self).setUp()
+        self.session = Session(FakeSession(TestCoreService()))
+        self.sf = ServiceFactory(session=self.session)
+        self.test_service_class = self.sf.construct_for('test')
 
     def test__check_method_params(self):
         _cmp = self.test_service_class()._check_method_params
@@ -150,6 +173,24 @@ class ServiceFactoryTestCase(unittest.TestCase):
             'QueueUrl': 'http://example.com'
         })
         self.assertEqual(ts.delete_queue(queue_name='boo'), True)
+
+    def test_late_binding(self):
+        # If the ``ServiceDetails`` data changes, it should be reflected in
+        # the dynamic methods.
+        ts = self.test_service_class()
+
+        # Successful calls.
+        self.assertEqual(ts.create_queue(queue_name='boo'), {
+            'QueueUrl': 'http://example.com'
+        })
+
+        # Now the required params change underneath us.
+        # This is ugly/fragile, but also unlikely.
+        sd = ts._details._loaded_service_data
+        sd['create_queue']['params'][1]['required'] = True
+
+        # Now this call should fail, since there's a new required parameter.
+        self.assertRaises(TypeError, ts, 'create_queue')
 
 
 if __name__ == "__main__":
