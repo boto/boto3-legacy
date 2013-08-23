@@ -32,6 +32,8 @@ Sample::
     for message in queue.messages.all():
         print(message.body)
 
+    queue.delete()
+
 
 Resource API
 ============
@@ -49,3 +51,34 @@ Sample::
     read = queue.receive_message()
     print(read.body)
 
+    queue.delete()
+
+
+Connection API
+==============
+
+Sample::
+
+    from boto3.core.session import Session
+
+    session = Session()
+    SQSConnection = session.get_service('sqs')
+
+    conn = SQSConnection(region_name='us-west-2')
+    q_details = conn.create_queue(queue_name='my_test_queue')
+
+    queue_url = q_details['QueueUrl']
+    print("Queue URL is: {0}".format(queue_url))
+
+    conn.send_message(
+        queue_url=queue_url,
+        message_body='This is an example message.'
+    )
+
+    read = conn.receive_message(
+        queue_url=queue_url,
+        max_number_of_messages=1
+    )
+    print(read['Messages'][0]['Body'])
+
+    conn.delete_queue(queue_url=queue_url)
