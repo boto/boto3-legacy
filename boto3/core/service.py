@@ -1,5 +1,6 @@
 import six
 
+from boto3.core.constants import DEFAULT_REGION
 from boto3.core.constants import NOTHING_PROVIDED
 from boto3.core.introspection import Introspection
 
@@ -14,6 +15,13 @@ class ServiceDetails(object):
         self.session = session
         self._api_version = None
         self._loaded_service_data = None
+
+    def __str__(self):
+        return u'<{0}: {1} - {2}>'.format(
+            self.__class__.__name__,
+            self.service_name,
+            self.api_version
+        )
 
     @property
     def service_data(self):
@@ -65,9 +73,15 @@ class Connection(object):
     """
     A common base class for all the ``Connection`` objects.
     """
-    def __init__(self, region_name='us-east-1'):
+    def __init__(self, region_name=DEFAULT_REGION):
         super(Connection, self).__init__()
         self.region_name = region_name
+
+    def __str__(self):
+        return u'<{0}: {0}>'.format(
+            self.__class__.__name__,
+            self.region_name
+        )
 
     def _check_method_params(self, op_params, **kwargs):
         # For now, we don't type-check or anything, just check for required
@@ -118,6 +132,8 @@ class Connection(object):
     # TODO: Implement further convenience methods for accessing param info
     #       & whatnot. (For the Resource layer to use.)
 
+    def _get_operation_params(self, method_name):
+        return self._get_operation_data(method_name).get('params', [])
 
 
 class ServiceFactory(object):
@@ -127,6 +143,9 @@ class ServiceFactory(object):
         self.session = session
         self.base_service = base_service
         self.details_class = ServiceDetails
+
+    def __str__(self):
+        return self.__class__.__name__
 
     def construct_for(self, service_name):
         # Construct a new ``ServiceDetails`` (or similar class) for storing
