@@ -1,12 +1,12 @@
 from hashlib import md5
 
 from boto3.core.exceptions import MD5ValidationError
-from boto3.core.resource import Resource, Structure
-from boto3.core.resource import BoundField, ListBoundField
-from boto3.core.resource import InstanceMethod, ClassMethod
+from boto3.core.resources import fields
+from boto3.core.resources import methods
+from boto3.core.resources import Resource, Structure
 
 
-class Queue(Resource):
+class SQSQueue(Resource):
     # A special, required key identifying what API versions a given
     # ``Resource/Structure`` works correctly with.
     valid_api_versions = [
@@ -14,38 +14,39 @@ class Queue(Resource):
     ]
 
     # Instance variables
-    name = BoundField('QueueName')
-    url = BoundField('QueueUrl', required=False)
+    name = fields.BoundField('queue_name')
+    url = fields.BoundField('queue_url', required=False)
 
-    # Methods
-    create = InstanceMethod('create_queue')
-    delete = InstanceMethod('delete_queue')
-    list_queues = ClassMethod('list_queues', kwargs={
-        'prefix': None
-    })
-    get_url = InstanceMethod('get_queue_url')
-    get_messages = InstanceMethod('receive_message', )
+    # Class methods
+    list_queues = methods.ClassMethod('list_queues')
+
+    # Instance methods
+    create = methods.InstanceMethod('create_queue')
+    delete = methods.InstanceMethod('delete_queue')
+    get_url = methods.InstanceMethod('get_queue_url')
+    get_messages = methods.InstanceMethod('receive_message')
+    send_message = methods.InstanceMethod('send_message')
 
 
-class Attribute(Structure):
+class SQSAttribute(Structure):
     valid_api_versions = [
         '2012-11-05',
     ]
 
-    name = BoundField('Name')
-    value = BoundField('Value')
+    name = fields.BoundField('Name')
+    value = fields.BoundField('Value')
 
 
-class Message(Structure):
+class SQSMessage(Structure):
     valid_api_versions = [
         '2012-11-05',
     ]
 
-    body = BoundField('Body')
-    md5 = BoundField('MD5OfBody', required=False)
-    message_id = BoundField('MessageId', required=False)
-    receipt_handle = BoundField('ReceiptHandle', required=False)
-    attributes = ListBoundField('Attribute', Attribute)
+    body = fields.BoundField('Body')
+    md5 = fields.BoundField('MD5OfBody', required=False)
+    message_id = fields.BoundField('MessageId', required=False)
+    receipt_handle = fields.BoundField('ReceiptHandle', required=False)
+    attributes = fields.ListBoundField('Attribute', SQSAttribute)
 
     def post_populate(self):
         # Verify the MD5 if present.
