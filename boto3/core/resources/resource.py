@@ -44,10 +44,7 @@ class ResourceMetaclass(type):
                 # called.
                 setattr(value, 'name', attr_name)
             elif getattr(value, 'is_method', False):
-                if getattr(value, 'is_class_method', False):
-                    attrs['_class_methods'][attr_name] = value
-                    setattr(value, 'name', attr_name)
-                elif getattr(value, 'is_instance_method', False):
+                if getattr(value, 'is_instance_method', False):
                     attrs['_instance_methods'][attr_name] = value
                     setattr(value, 'name', attr_name)
 
@@ -55,22 +52,18 @@ class ResourceMetaclass(type):
 
         # Once we're done constructing the base object, go back & add on the
         # methods.
-        #
         # We do this after the fact so that we can let the ``Resource`` (or
         # similar) class handle the construction of the methods.
-        #
         # This avoids further metaclass hackery & puts the subclass in control,
         # rather than embedding that logic here.
         for attr_name, method in klass._instance_methods.items():
             method.setup_on_resource(klass)
 
-        for attr_name, method in klass._class_methods.items():
-            method.setup_on_resource(klass)
-
         return klass
 
 
-class Resource(six.with_metaclass(ResourceMetaclass)):
+@six.add_metaclass(ResourceMetaclass)
+class Resource(object):
     # Subclasses should always specify this & list out the API versions
     # it supports.
     valid_api_versions = []
