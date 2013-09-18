@@ -3,7 +3,16 @@ from hashlib import md5
 from boto3.core.exceptions import MD5ValidationError
 from boto3.core.resources import fields
 from boto3.core.resources import methods
-from boto3.core.resources import Resource, Structure
+from boto3.core.resources import ResourceCollection, Resource, Structure
+
+
+class SQSQueueCollection(ResourceCollection):
+    valid_api_versions = [
+        '2012-11-05',
+    ]
+
+    list_queues = methods.ClassMethod('list_queues')
+    create = methods.InstanceMethod('create_queue')
 
 
 class SQSQueue(Resource):
@@ -13,19 +22,33 @@ class SQSQueue(Resource):
         '2012-11-05',
     ]
 
+    # Assign a default collection.
+    collection = SQSQueueCollection()
+
     # Instance variables
     name = fields.BoundField('queue_name')
     url = fields.BoundField('queue_url', required=False)
 
-    # Class methods
-    list_queues = methods.ClassMethod('list_queues')
-
     # Instance methods
-    create = methods.InstanceMethod('create_queue')
     delete = methods.InstanceMethod('delete_queue')
     get_url = methods.InstanceMethod('get_queue_url')
-    get_messages = methods.InstanceMethod('receive_message')
     send_message = methods.InstanceMethod('send_message')
+    receive_message = methods.InstanceMethod('receive_message', limit=1)
+    receive_messages = methods.InstanceMethod('receive_message')
+    change_message_visibility = methods.InstanceMethod(
+        'change_message_visibility'
+    )
+
+    add_permission = methods.InstanceMethod('add_permission')
+    remove_permission = methods.InstanceMethod('remove_permission')
+    get_attributes = methods.InstanceMethod('get_queue_attributes')
+    set_attributes = methods.InstanceMethod('set_queue_attributes')
+
+    send_message_batch = methods.InstanceMethod('send_message_batch')
+    delete_message_batch = methods.InstanceMethod('delete_message_batch')
+    change_message_visibility_batch = methods.InstanceMethod(
+        'change_message_visibility_batch'
+    )
 
 
 class SQSAttribute(Structure):

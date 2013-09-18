@@ -1,11 +1,7 @@
-from botocore.compat import OrderedDict
-from botocore.compat import six
-
-from boto3.core.exceptions import APIVersionMismatchError
-from boto3.core.exceptions import ResourceError
+import six
 
 
-class ResourceMetaclass(type):
+class ResourceCollectionMetaclass(type):
     def __new__(cls, name, bases, attrs):
         if name in ['NewBase', 'Resource']:
             # Grumble grumble six grumble.
@@ -62,70 +58,8 @@ class ResourceMetaclass(type):
         return klass
 
 
-@six.add_metaclass(ResourceMetaclass)
-class Resource(object):
+@six.add_metaclass(ResourceCollectionMetaclass)
+class ResourceCollection(object):
     # Subclasses should always specify this & list out the API versions
     # it supports.
     valid_api_versions = []
-
-    def __init__(self, session, connection=None):
-        super(Resource, self).__init__()
-        self._session = session
-        self._connection = connection
-        self._data = {}
-
-        if self._connection is None:
-            klass = self._session.get_service(self._details.service_name)
-            self._connection = klass()
-
-        self._update_docstrings()
-        self._check_api_version()
-
-    def __str__(self):
-        return u'<{0}>'.format(
-            self.__class__.__name__
-        )
-
-    def __getattr__(self, name):
-        # Python didn't find it hanging off the class already, so it might
-        # be instance data. Try to find it in ``_data``.
-        if name in self._data:
-            return self._data[name]
-
-        raise AttributeError(
-            "'{0}' object has no attribute '{1}'".format(
-                self.__class__.__name__,
-                name
-            )
-        )
-
-    def __setattr__(self, name, value):
-        # Check to see if it's a value for a known field first.
-        if name in self.fields:
-            self._data[name] = value
-            return
-
-        # Must be regular assignment.
-        super(Resource, self).__setattr__(name, value)
-
-    def _update_docstrings(self):
-        # Because this is going to get old typing & re-typing.
-        cls = self.__class__
-
-        for attr_name, method in cls._instance_methods.items():
-            method.update_docstring(self)
-
-    def _check_api_version(self):
-        conn_version = self._connection.api_version
-
-        if not conn_version in self.valid_api_versions:
-            msg = "The '{0}' resource supports these API versions ({1}) " + \
-                  "but the provided connection has an incompatible API " + \
-                  "version '{2}'."
-            raise APIVersionMismatchError(
-                msg.format(
-                    self.__class__.__name__,
-                    ', '.join(self.valid_api_versions),
-                    conn_version
-                )
-            )

@@ -42,7 +42,7 @@ Sample::
 
     from boto3.sqs.resources import SQSQueue, SQSMessage
 
-    queue = SQSQueue.create(name='my_test_queue')
+    queue = SQSQueue.collection.create(name='my_test_queue')
     msg = SQSMessage(
         body='This is an example message.'
     )
