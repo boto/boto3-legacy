@@ -1,4 +1,4 @@
-import six
+from botocore.compat import six
 
 from botocore.compat import OrderedDict
 

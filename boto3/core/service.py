@@ -1,4 +1,4 @@
-import six
+from botocore.compat import six
 
 from boto3.core.constants import DEFAULT_REGION
 from boto3.core.constants import NOTHING_PROVIDED

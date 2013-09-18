@@ -1,7 +1,7 @@
-import six
-
 from botocore.compat import OrderedDict
+from botocore.compat import six
 
+from boto3.core.exceptions import APIVersionMismatchError
 from boto3.core.exceptions import ResourceError
 
 

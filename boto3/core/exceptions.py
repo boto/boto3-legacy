@@ -13,6 +13,10 @@ class ResourceError(BotoException):
     pass
 
 
+class APIVersionMismatchError(BotoException):
+    pass
+
+
 class NoNameProvidedError(BotoException):
     pass
 
