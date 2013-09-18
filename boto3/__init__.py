@@ -20,12 +20,18 @@ def get_version(full=False):
     return version
 
 
+# Set up logging to ``/dev/null`` like a library is supposed to.
+# http://docs.python.org/3.3/howto/logging.html#configuring-logging-for-a-library
 class NullHandler(logging.Handler):
     def emit(self, record):
         pass
 
 
-# Set up logging to ``/dev/null`` like a library is supposed to.
-# http://docs.python.org/3.3/howto/logging.html#configuring-logging-for-a-library
 log = logging.getLogger('boto3')
 log.addHandler(NullHandler())
+# End logging setup.
+
+
+# A plain default ``Session`` (for convenience).
+from boto3.core.session import Session
+session = Session()

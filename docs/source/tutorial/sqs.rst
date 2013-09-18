@@ -59,9 +59,8 @@ Connection API
 
 Sample::
 
-    from boto3.core.session import Session
+    from boto3 import session
 
-    session = Session()
     SQSConnection = session.get_service('sqs')
 
     conn = SQSConnection(region_name='us-west-2')
