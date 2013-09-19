@@ -65,7 +65,7 @@ class ServiceDetailsTestCase(unittest.TestCase):
 
         self.assertNotEqual(self.sd._loaded_service_data, None)
         # Ensure the API version was cleared out as well.
-        self.assertNotEqual(self.sd._api_version, None)
+        self.assertEqual(self.sd._api_version, None)
 
     def test_api_version(self):
         self.assertEqual(self.sd._api_version, None)
@@ -73,7 +73,7 @@ class ServiceDetailsTestCase(unittest.TestCase):
         # Access the property. It should load the data, cache it & return it.
         self.assertEqual(self.sd.api_version, '2013-08-23')
 
-        self.assertNotEqual(self.sd._api_version, '2013-08-23')
+        self.assertEqual(self.sd._api_version, '2013-08-23')
 
     def test__introspect_service(self):
         service_data = self.sd._introspect_service(

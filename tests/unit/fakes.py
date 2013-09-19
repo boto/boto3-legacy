@@ -1,6 +1,10 @@
+from botocore import xform_name
+
+
 class FakeParam(object):
     def __init__(self, name, required=False, ptype='string'):
         self.name = name
+        self.py_name = xform_name(name)
         self.required = required
         self.type = ptype
 
@@ -8,6 +12,7 @@ class FakeParam(object):
 class FakeOperation(object):
     def __init__(self, name, docs='', params=None, output=None, result=None):
         self.name = name
+        self.py_name = xform_name(name)
         self.documentation = docs
         self.params = params
         self.output = output
