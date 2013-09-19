@@ -1,3 +1,7 @@
+import time
+
+from boto3.core.waiter import RetriesExceededError
+from boto3.core.waiter import TimeoutExceededError
 from boto3.core.waiter import Waiter
 
 from tests import unittest
@@ -35,6 +39,16 @@ class Complex(object):
             return False
 
         return "Got a 200 from %s in less than %s seconds." % (url, timeout)
+
+
+class Failed(object):
+    def __init__(self):
+        self.fails = 0
+
+    def request(self, url, timeout=60):
+        # Simulate a failsome network.
+        self.fails += 1
+        return False
 
 
 def before_running(waiter_obj):
@@ -83,6 +97,63 @@ class WaiterTestCase(unittest.TestCase):
             final,
             'Got a 200 from http://aws.amazon.com/ in less than 5 seconds.'
         )
+
+    def test_errors(self):
+        client = Complex()
+
+        # First, invalid retries
+        with self.assertRaises(ValueError) as cm:
+            waiter = Waiter(
+                client.request,
+                args=['http://aws.amazon.com/'],
+                kwargs={'timeout': 5},
+                retries=-1,
+                interval=0.5
+            )
+
+        self.assertTrue('Retries must be greater' in str(cm.exception))
+
+        # Then invalid interval
+        with self.assertRaises(ValueError) as cm:
+            waiter = Waiter(
+                client.request,
+                args=['http://aws.amazon.com/'],
+                kwargs={'timeout': 5},
+                retries=0,
+                interval=-0.1
+            )
+
+        self.assertTrue('Interval must be greater' in str(cm.exception))
+
+    def test_exceeded_timeout(self):
+        client = Complex()
+        waiter = Waiter(
+            client.request,
+            args=['http://aws.amazon.com/'],
+            kwargs={'timeout': 0.3},
+            retries=3,
+            interval=1
+        )
+
+        with self.assertRaises(TimeoutExceededError) as cm:
+            final = waiter.join(timeout=0.1)
+
+        self.assertTrue('exceeded the timeout' in str(cm.exception))
+
+    def test_exceeded_retries(self):
+        client = Failed()
+        waiter = Waiter(
+            client.request,
+            args=['http://aws.amazon.com/'],
+            kwargs={'timeout': 1},
+            retries=1,
+            interval=1
+        )
+
+        with self.assertRaises(RetriesExceededError) as cm:
+            final = waiter.join()
+
+        self.assertTrue('exceeded the number of retries' in str(cm.exception))
 
 
 if __name__ == "__main__":

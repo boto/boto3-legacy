@@ -211,6 +211,13 @@ class ServiceFactoryTestCase(unittest.TestCase):
         })
         self.assertEqual(ts.delete_queue(queue_name='boo'), True)
 
+        # Test the params.
+        create_queue_params = ts._get_operation_params('create_queue')
+        self.assertEqual(
+            [param['var_name'] for param in create_queue_params],
+            ['queue_name', 'attributes']
+        )
+
     def test_late_binding(self):
         # If the ``ServiceDetails`` data changes, it should be reflected in
         # the dynamic methods.

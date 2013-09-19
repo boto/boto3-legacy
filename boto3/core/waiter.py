@@ -141,7 +141,7 @@ class Waiter(object):
             if timeout is not None:
                 elapsed = time.time() - start_time
 
-                if elasped >= timeout:
+                if elapsed >= timeout:
                     raise TimeoutExceededError(
                         "%r exceeded the timeout of %s." % (
                             self.target,
