@@ -1,6 +1,4 @@
 from boto3.core.constants import DEFAULT_REGION
-from boto3.utils.mangle import to_snake_case
-from boto3.utils.mangle import to_camel_case
 from boto3.utils.mangle import html_to_rst
 
 
@@ -22,7 +20,7 @@ class Introspection(object):
 
     def parse_param(self, core_param):
         return {
-            'var_name': to_snake_case(core_param.name),
+            'var_name': core_param.py_name,
             'api_name': core_param.name,
             'required': core_param.required,
             'type': core_param.type,
@@ -38,7 +36,7 @@ class Introspection(object):
 
     def introspect_operation(self, operation):
         return {
-            'method_name': to_snake_case(operation.name),
+            'method_name': operation.py_name,
             'api_name': operation.name,
             'docs': html_to_rst(operation.documentation),
             'params': self.parse_params(operation.params),
