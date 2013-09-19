@@ -80,7 +80,7 @@ class BaseMethod(object):
             #        params, not in return values), so we have to do a little
             #        hocus-pocus guessing about names. :(
             # FIXME: Alternatively, we could snake_case in the field's
-            #        ``__init``, which would allow us to use the regular API
+            #        ``__init__``, which would allow us to use the regular API
             #        name here (we'd have to use the alternate snake'd version
             #        above in ``get_bound_params``).
             snaked_key = to_snake_case(key)
@@ -99,8 +99,6 @@ class BaseMethod(object):
         #       not sure how to generically mitigate this for the moment.
         return raw_results
 
-    # TODO: If these stay as plain class/instance-attributes (Option #1), this
-    #       needs to become ``__call__`` instead of ``call``.
     def call(self, conn, **kwargs):
         built_params = kwargs
 
