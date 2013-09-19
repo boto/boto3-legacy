@@ -5,6 +5,10 @@ class BotoException(Exception):
     pass
 
 
+class IncorrectImportPath(BotoException):
+    pass
+
+
 class NoSuchMethod(BotoException):
     pass
 

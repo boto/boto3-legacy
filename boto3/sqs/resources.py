@@ -7,15 +7,19 @@ from boto3.core.resources import ResourceCollection, Resource, Structure
 
 
 class SQSQueueCollection(ResourceCollection):
+    resource_class = 'boto3.sqs.resources.SQSQueue'
+    service_name = 'sqs'
     valid_api_versions = [
         '2012-11-05',
     ]
 
-    list_queues = methods.ClassMethod('list_queues')
+    # FIXME: These need to return ``SQSQueue`` objects...
+    list_queues = methods.InstanceMethod('list_queues')
     create = methods.InstanceMethod('create_queue')
 
 
 class SQSQueue(Resource):
+    service_name = 'sqs'
     # A special, required key identifying what API versions a given
     # ``Resource/Structure`` works correctly with.
     valid_api_versions = [

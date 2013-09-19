@@ -1,7 +1,9 @@
 from botocore.compat import OrderedDict
 from botocore.compat import six
 
+from boto3.core.exceptions import ResourceError
 from boto3.core.resources.base import ResourceBase
+from boto3.utils.import_utils import import_class
 
 
 # TODO: This is almost identical to the ``ResourceMetaclass``.
@@ -63,13 +65,6 @@ class ResourceCollectionMetaclass(type):
 
 @six.add_metaclass(ResourceCollectionMetaclass)
 class ResourceCollection(ResourceBase):
-    # FIXME: Need to supply/discover the non-collection class to return.
-    #        Perhaps make this obey the descriptor protocol, so that it can
-    #        be used either individually or on a ``Resource`` class.::
-    #
-    #            >>> SQSQueueCollection(resource_class=MySQSQueue).create('...')
-    #            # ...or...
-    #            >>> SQSQueue.collection.create('...')
     resource_class = None
     service_name = None
 
@@ -77,14 +72,13 @@ class ResourceCollection(ResourceBase):
         super(ResourceCollection, self).__init__()
         self._session = session
         self._connection = connection
-        self._data = {}
 
         if self._connection is None:
             klass = self._session.get_service(self.service_name)
             self._connection = klass()
 
         if resource_class is not None:
-            self.resource_class = resource_class
+            self._resource_class = resource_class
 
         self._update_docstrings()
         self._check_api_version()
@@ -92,5 +86,19 @@ class ResourceCollection(ResourceBase):
     def __str__(self):
         return u'<{0} for {1}>'.format(
             self.__class__.__name__,
-            self.resource_class.__name__
+            self.get_resource_class().__name__
         )
+
+    def get_resource_class(self):
+        if self.resource_class is None:
+            raise ResourceError(
+                "No resource_class configured for '{0}.".format(
+                    self.__class__.__name__
+                )
+            )
+
+        if isinstance(self.resource_class, six.string_types):
+            # We've got a path. Try to import it.
+            self.resource_class = import_class(self.resource_class)
+
+        return self.resource_class
