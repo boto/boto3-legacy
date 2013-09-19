@@ -131,7 +131,7 @@ class WaiterTestCase(unittest.TestCase):
             client.request,
             args=['http://aws.amazon.com/'],
             kwargs={'timeout': 0.3},
-            retries=3,
+            retries=1,
             interval=1
         )
 

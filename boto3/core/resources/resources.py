@@ -1,7 +1,6 @@
-from botocore.compat import OrderedDict
-from botocore.compat import six
-
 from boto3.core.resources.base import ResourceBase
+from boto3.utils import OrderedDict
+from boto3.utils import six
 
 
 class ResourceMetaclass(type):

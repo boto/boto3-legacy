@@ -1,8 +1,7 @@
-from botocore.compat import six
-
 from boto3.core.constants import DEFAULT_REGION
 from boto3.core.constants import NOTHING_PROVIDED
 from boto3.core.introspection import Introspection
+from boto3.utils import six
 
 
 class ServiceDetails(object):

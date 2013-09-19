@@ -1,6 +1,5 @@
-from botocore.compat import six
-
-from botocore.compat import OrderedDict
+from boto3.utils import OrderedDict
+from boto3.utils import six
 
 
 class StructureMetaclass(type):

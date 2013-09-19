@@ -1,4 +1,4 @@
-botocore==0.12.0
+botocore==0.16.0
 six>=1.4.0
 jmespath>=0.0.2
 python-dateutil>=2.1

@@ -1,9 +1,8 @@
-from botocore.compat import OrderedDict
-from botocore.compat import six
-
 from boto3.core.exceptions import ResourceError
 from boto3.core.resources.base import ResourceBase
 from boto3.utils.import_utils import import_class
+from boto3.utils import OrderedDict
+from boto3.utils import six
 
 
 # TODO: This is almost identical to the ``ResourceMetaclass``.
