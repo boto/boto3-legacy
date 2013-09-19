@@ -154,22 +154,3 @@ class InstanceMethod(BaseMethod):
         _new_method.__doc__ = DEFAULT_DOCSTRING
         setattr(resource_class, meth_self.name, _new_method)
         return True
-
-
-class ClassMethod(BaseMethod):
-    is_class_method = True
-
-    def setup_on_resource(meth_self, resource_class):
-        def _new_method(cls, **kwargs):
-            meth_self.resource = cls
-            return cls._class_methods[meth_self.name].call(
-                # FIXME: No clue how a connection will get here. That's a bit
-                #        of a deal-breaker for class methods. :(
-                **kwargs
-            )
-
-        # Set the name/docs & hook it up to the class.
-        _new_method.__name__ = meth_self.name
-        _new_method.__doc__ = DEFAULT_DOCSTRING
-        setattr(resource_class, meth_self.name, classmethod(_new_method))
-        return True

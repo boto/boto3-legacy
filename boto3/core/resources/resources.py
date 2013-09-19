@@ -1,8 +1,7 @@
 from botocore.compat import OrderedDict
 from botocore.compat import six
 
-from boto3.core.exceptions import APIVersionMismatchError
-from boto3.core.exceptions import ResourceError
+from boto3.core.resources.base import ResourceBase
 
 
 class ResourceMetaclass(type):
@@ -25,13 +24,12 @@ class ResourceMetaclass(type):
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
             'fields': OrderedDict(),
             'collection': orig_attrs.pop('collection', None),
-            '_instance_methods': OrderedDict(),
+            '_methods': OrderedDict(),
         }
 
         # We keep the objects as is, stowing them on the instance (think
         # ``self._methods``), then construct wrapper methods that delegate
         # off to them.
-
         # Iterate & pick out the fields/methods for construction.
         # Note: We're duck-typing (looking at an attribute) because calling
         #       ``isinstance(...)`` is pretty frail & could break badly for
@@ -44,9 +42,8 @@ class ResourceMetaclass(type):
                 # called.
                 setattr(value, 'name', attr_name)
             elif getattr(value, 'is_method', False):
-                if getattr(value, 'is_instance_method', False):
-                    attrs['_instance_methods'][attr_name] = value
-                    setattr(value, 'name', attr_name)
+                attrs['_methods'][attr_name] = value
+                setattr(value, 'name', attr_name)
 
         klass = super(ResourceMetaclass, cls).__new__(cls, name, bases, attrs)
 
@@ -56,18 +53,14 @@ class ResourceMetaclass(type):
         # similar) class handle the construction of the methods.
         # This avoids further metaclass hackery & puts the subclass in control,
         # rather than embedding that logic here.
-        for attr_name, method in klass._instance_methods.items():
+        for attr_name, method in klass._methods.items():
             method.setup_on_resource(klass)
 
         return klass
 
 
 @six.add_metaclass(ResourceMetaclass)
-class Resource(object):
-    # Subclasses should always specify this & list out the API versions
-    # it supports.
-    valid_api_versions = []
-
+class Resource(ResourceBase):
     def __init__(self, session, connection=None):
         super(Resource, self).__init__()
         self._session = session
@@ -107,25 +100,3 @@ class Resource(object):
 
         # Must be regular assignment.
         super(Resource, self).__setattr__(name, value)
-
-    def _update_docstrings(self):
-        # Because this is going to get old typing & re-typing.
-        cls = self.__class__
-
-        for attr_name, method in cls._instance_methods.items():
-            method.update_docstring(self)
-
-    def _check_api_version(self):
-        conn_version = self._connection.api_version
-
-        if not conn_version in self.valid_api_versions:
-            msg = "The '{0}' resource supports these API versions ({1}) " + \
-                  "but the provided connection has an incompatible API " + \
-                  "version '{2}'."
-            raise APIVersionMismatchError(
-                msg.format(
-                    self.__class__.__name__,
-                    ', '.join(self.valid_api_versions),
-                    conn_version
-                )
-            )
