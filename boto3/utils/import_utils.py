@@ -7,6 +7,13 @@ def import_class(import_path):
     """
     Imports a class dynamically from a full import path.
     """
+    if not '.' in import_path:
+        raise IncorrectImportPath(
+            "Invalid Python-style import path provided: {0}.".format(
+                import_path
+            )
+        )
+
     path_bits = import_path.split('.')
     mod_path = '.'.join(path_bits[:-1])
     klass_name = path_bits[-1]
