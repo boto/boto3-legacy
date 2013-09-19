@@ -57,6 +57,23 @@ class IntrospectionTestCase(unittest.TestCase):
         self.assertEqual(params_data[1]['required'], False)
         self.assertEqual(params_data[1]['type'], 'map')
 
+    def test_get_endpoint(self):
+        endpoint = self.introspection.get_endpoint(self.service)
+        self.assertEqual(endpoint.region_name, 'us-east-1')
+
+        endpoint = self.introspection.get_endpoint(
+            self.service,
+            region_name='us-west-2'
+        )
+        self.assertEqual(endpoint.region_name, 'us-west-2')
+
+    def test_get_operation(self):
+        operation = self.introspection.get_operation(
+            self.service,
+            'CreateQueue'
+        )
+        self.assertEqual(operation.py_name, 'create_queue')
+
     def test_introspect_operation(self):
         op_data = self.introspection.introspect_operation(
             self.service.operations[0]

@@ -39,6 +39,9 @@ class FakeService(object):
             self.endpoint = FakeEndpoint()
 
     def get_endpoint(self, region_name=None):
+        if region_name:
+            self.endpoint.region_name = region_name
+
         return self.endpoint
 
     def get_operation(self, operation_name):

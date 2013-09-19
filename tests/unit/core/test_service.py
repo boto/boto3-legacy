@@ -42,6 +42,10 @@ class TestCoreService(FakeService):
     ]
 
 
+class ChangedTestCoreService(TestCoreService):
+    operations = TestCoreService.operations[1:2]
+
+
 class ServiceDetailsTestCase(unittest.TestCase):
     def setUp(self):
         super(ServiceDetailsTestCase, self).setUp()
@@ -75,6 +79,10 @@ class ServiceDetailsTestCase(unittest.TestCase):
 
         self.assertEqual(self.sd._api_version, '2013-08-23')
 
+        # Test the cached version
+        self.sd._api_version += 'a'
+        self.assertEqual(self.sd.api_version, '2013-08-23a')
+
     def test__introspect_service(self):
         service_data = self.sd._introspect_service(
             self.session.core_session,
@@ -84,6 +92,23 @@ class ServiceDetailsTestCase(unittest.TestCase):
         # just check the necessary method names are here.
         self.assertEqual(sorted(list(service_data.keys())), [
             'create_queue',
+            'delete_queue'
+        ])
+
+    def test_reload_service_data(self):
+        service_data = self.sd._introspect_service(
+            self.session.core_session,
+            'test'
+        )
+        self.assertEqual(sorted(list(service_data.keys())), [
+            'create_queue',
+            'delete_queue'
+        ])
+
+        # Now it changed.
+        self.sd.session = Session(FakeSession(ChangedTestCoreService()))
+        self.sd.reload_service_data()
+        self.assertEqual(sorted(list(self.sd.service_data.keys())), [
             'delete_queue'
         ])
 
