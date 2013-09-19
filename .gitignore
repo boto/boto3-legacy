@@ -5,3 +5,5 @@ env2
 env3
 dist
 build
+tests/cover
+tests/.coverage
