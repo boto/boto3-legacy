@@ -1,11 +1,18 @@
-import six
+from botocore.compat import OrderedDict
+from botocore.compat import six
+
+from boto3.core.resources.base import ResourceBase
 
 
+# TODO: This is almost identical to the ``ResourceMetaclass``.
+#       DRY-ing it up would be nice, but difference between
+#       ``resource_class`` and ``fields/collection`` makes it difficult.
 class ResourceCollectionMetaclass(type):
     def __new__(cls, name, bases, attrs):
-        if name in ['NewBase', 'Resource']:
-            # Grumble grumble six grumble.
-            return super(ResourceMetaclass, cls).__new__(
+        # Check if we're dealing with the base class.
+        # If so, don't run the rest of the metaclass.
+        if attrs.get('service_name', None) is None:
+            return super(ResourceCollectionMetaclass, cls).__new__(
                 cls,
                 name,
                 bases,
@@ -19,32 +26,28 @@ class ResourceCollectionMetaclass(type):
         # class with.
         attrs = {
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
-            'fields': OrderedDict(),
-            'collection': orig_attrs.pop('collection', None),
-            '_instance_methods': OrderedDict(),
+            'resource_class': orig_attrs.pop('resource_class', None),
+            '_methods': OrderedDict(),
         }
 
         # We keep the objects as is, stowing them on the instance (think
         # ``self._methods``), then construct wrapper methods that delegate
         # off to them.
-
-        # Iterate & pick out the fields/methods for construction.
+        # Iterate & pick out the methods for construction.
         # Note: We're duck-typing (looking at an attribute) because calling
         #       ``isinstance(...)`` is pretty frail & could break badly for
         #       other yet-to-be-created-or-known subclasses. Quack.
         for attr_name, value in orig_attrs.items():
-            if getattr(value, 'is_field', False):
-                # It's a field. Weird, right?
-                attrs['fields'][attr_name] = value
-                # Make sure the instance knows what the parent thinks it's
-                # called.
+            if getattr(value, 'is_method', False):
+                attrs['_methods'][attr_name] = value
                 setattr(value, 'name', attr_name)
-            elif getattr(value, 'is_method', False):
-                if getattr(value, 'is_instance_method', False):
-                    attrs['_instance_methods'][attr_name] = value
-                    setattr(value, 'name', attr_name)
 
-        klass = super(ResourceMetaclass, cls).__new__(cls, name, bases, attrs)
+        klass = super(ResourceCollectionMetaclass, cls).__new__(
+            cls,
+            name,
+            bases,
+            attrs
+        )
 
         # Once we're done constructing the base object, go back & add on the
         # methods.
@@ -52,14 +55,42 @@ class ResourceCollectionMetaclass(type):
         # similar) class handle the construction of the methods.
         # This avoids further metaclass hackery & puts the subclass in control,
         # rather than embedding that logic here.
-        for attr_name, method in klass._instance_methods.items():
+        for attr_name, method in klass._methods.items():
             method.setup_on_resource(klass)
 
         return klass
 
 
 @six.add_metaclass(ResourceCollectionMetaclass)
-class ResourceCollection(object):
-    # Subclasses should always specify this & list out the API versions
-    # it supports.
-    valid_api_versions = []
+class ResourceCollection(ResourceBase):
+    # FIXME: Need to supply/discover the non-collection class to return.
+    #        Perhaps make this obey the descriptor protocol, so that it can
+    #        be used either individually or on a ``Resource`` class.::
+    #
+    #            >>> SQSQueueCollection(resource_class=MySQSQueue).create('...')
+    #            # ...or...
+    #            >>> SQSQueue.collection.create('...')
+    resource_class = None
+    service_name = None
+
+    def __init__(self, session, connection=None, resource_class=None):
+        super(ResourceCollection, self).__init__()
+        self._session = session
+        self._connection = connection
+        self._data = {}
+
+        if self._connection is None:
+            klass = self._session.get_service(self.service_name)
+            self._connection = klass()
+
+        if resource_class is not None:
+            self.resource_class = resource_class
+
+        self._update_docstrings()
+        self._check_api_version()
+
+    def __str__(self):
+        return u'<{0} for {1}>'.format(
+            self.__class__.__name__,
+            self.resource_class.__name__
+        )

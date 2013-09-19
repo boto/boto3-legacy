@@ -6,8 +6,9 @@ from boto3.core.resources.base import ResourceBase
 
 class ResourceMetaclass(type):
     def __new__(cls, name, bases, attrs):
-        if name in ['NewBase', 'Resource']:
-            # Grumble grumble six grumble.
+        # Check if we're dealing with the base class.
+        # If so, don't run the rest of the metaclass.
+        if attrs.get('service_name', None) is None:
             return super(ResourceMetaclass, cls).__new__(
                 cls,
                 name,
@@ -61,6 +62,8 @@ class ResourceMetaclass(type):
 
 @six.add_metaclass(ResourceMetaclass)
 class Resource(ResourceBase):
+    service_name = None
+
     def __init__(self, session, connection=None):
         super(Resource, self).__init__()
         self._session = session
@@ -68,7 +71,7 @@ class Resource(ResourceBase):
         self._data = {}
 
         if self._connection is None:
-            klass = self._session.get_service(self._details.service_name)
+            klass = self._session.get_service(self.service_name)
             self._connection = klass()
 
         self._update_docstrings()
