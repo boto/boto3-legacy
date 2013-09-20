@@ -39,7 +39,8 @@ class StructureMetaclass(type):
         return klass
 
 
-class Structure(six.with_metaclass(StructureMetaclass)):
+@six.add_metaclass(StructureMetaclass)
+class Structure(object):
     # Subclasses should always specify this & list out the API versions
     # it supports.
     valid_api_versions = []
