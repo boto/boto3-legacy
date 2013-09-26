@@ -10,13 +10,22 @@ class BaseField(object):
         if name:
             self.name = name
 
-    def __get__(self, instance, owner):
+    def get_python(self, instance):
         return instance._data[self.name]
 
-    def __set__(self, instance, value):
+    def set_python(self, instance, value):
         instance._data[self.name] = value
 
-    def __delete__(self, instance):
+    def get_api(self, instance):
+        return instance._data[self.name]
+
+    def set_api(self, instance, value):
+        instance._data[self.name] = value
+
+    def delete(self, instance):
+        # TODO: This is mostly just a hook & likely an unnecessary one.
+        #       For now, we'll leave it & use it, but we should re-evaluate
+        #       it before we launch.
         del instance._data[self.name]
 
 
