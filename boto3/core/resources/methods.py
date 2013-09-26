@@ -152,3 +152,21 @@ class InstanceMethod(BaseMethod):
         _new_method.__doc__ = DEFAULT_DOCSTRING
         setattr(resource_class, meth_self.name, _new_method)
         return True
+
+
+class CollectionMethod(BaseMethod):
+    is_collection_method = True
+
+    def setup_on_resource(meth_self, resource_class):
+        def _new_method(self, **kwargs):
+            meth_self.resource = self
+            return self._instance_methods[meth_self.name].call(
+                self._connection,
+                **kwargs
+            )
+
+        # Set the name/docs & hook it up to the class.
+        _new_method.__name__ = meth_self.name
+        _new_method.__doc__ = DEFAULT_DOCSTRING
+        setattr(resource_class, meth_self.name, _new_method)
+        return True
