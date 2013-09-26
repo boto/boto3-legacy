@@ -48,6 +48,65 @@ Research
     * Not by simple assignment or ``setattr``.
     * This favors the ``__getattr__``-based approach.
 
+Code used::
+
+    class SimpleField(object):
+        name = 'unknown'
+        is_field = True
+
+        def __get__(self, obj, type=None):
+            if self.name in obj._data:
+                return "Hello {0}".format(obj._data[self.name])
+            return 'Nope.'
+
+
+    class TestMeta(type):
+        def __new__(cls, name, bases, attrs):
+            for name, field in attrs.items():
+                print('Saw {0}.'.format(name))
+
+                if getattr(field, 'is_field', False) is True:
+                    field.name = name
+
+            return super(TestMeta, cls).__new__(cls, name, bases, attrs)
+
+
+    class Test(object, metaclass=TestMeta):
+        name = SimpleField()
+        age = SimpleField()
+        data_type = SimpleField()
+        request = SimpleField()
+
+        def __init__(self, **kwargs):
+            self._data = kwargs
+
+
+    if __name__ == '__main__':
+        test = Test(
+            name='Mister',
+            age=17,
+            data_type='string',
+            is_admin=True
+        )
+
+        print()
+        print("Name is: {0}".format(test.name))
+        print("Age is: {0}".format(test.age))
+        print("Request is: {0}".format(test.request))
+
+        test.is_admin = SimpleField()
+        test.is_admin.name = 'is_admin'
+
+        print("Simple assignment...")
+        print("Is Admin is: {0}".format(test.is_admin))
+
+        field = SimpleField()
+        field.name = 'is_admin'
+        setattr(test, 'is_admin', field)
+
+        print("Setattr assignment...")
+        print("Is Admin is: {0}".format(test.is_admin))
+
 
 Revised Reasons
 ===============
