@@ -14,7 +14,7 @@ Requirements
 ------------
 
 * Python 2.6+ or Python 3.3+
-* botocore>=0.12.0
+* botocore>=0.16.0
 
 
 Tutorials
@@ -30,9 +30,19 @@ API References
 
 .. toctree::
    :maxdepth: 2
+   :glob:
 
-   reference/sqs
+   reference/*
 
+Design
+------
+
+.. toctree::
+
+   design/boto3_architecture
+   design/boto3_proposal
+   design/resource_objects
+   design/resource_fields
 
 
 Indices and tables

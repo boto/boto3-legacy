@@ -11,9 +11,9 @@ boto3.sqs
    :members:
    :undoc-members:
 
-boto3.sqs.connection
---------------------
+boto3.sqs.resources
+-------------------
 
-.. automodule:: boto3.sqs.connection
+.. automodule:: boto3.sqs.resources
    :members:
    :undoc-members:
