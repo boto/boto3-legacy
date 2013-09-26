@@ -75,7 +75,7 @@ class SQSMessage(Structure):
     receipt_handle = fields.BoundField('ReceiptHandle', required=False)
     attributes = fields.ListBoundField('Attribute', SQSAttribute)
 
-    def post_populate(self):
+    def post_populate(self, data):
         # Verify the MD5 if present.
         if not self.md5:
             return
