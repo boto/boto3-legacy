@@ -33,5 +33,9 @@ class ValidationError(BotoException):
     pass
 
 
+class UnknownFieldError(BotoException):
+    pass
+
+
 class MD5ValidationError(ValidationError):
     pass

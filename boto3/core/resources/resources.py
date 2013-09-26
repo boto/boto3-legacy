@@ -83,9 +83,9 @@ class Resource(ResourceBase):
 
     def __getattr__(self, name):
         # Python didn't find it hanging off the class already, so it might
-        # be instance data. Try to find it in ``_data``.
-        if name in self._data:
-            return self._data[name]
+        # be field data. Delegate to the field if present.
+        if name in self.fields:
+            return self.fields[name].get_python(self)
 
         raise AttributeError(
             "'{0}' object has no attribute '{1}'".format(
@@ -96,9 +96,18 @@ class Resource(ResourceBase):
 
     def __setattr__(self, name, value):
         # Check to see if it's a value for a known field first.
+        # If so, let the field set the data.
         if name in self.fields:
-            self._data[name] = value
+            self.fields[name].set_python(self, value)
             return
 
         # Must be regular assignment.
         super(Resource, self).__setattr__(name, value)
+
+    def __delattr__(self, name):
+        if name in self.fields:
+            self.fields[name].delete(self)
+            return
+
+        # Must be regular deletion.
+        super(Resource, self).__delattr__(name)

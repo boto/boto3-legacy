@@ -40,3 +40,15 @@ class ListBoundField(BaseField):
     def __init__(self, api_name, data_class, **kwargs):
         self.data_class = data_class
         super(ListBoundField, self).__init__(api_name, **kwargs)
+
+    def get_api(self, instance):
+        raw_data = instance._data[self.name]
+        data = []
+
+        for item in raw_data:
+            if hasattr(item, 'full_prepare'):
+                data.append(item.full_prepare())
+            else:
+                data.append(item)
+
+        return data
