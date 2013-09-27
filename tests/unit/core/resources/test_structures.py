@@ -17,13 +17,19 @@ class TestTag(Structure):
     name = fields.BoundField('Name')
 
 
+class HelloField(fields.BoundField):
+    def get_python(self, instance):
+        data = super(HelloField, self).get_python(instance)
+        return "Hello, {0}".format(data)
+
+
 class TestStructure(Structure):
     valid_api_versions = [
         '2013-09-24',
         '2013-07-31',
     ]
 
-    name = fields.BoundField('Name')
+    name = HelloField('Name')
     slug = fields.BoundField('Slug', required=False)
     md5 = fields.BoundField('TestMD5')
     body = fields.BoundField('MessageBody')
@@ -31,7 +37,7 @@ class TestStructure(Structure):
 
     def prepare(self, data):
         if not data.get('slug'):
-            slug = self.name.lower()
+            slug = data['name'].lower()
             data['slug'] = slug
             # FIXME: This feels clumsy. :/
             self.fields['slug'].set_python(self, slug)
@@ -75,6 +81,47 @@ class StructureTestCase(unittest.TestCase):
             'tags',
         ])
 
+    def test_getattr(self):
+        # A plain attr.
+        self.struct.whatever = True
+        self.assertEqual(self.struct.whatever, True)
+
+        # A field.
+        # First, the internal state.
+        self.assertEqual(self.struct._data['name'], 'test')
+        # Then, the post-processing by the field.
+        self.assertEqual(self.struct.name, 'Hello, test')
+
+    def test_setattr(self):
+        # A plain attr.
+        with self.assertRaises(AttributeError):
+            self.struct.whatever
+
+        self.struct.whatever = True
+        self.assertEqual(self.struct.whatever, True)
+
+        # A field.
+        self.assertEqual(self.struct._data['name'], 'test')
+        self.struct.name = 'foo'
+        self.assertEqual(self.struct.name, 'Hello, foo')
+        self.assertTrue(self.struct.fields['name'])
+
+    def test_delattr(self):
+        # A plain attr.
+        self.struct.whatever = True
+        self.assertEqual(self.struct.whatever, True)
+        del self.struct.whatever
+
+        with self.assertRaises(AttributeError):
+            self.struct.whatever
+
+        # A field.
+        self.assertEqual(self.struct._data['name'], 'test')
+        del self.struct.name
+
+        with self.assertRaises(KeyError):
+            self.struct._data['name']
+
     def test_full_prepare(self):
         data = self.struct.full_prepare()
         self.assertEqual(data, {
@@ -91,6 +138,13 @@ class StructureTestCase(unittest.TestCase):
                 },
             ],
         })
+
+    def test_prepare_failed(self):
+        # Delete a required key.
+        del self.struct.name
+
+        with self.assertRaises(KeyError):
+            data = self.struct.full_prepare()
 
     def test_full_populate(self):
         body = 'texty text text'
