@@ -43,9 +43,15 @@ class Session(object):
         classes[service_name] = new_class
         return new_class
 
-    def connect_to_region(self, service_name, **kwargs):
+    def connect_to(self, service_name, **kwargs):
+        """
+        Shortcut method to make instantiating the ``Connection`` classes
+        easier.
+
+        Forwards ``kwargs`` like region, keys, etc. on to the constructor.
+        """
         service_class = self.get_service(service_name)
-        return service_class.connect_to_region(**kwargs)
+        return service_class.connect_to(**kwargs)
 
     def get_core_service(self, service_name):
         """

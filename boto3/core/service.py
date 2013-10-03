@@ -119,7 +119,7 @@ class Connection(object):
         return results[1]
 
     @classmethod
-    def connect_to_region(cls, **kwargs):
+    def connect_to(cls, **kwargs):
         return cls(**kwargs)
 
     def _get_operation_data(self, method_name):
