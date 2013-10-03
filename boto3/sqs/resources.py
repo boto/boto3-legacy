@@ -6,8 +6,8 @@ from boto3.core.resources import methods
 from boto3.core.resources import ResourceCollection, Resource, Structure
 
 
-class SQSQueueCollection(ResourceCollection):
-    resource_class = 'boto3.sqs.resources.SQSQueue'
+class QueueCollection(ResourceCollection):
+    resource_class = 'boto3.sqs.resources.Queue'
     service_name = 'sqs'
     valid_api_versions = [
         '2012-11-05',
@@ -16,9 +16,12 @@ class SQSQueueCollection(ResourceCollection):
     # FIXME: These need to return ``SQSQueue`` objects...
     list_queues = methods.InstanceMethod('list_queues')
     create = methods.InstanceMethod('create_queue')
+    # FIXME: CONNUNDRUM! There is no "get_queue" API, but it's a thing users
+    #        will want to do. Grump.
+    get = methods.InstanceMethod('get_queue_url')
 
 
-class SQSQueue(Resource):
+class Queue(Resource):
     service_name = 'sqs'
     # A special, required key identifying what API versions a given
     # ``Resource/Structure`` works correctly with.
@@ -27,7 +30,7 @@ class SQSQueue(Resource):
     ]
 
     # Assign a default collection.
-    collection = SQSQueueCollection()
+    collection = QueueCollection()
 
     # Instance variables
     name = fields.BoundField('queue_name')
@@ -55,7 +58,7 @@ class SQSQueue(Resource):
     )
 
 
-class SQSAttribute(Structure):
+class Attribute(Structure):
     valid_api_versions = [
         '2012-11-05',
     ]
@@ -64,7 +67,7 @@ class SQSAttribute(Structure):
     value = fields.BoundField('Value')
 
 
-class SQSMessage(Structure):
+class Message(Structure):
     valid_api_versions = [
         '2012-11-05',
     ]

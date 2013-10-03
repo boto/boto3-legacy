@@ -10,7 +10,8 @@ class RoleCollection(ResourceCollection):
         '2010-05-08',
     ]
 
-    create = methods.CollectionMethod('CreateRole')
+    create = methods.CollectionMethod('create_role')
+    get = methods.CollectionMethod('get_role')
 
 
 class Role(Resource):

@@ -10,7 +10,8 @@ class BucketCollection(ResourceCollection):
         '2006-03-01',
     ]
 
-    create = methods.CollectionMethod('CreateBucket')
+    create = methods.CollectionMethod('create_bucket')
+    get = methods.CollectionMethod('head_bucket')
 
 
 class Bucket(Resource):
@@ -28,7 +29,8 @@ class KeyCollection(ResourceCollection):
         '2006-03-01',
     ]
 
-    create = methods.CollectionMethod('CreateKey')
+    create = methods.CollectionMethod('create_key')
+    get = methods.CollectionMethod('get_key')
 
 
 class Key(Resource):

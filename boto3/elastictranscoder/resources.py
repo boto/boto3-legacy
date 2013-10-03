@@ -10,7 +10,8 @@ class PipelineCollection(ResourceCollection):
         '2012-09-25',
     ]
 
-    create = methods.CollectionMethod('CreatePipeline')
+    create = methods.CollectionMethod('create_pipeline')
+    get = methods.CollectionMethod('get_pipeline')
 
 
 class Pipeline(Resource):
@@ -28,7 +29,8 @@ class JobCollection(ResourceCollection):
         '2012-09-25',
     ]
 
-    create = methods.CollectionMethod('CreateJob')
+    create = methods.CollectionMethod('create_job')
+    get = methods.CollectionMethod('get_job')
 
 
 class Job(Resource):
