@@ -31,7 +31,7 @@ class SessionTestCase(unittest.TestCase):
         self.assertEqual(len(self.session.conn_classes), 1)
 
     def test_connect_to_region(self):
-        client = self.session.connect_to_region('sqs', region_name='us-west-2')
+        client = self.session.connect_to('sqs', region_name='us-west-2')
         self.assertEqual(client.__class__.__name__, 'SqsConnection')
         self.assertEqual(client.region_name, 'us-west-2')
 
