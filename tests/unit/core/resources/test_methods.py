@@ -1,3 +1,5 @@
+import mock
+
 from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.constants import NO_NAME
 from boto3.core.constants import NOTHING_PROVIDED
@@ -7,6 +9,7 @@ from boto3.core.exceptions import NoResourceAttachedError
 from boto3.core.resources.fields import BaseField
 from boto3.core.resources.methods import BaseMethod
 from boto3.core.resources.methods import InstanceMethod
+from boto3.core.resources.methods import CollectionMethod
 from boto3.core.service import ServiceFactory
 from boto3.core.session import Session
 
@@ -69,6 +72,9 @@ class BaseMethodTestCase(unittest.TestCase):
         self.sf = ServiceFactory(session=self.session)
         self.conn_class = self.sf.construct_for('test')
         self.conn = self.conn_class()
+
+    def remove_added_method(self, method_name):
+        delattr(FakeResource, method_name)
 
     def test_incorrect_setup(self):
         bare = BaseMethod()
@@ -150,14 +156,22 @@ class BaseMethodTestCase(unittest.TestCase):
         })
 
     def test_check_required_params(self):
-        # FIXME: For now, thise does nothing in the implementation. If we remove
+        # FIXME: For now, this does nothing in the implementation. If we remove
         #        it there, we should remove it here.
         self.assertEqual(self.create_method.check_required_params({}, {}), None)
 
     def test_update_bound_params_from_api(self):
+        def del_new_attr(name):
+            try:
+                delattr(self.fake_resource, name)
+            except AttributeError:
+                pass
+
         # They shouldn't be there.
         self.assertEqual(getattr(self.fake_resource, 'name', None), None)
         self.assertEqual(getattr(self.fake_resource, 'url', None), None)
+        self.addCleanup(del_new_attr, 'name')
+        self.addCleanup(del_new_attr, 'url')
 
         # Get data back from an API call & update.
         self.create_method.update_bound_params_from_api({
@@ -179,14 +193,147 @@ class BaseMethodTestCase(unittest.TestCase):
         )
 
     def test_post_process_results(self):
-        pass
+        # FIXME: For now, this does nothing in the implementation. If we remove
+        #        it there, we should remove it here.
+        self.assertEqual(self.create_method.post_process_results({}), {})
 
     def test_call(self):
-        pass
+        base = BaseMethod('create_queue')
+        base.name = 'create_method'
+        base.resource = self.fake_resource
+        mpo = mock.patch.object
+
+        # Just the passed args.
+        ret = {'QueueUrl': '/test-queue'}
+
+        with mpo(self.conn, 'create_queue', return_value=ret) as mock_conn:
+            results = base.call(self.conn, queue_name='test-queue')
+            self.assertEqual(
+                getattr(self.fake_resource, 'name', None),
+                None
+            )
+            self.assertEqual(
+                getattr(self.fake_resource, 'url', None),
+                '/test-queue'
+            )
+            self.assertEqual(results, {
+                'QueueUrl': '/test-queue',
+            })
+
+        mock_conn.assert_called_once_with(queue_name='test-queue')
+
+        # With the kwargs to be partially applied.
+        base = BaseMethod('create_queue', limit=2, queue_name='unseen')
+        base.name = 'create_method'
+        base.resource = self.fake_resource
+        ret = {'QueueUrl': '/test-queue', 'CreateCount': 1}
+
+        with mpo(self.conn, 'create_queue', return_value=ret) as mock_conn:
+            results = base.call(self.conn, queue_name='test-queue')
+            self.assertEqual(
+                getattr(self.fake_resource, 'name', None),
+                None
+            )
+            self.assertEqual(
+                getattr(self.fake_resource, 'url', None),
+                '/test-queue'
+            )
+            self.assertEqual(results, {
+                'CreateCount': 1,
+                'QueueUrl': '/test-queue',
+            })
+
+        mock_conn.assert_called_once_with(limit=2, queue_name='test-queue')
+
+        # With bound params.
+        base = BaseMethod('create_queue', limit=2)
+        base.name = 'create_method'
+        base.resource = self.fake_resource
+        self.fake_resource.name = 'whatever'
+        ret = {
+            'QueueUrl': '/whatever-queue',
+            # This should update the instance's ``name``.
+            'QueueName': 'Whatever',
+        }
+
+        with mpo(self.conn, 'create_queue', return_value=ret) as mock_conn:
+            results = base.call(self.conn)
+            self.assertEqual(
+                getattr(self.fake_resource, 'name', None),
+                'Whatever'
+            )
+            self.assertEqual(
+                getattr(self.fake_resource, 'url', None),
+                '/whatever-queue'
+            )
+            self.assertEqual(results, {
+                'QueueName': 'Whatever',
+                'QueueUrl': '/whatever-queue',
+            })
+
+        mock_conn.assert_called_once_with(limit=2, queue_name='whatever')
 
     def test_update_docstring(self):
-        pass
+        # Setup to fake a method we can actually test.
+        def create_thing(self, *args, **kwargs):
+            return True
+
+        fake_resource = FakeResource()
+        fake_resource._connection = self.conn
+        create_method = BaseMethod('create_queue')
+        create_method.name = 'create_thing'
+        setattr(FakeResource, 'create_thing', create_thing)
+        self.addCleanup(self.remove_added_method, 'create_thing')
+
+        # Shouldn't have a docstring.
+        self.assertEqual(fake_resource.create_thing.__doc__, None)
+
+        create_method.update_docstring(fake_resource)
+
+        # Shouldn't have a docstring.
+        self.assertEqual(
+            fake_resource.create_thing.__doc__,
+            ' <p>Creates a queue.</p>\n '
+        )
 
 
 class InstanceMethodTestCase(unittest.TestCase):
-    pass
+    def remove_added_method(self, method_name):
+        delattr(FakeResource, method_name)
+
+    def test_init(self):
+        inst = InstanceMethod('something')
+        self.assertTrue(inst.is_instance_method)
+
+    def test_setup_on_resource(self):
+        inst = InstanceMethod('something')
+        inst.name = 'something'
+        self.assertFalse(hasattr(FakeResource, 'something'))
+        self.addCleanup(self.remove_added_method, 'something')
+
+        inst.setup_on_resource(FakeResource)
+        self.assertTrue(hasattr(FakeResource, 'something'))
+        the_method = getattr(FakeResource, 'something')
+        self.assertEqual(the_method.__name__, 'something')
+        self.assertEqual(the_method.__doc__, DEFAULT_DOCSTRING)
+
+
+class CollectionMethodTestCase(unittest.TestCase):
+    def remove_added_method(self, method_name):
+        delattr(FakeResource, method_name)
+
+    def test_init(self):
+        coll = CollectionMethod('something')
+        self.assertTrue(coll.is_collection_method)
+
+    def test_setup_on_resource(self):
+        coll = CollectionMethod('something')
+        coll.name = 'something'
+        self.assertFalse(hasattr(FakeResource, 'something'))
+        self.addCleanup(self.remove_added_method, 'something')
+
+        coll.setup_on_resource(FakeResource)
+        self.assertTrue(hasattr(FakeResource, 'something'))
+        the_method = getattr(FakeResource, 'something')
+        self.assertEqual(the_method.__name__, 'something')
+        self.assertEqual(the_method.__doc__, DEFAULT_DOCSTRING)

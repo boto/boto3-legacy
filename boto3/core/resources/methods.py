@@ -98,9 +98,6 @@ class BaseMethod(object):
         # Start by partially applying whatever kwargs it was instantiated with.
         # Because reasonable defaults.
         built_params = self._partial
-        # Then update it with what was passed in (allowing overrides).
-        # TODO: Perhaps this should happen after the bound params?
-        built_params.update(kwargs)
 
         # Determine the parameters this method should accept.
         expected_params = self.get_expected_parameters(conn)
@@ -108,6 +105,9 @@ class BaseMethod(object):
         # Next, update **kwargs with bound/instance variables.
         if hasattr(self.resource, 'fields'):
             built_params.update(self.get_bound_params(expected_params))
+
+        # Then update it with what was passed in (allowing overrides).
+        built_params.update(kwargs)
 
         # Now that we have all the data, check to make sure we've got all the
         # required parameters.
