@@ -63,15 +63,18 @@ class ResourceMetaclass(type):
 class Resource(ResourceBase):
     service_name = None
 
-    def __init__(self, session, connection=None):
+    def __init__(self, session=None, connection=None):
         super(Resource, self).__init__()
         self._session = session
         self._connection = connection
         self._data = {}
 
+        if self._session is None:
+            import boto3
+            self._session = boto3.session
+
         if self._connection is None:
-            klass = self._session.get_service(self.service_name)
-            self._connection = klass()
+            self._connection = self._session.connect_to(self.service_name)
 
         self._update_docstrings()
         self._check_api_version()

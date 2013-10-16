@@ -21,7 +21,8 @@ class ResourceBase(object):
             method.update_docstring(self)
 
     def _check_api_version(self):
-        conn_version = self._connection.api_version
+        # ALL THE UNDERS!!!
+        conn_version = self._connection._details.api_version
 
         if not conn_version in self.valid_api_versions:
             msg = "The '{0}' resource supports these API versions ({1}) " + \

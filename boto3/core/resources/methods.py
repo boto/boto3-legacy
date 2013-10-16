@@ -11,10 +11,11 @@ class BaseMethod(object):
     name = NO_NAME
     is_method = True
 
-    def __init__(self, conn_method_name=None):
+    def __init__(self, conn_method_name=None, **kwargs):
         super(BaseMethod, self).__init__()
         self.conn_method_name = conn_method_name
         self.resource = NO_RESOURCE
+        self._partial = kwargs
 
     def check_name(self):
         if self.name == NO_NAME:
@@ -100,13 +101,19 @@ class BaseMethod(object):
         return raw_results
 
     def call(self, conn, **kwargs):
-        built_params = kwargs
+        # Start by partially applying whatever kwargs it was instantiated with.
+        # Because reasonable defaults.
+        built_params = self._partial
+        # Then update it with what was passed in (allowing overrides).
+        # TODO: Perhaps this should happen after the bound params?
+        built_params.update(kwargs)
 
         # Determine the parameters this method should accept.
         expected_params = self.get_expected_parameters(conn)
 
         # Next, update **kwargs with bound/instance variables.
-        built_params.update(self.get_bound_params(expected_params))
+        if hasattr(self.resource, 'fields'):
+            built_params.update(self.get_bound_params(expected_params))
 
         # Now that we have all the data, check to make sure we've got all the
         # required parameters.
@@ -117,7 +124,8 @@ class BaseMethod(object):
         raw_results = conn_method(**built_params)
 
         # Check the output for bound data & update the instance.
-        self.update_bound_params_from_api(raw_results)
+        if hasattr(self.resource, 'fields'):
+            self.update_bound_params_from_api(raw_results)
 
         # Return whatever is left.
         results = self.post_process_results(raw_results)
@@ -142,7 +150,8 @@ class InstanceMethod(BaseMethod):
     def setup_on_resource(meth_self, resource_class):
         def _new_method(self, **kwargs):
             meth_self.resource = self
-            return self._instance_methods[meth_self.name].call(
+            # FIXME: This needs to update the resource's instance data.
+            return self._methods[meth_self.name].call(
                 self._connection,
                 **kwargs
             )
@@ -160,7 +169,11 @@ class CollectionMethod(BaseMethod):
     def setup_on_resource(meth_self, resource_class):
         def _new_method(self, **kwargs):
             meth_self.resource = self
-            return self._instance_methods[meth_self.name].call(
+            # FIXME: This needs to:
+            #        1. Expect a list of resources
+            #        2. Build those **OBJECTS** & return them, not just blindly
+            #           returning data
+            return self._methods[meth_self.name].call(
                 self._connection,
                 **kwargs
             )

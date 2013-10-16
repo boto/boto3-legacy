@@ -29,9 +29,6 @@ class Queue(Resource):
         '2012-11-05',
     ]
 
-    # Assign a default collection.
-    collection = QueueCollection()
-
     # Instance variables
     name = fields.BoundField('queue_name')
     url = fields.BoundField('queue_url', required=False)
@@ -76,7 +73,7 @@ class Message(Structure):
     md5 = fields.BoundField('MD5OfBody', required=False)
     message_id = fields.BoundField('MessageId', required=False)
     receipt_handle = fields.BoundField('ReceiptHandle', required=False)
-    attributes = fields.ListBoundField('Attribute', SQSAttribute)
+    attributes = fields.ListBoundField('Attribute', Attribute)
 
     def post_populate(self, data):
         # Verify the MD5 if present.

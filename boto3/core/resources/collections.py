@@ -28,6 +28,7 @@ class ResourceCollectionMetaclass(type):
         attrs = {
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
             'resource_class': orig_attrs.pop('resource_class', None),
+            'service_name': orig_attrs.pop('service_name', None),
             '_methods': OrderedDict(),
         }
 
@@ -67,14 +68,17 @@ class ResourceCollection(ResourceBase):
     resource_class = None
     service_name = None
 
-    def __init__(self, session, connection=None, resource_class=None):
+    def __init__(self, session=None, connection=None, resource_class=None):
         super(ResourceCollection, self).__init__()
         self._session = session
         self._connection = connection
 
+        if self._session is None:
+            import boto3
+            self._session = boto3.session
+
         if self._connection is None:
-            klass = self._session.get_service(self.service_name)
-            self._connection = klass()
+            self._connection = self._session.connect_to(self.service_name)
 
         if resource_class is not None:
             self._resource_class = resource_class
