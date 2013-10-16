@@ -60,8 +60,8 @@ class BaseMethod(object):
         #        once (``{api_name: _data[name]}``) to limit this.
         for param_info in expected_params:
             for name, value in self.resource.fields.items():
-                if value.api_name == param_info['var_name']:
-                    bound_params[value.api_name] = getattr(
+                if value.snake_name == param_info['var_name']:
+                    bound_params[value.snake_name] = getattr(
                         self.resource,
                         name,
                         NOTHING_PROVIDED
@@ -76,18 +76,12 @@ class BaseMethod(object):
 
     def update_bound_params_from_api(self, raw_results):
         for key, value in raw_results.items():
-            # FIXME: Ouch.
-            #        botocore only snake_case's the variables one-way (as
-            #        params, not in return values), so we have to do a little
-            #        hocus-pocus guessing about names. :(
-            # FIXME: Alternatively, we could snake_case in the field's
-            #        ``__init__``, which would allow us to use the regular API
-            #        name here (we'd have to use the alternate snake'd version
-            #        above in ``get_bound_params``).
-            snaked_key = to_snake_case(key)
-
+            # Ouch.
+            # botocore only snake_case's the variables one-way (as
+            # params, not in return values), so we have to lean on the
+            # API names here. :(
             for name, field in self.resource.fields.items():
-                if field.api_name == snaked_key:
+                if field.api_name == key:
                     setattr(
                         self.resource,
                         name,

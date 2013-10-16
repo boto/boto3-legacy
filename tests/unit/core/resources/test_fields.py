@@ -29,6 +29,7 @@ class BoundFieldTestCase(unittest.TestCase):
         self.assertEqual(base.name, 'unknown')
         self.assertEqual(base.is_field, True)
         self.assertEqual(base.api_name, 'Basic')
+        self.assertEqual(base.snake_name, 'basic')
         self.assertEqual(base.required, True)
 
     def test_complex_init(self):
@@ -36,6 +37,7 @@ class BoundFieldTestCase(unittest.TestCase):
         self.assertEqual(base.name, 'unknown')
         self.assertEqual(base.is_field, True)
         self.assertEqual(base.api_name, 'Complex')
+        self.assertEqual(base.snake_name, 'complex')
         self.assertEqual(base.required, False)
 
     def test_get_python(self):

@@ -1,3 +1,6 @@
+from boto3.utils.mangle import to_snake_case
+
+
 class BaseField(object):
     name = 'unknown'
     is_field = True
@@ -5,6 +8,10 @@ class BaseField(object):
     def __init__(self, api_name, name=None, required=True):
         super(BaseField, self).__init__()
         self.api_name = api_name
+        # An optimization for dealing with botocore.
+        # See ``boto3.core.resources.methods.BaseMethod.update_bound_params_from_api``
+        # for details...
+        self.snake_name = to_snake_case(api_name)
         self.required = required
 
         if name:
