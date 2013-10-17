@@ -22,8 +22,8 @@ class ResourceMetaclass(type):
         # class with.
         attrs = {
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
+            'service_name': orig_attrs.pop('service_name'),
             'fields': OrderedDict(),
-            'collection': orig_attrs.pop('collection', None),
             '_methods': OrderedDict(),
         }
 
