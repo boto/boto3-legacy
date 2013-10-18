@@ -49,6 +49,121 @@ class TestCoreService(FakeService):
             result=(None, True)
         ),
         FakeOperation(
+            'ReceiveMessage',
+            " something something something ",
+            params=[
+                FakeParam('QueueUrl', required=True, ptype='string'),
+                FakeParam('AttributeNames', required=False, ptype='list'),
+                FakeParam('MaxNumberOfMessages', required=False, ptype='integer'),
+                FakeParam('VisibilityTimeout', required=False, ptype='integer'),
+                FakeParam('WaitTimeSeconds', required=False, ptype='integer'),
+            ],
+            output={
+                'shape_name': 'ReceiveMessageResult',
+                'type': 'structure',
+                'members': {
+                    'Messages': {
+                        'shape_name': 'MessageList',
+                        'type': 'list',
+                        'members': {
+                            'shape_name': 'Message',
+                            'type': 'structure',
+                            'members': {
+                                'MessageId': {
+                                    'shape_name': 'String',
+                                    'type': 'string',
+                                    'documentation': None
+                                },
+                                'ReceiptHandle': {
+                                    'shape_name': 'String',
+                                    'type': 'string',
+                                    'documentation': None
+                                },
+                                'MD5OfBody': {
+                                    'shape_name': 'String',
+                                    'type': 'string',
+                                    'documentation': None
+                                },
+                                'Body': {
+                                    'shape_name': 'String',
+                                    'type': 'string',
+                                    'documentation': None
+                                },
+                                'Attributes': {
+                                    'shape_name': 'AttributeMap',
+                                    'type': 'map',
+                                    'keys': {
+                                        'shape_name': 'QueueAttributeName',
+                                        'type': 'string',
+                                        'enum': [
+                                            'Policy',
+                                            'VisibilityTimeout',
+                                            'MaximumMessageSize',
+                                            'MessageRetentionPeriod',
+                                            'ApproximateNumberOfMessages',
+                                            'ApproximateNumberOfMessagesNotVisible',
+                                            'CreatedTimestamp',
+                                            'LastModifiedTimestamp',
+                                            'QueueArn',
+                                            'ApproximateNumberOfMessagesDelayed',
+                                            'DelaySeconds',
+                                            'ReceiveMessageWaitTimeSeconds'
+                                        ],
+                                        'documentation': '\n    <p>The name of a queue attribute.</p>\n  ',
+                                        'xmlname': 'Name'
+                                    },
+                                    'members': {
+                                        'shape_name': 'String',
+                                        'type': 'string',
+                                        'documentation': '\n    <p>The value of a queue attribute.</p>\n  ',
+                                        'xmlname': 'Value'
+                                    },
+                                    'flattened': True,
+                                    'xmlname': 'Attribute',
+                                    'documentation': None,
+                                },
+                            },
+                            'documentation': None,
+                            'xmlname': 'Message'
+                        },
+                        'flattened': True,
+                        'documentation': '\n    <p>A list of messages.</p>\n  '
+                    }
+                },
+                'documentation': None
+            },
+            result=(None, {
+                'Messages': [
+                    {
+                        'MessageId': 'msg-12345',
+                        'ReceiptHandle': 'hndl-12345',
+                        'MD5OfBody': '6cd3556deb0da54bca060b4c39479839',
+                        'Body': 'Hello, world!',
+                        'Attributes': {
+                            'QueueArn': 'arn:aws:example:example:sqs:something',
+                            'ApproximateNumberOfMessagesDelayed': '2',
+                            'DelaySeconds': '10',
+                            'CreatedTimestamp': '2013-10-17T21:52:46Z',
+                            'LastModifiedTimestamp': '2013-10-17T21:52:46Z',
+                        },
+                    },
+                    {
+                        'MessageId': 'msg-12346',
+                        'ReceiptHandle': 'hndl-12346',
+                        'MD5OfBody': '6cd3556deb0da54bca060b4c39479839',
+                        'Body': 'Hello, world!',
+                        'Attributes': {
+                            'QueueArn': 'arn:aws:example:example:sqs:something',
+                            'ApproximateNumberOfMessagesDelayed': '2',
+                            'DelaySeconds': '10',
+                            'CreatedTimestamp': '2013-10-17T21:52:46Z',
+                            'LastModifiedTimestamp': '2013-10-17T21:52:46Z',
+                        },
+                    },
+                ]
+            })
+        ),
+        FakeOperation(
             'DeleteQueue',
             " <p>Deletes a queue.</p>\n ",
             params=[
