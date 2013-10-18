@@ -6,6 +6,37 @@ from boto3.core.resources import methods
 from boto3.core.resources import ResourceCollection, Resource, Structure
 
 
+class Attribute(Structure):
+    valid_api_versions = [
+        '2012-11-05',
+    ]
+
+    name = fields.BoundField('Name')
+    value = fields.BoundField('Value')
+
+
+class Message(Structure):
+    valid_api_versions = [
+        '2012-11-05',
+    ]
+
+    body = fields.BoundField('Body')
+    md5 = fields.BoundField('MD5OfBody', required=False)
+    message_id = fields.BoundField('MessageId', required=False)
+    receipt_handle = fields.BoundField('ReceiptHandle', required=False)
+    attributes = fields.ListBoundField('Attribute', Attribute)
+
+    def post_populate(self, data):
+        # Verify the MD5 if present.
+        if not self.md5:
+            return
+
+        body_md5 = md5(self.body).hexdigest()
+
+        if body_md5 != self.md5:
+            raise MD5ValidationError("The provided MD5 does not match the body")
+
+
 class QueueCollection(ResourceCollection):
     resource_class = 'boto3.sqs.resources.Queue'
     service_name = 'sqs'
@@ -37,7 +68,23 @@ class Queue(Resource):
     delete = methods.InstanceMethod('delete_queue')
     get_url = methods.InstanceMethod('get_queue_url')
     send_message = methods.InstanceMethod('send_message')
-    receive_message = methods.InstanceMethod('receive_message', limit=1)
+    # TODO: This probably shouldn't be vanilla ``InstanceMethod``, since it's
+    #       really returning other data?
+    # FIXME: This is pretty ugly & will get out of hand quickly.
+    #        We really ought to be delegating to resources/structures
+    #        themselves to parse out their data?
+    receive_message = methods.InstanceMethod(
+        'receive_message',
+        partials={
+            'limit': 1
+        },
+        creates={
+            'Messages': {
+                'type': 'list',
+                'class': Message,
+            }
+        }
+    )
     receive_messages = methods.InstanceMethod('receive_message')
     change_message_visibility = methods.InstanceMethod(
         'change_message_visibility'
@@ -53,34 +100,3 @@ class Queue(Resource):
     change_message_visibility_batch = methods.InstanceMethod(
         'change_message_visibility_batch'
     )
-
-
-class Attribute(Structure):
-    valid_api_versions = [
-        '2012-11-05',
-    ]
-
-    name = fields.BoundField('Name')
-    value = fields.BoundField('Value')
-
-
-class Message(Structure):
-    valid_api_versions = [
-        '2012-11-05',
-    ]
-
-    body = fields.BoundField('Body')
-    md5 = fields.BoundField('MD5OfBody', required=False)
-    message_id = fields.BoundField('MessageId', required=False)
-    receipt_handle = fields.BoundField('ReceiptHandle', required=False)
-    attributes = fields.ListBoundField('Attribute', Attribute)
-
-    def post_populate(self, data):
-        # Verify the MD5 if present.
-        if not self.md5:
-            return
-
-        body_md5 = md5(self.body).hexdigest()
-
-        if body_md5 != self.md5:
-            raise MD5ValidationError("The provided MD5 does not match the body")
