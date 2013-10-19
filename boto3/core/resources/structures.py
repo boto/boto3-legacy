@@ -22,6 +22,7 @@ class StructureMetaclass(type):
         # class with.
         attrs = {
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
+            'possible_paths': orig_attrs.pop('possible_paths', []),
             'fields': OrderedDict(),
         }
 
@@ -48,6 +49,7 @@ class Structure(object):
     # Subclasses should always specify this & list out the API versions
     # it supports.
     valid_api_versions = []
+    possible_paths = []
 
     def __init__(self, **kwargs):
         super(Structure, self).__init__()
