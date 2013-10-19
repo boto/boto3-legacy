@@ -1,6 +1,6 @@
 import datetime
 
-from boto3.utils.dictpath import dictpath, InvalidPathError
+from boto3.utils.dictpath import DictPath, InvalidPathError
 
 from tests import unittest
 
@@ -34,47 +34,81 @@ class DictPathTestCase(unittest.TestCase):
                 'count': 64,
             }
         }
+        self.path = DictPath(self.data)
 
-    def test_simple_data(self):
+    def test_find_simple_data(self):
         selector = 'object.id'
-        self.assertEqual(dictpath(self.data, selector), 7)
+        self.assertEqual(self.path.find(selector), 7)
 
-    def test_fetch_list_data(self):
+    def test_find_list_data(self):
         selector = 'object.owner_ids'
-        self.assertEqual(dictpath(self.data, selector), [3, 25])
+        self.assertEqual(self.path.find(selector), [3, 25])
 
-    def test_single_key(self):
+    def test_find_single_key(self):
         selector = 'request_id'
-        self.assertEqual(dictpath(self.data, selector), 'abc123')
+        self.assertEqual(self.path.find(selector), 'abc123')
 
-    def test_single_key_complex_data(self):
+    def test_find_single_key_complex_data(self):
         selector = 'meta'
-        self.assertEqual(dictpath(self.data, selector), {
+        self.assertEqual(self.path.find(selector), {
             'next': '/?page=3',
             'prev': '/?page=1',
             'count': 64,
         })
 
-    def test_deeper_fetch(self):
+    def test_find_deeper_fetch(self):
         selector = 'object.properties.type'
-        self.assertEqual(dictpath(self.data, selector), 'document')
+        self.assertEqual(self.path.find(selector), 'document')
 
-    def test_nonexistent(self):
+    def test_find_nonexistent(self):
         selector = 'not-there'
-        self.assertEqual(dictpath(self.data, selector), None)
+        self.assertEqual(self.path.find(selector), None)
 
-    def test_nonexistent_overridden_default(self):
+    def test_find_nonexistent_overridden_default(self):
         selector = 'not-there'
-        self.assertEqual(dictpath(self.data, selector, retval=-1), -1)
+        self.assertEqual(self.path.find(selector, retval=-1), -1)
 
-    def test_no_path(self):
+    def test_find_no_path(self):
         with self.assertRaises(InvalidPathError):
-            dictpath(self.data, None)
+            self.path.find(None)
 
-    def test_empty_path(self):
+    def test_find_empty_path(self):
         with self.assertRaises(InvalidPathError):
-            dictpath(self.data, '...')
+            self.path.find('...')
 
-    def test_middle_key_not_found(self):
+    def test_find_middle_key_not_found(self):
         selector = 'object.oops.type'
-        self.assertEqual(dictpath(self.data, selector), None)
+        self.assertEqual(self.path.find(selector), None)
+
+    def test_store_single_key(self):
+        self.assertFalse('test' in self.data)
+
+        selector = 'test'
+        self.path.store(selector, 'This is a triumph!')
+        self.assertTrue('test' in self.data)
+
+    def test_store_deeper(self):
+        self.assertFalse('last_edited' in self.data['object']['properties'])
+
+        selector = 'object.properties.last_edited'
+        self.path.store(selector, 'daniel')
+        self.assertTrue('last_edited' in self.data['object']['properties'])
+
+    def test_store_missing_intermediate(self):
+        self.assertFalse('test' in self.data)
+
+        selector = 'test.to_be_created.it_happened'
+        self.path.store(selector, 'Yup')
+        self.assertEqual(self.data['test'], {
+            'to_be_created': {
+                'it_happened': 'Yup'
+            }
+        })
+
+    def test_store_no_path(self):
+        with self.assertRaises(InvalidPathError):
+            self.path.store(None, 'not happening')
+
+    def test_store_empty_path(self):
+        with self.assertRaises(InvalidPathError):
+            self.path.store('...', 'not happening')

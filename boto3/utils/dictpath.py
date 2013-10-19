@@ -35,21 +35,22 @@ Given the following data...::
 
 ...some examples of usage look like::
 
-    >>> dictpath(data, meta)
+    >>> path = DictPath(data)
+    >>> path.find(data, meta)
     {
         'next': '/?page=3',
         'prev': '/?page=1',
         'count': 64,
     }
-    >>> dictpath(data, 'object.id')
+    >>> path.find(data, 'object.id')
     7
-    >>> dictpath(data, 'object.owner_ids')
+    >>> path.find(data, 'object.owner_ids')
     [3, 25]
-    >>> dictpath(data, 'object.properties.type')
+    >>> path.find(data, 'object.properties.type')
     'document'
-    >>> dictpath(data, 'nonexistent')
+    >>> path.find(data, 'nonexistent')
     None
-    >>> dictpath(data, 'nonexistent', retval='Not there')
+    >>> path.find(data, 'nonexistent', retval='Not there')
     'Not there'
 
 """
@@ -60,23 +61,51 @@ class InvalidPathError(Exception):
     pass
 
 
-def dictpath(data, path, retval=None):
-    if not isinstance(path, six.text_type):
-        raise InvalidPathError("Path must be a string.")
+class DictPath(object):
+    def __init__(self, data):
+        self.data = data
 
-    path_bits = path.split('.', 1)
-    key = path_bits[0]
+    def find(self, path, data=None, retval=None):
+        if not isinstance(path, six.text_type):
+            raise InvalidPathError("Path must be a string.")
 
-    if not key:
-        raise InvalidPathError("An empty path was supplied.")
+        if data is None:
+            data = self.data
 
-    found = data.get(path_bits[0], retval)
+        path_bits = path.split('.', 1)
+        key = path_bits[0]
 
-    if len(path_bits) == 1:
-        return found
+        if not key:
+            raise InvalidPathError("An empty path was supplied.")
 
-    if found is retval:
-        return found
+        found = data.get(key, retval)
 
-    # Recurse to find the rest.
-    return dictpath(found, path_bits[1])
+        if len(path_bits) == 1:
+            return found
+
+        if found is retval:
+            return found
+
+        # Recurse to find the rest.
+        return self.find(path_bits[1], data=found, retval=retval)
+
+    def store(self, path, value, data=None):
+        if not isinstance(path, six.text_type):
+            raise InvalidPathError("Path must be a string.")
+
+        path_bits = path.split('.', 1)
+        key = path_bits[0]
+
+        if not key:
+            raise InvalidPathError("An empty path was supplied.")
+
+        if data is None:
+            data = self.data
+
+        if len(path_bits) == 1:
+            data[key] = value
+            return
+
+        # Make sure it exists.
+        sub_data = data.setdefault(key, {})
+        return self.store(path_bits[1], value, data=sub_data)
