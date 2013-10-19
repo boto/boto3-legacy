@@ -64,6 +64,10 @@ class FakeStructure(object):
         for key, value in kwargs.items():
             setattr(self, key, value)
 
+    def full_populate(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
 
 class FakeResource(object):
     fields = {

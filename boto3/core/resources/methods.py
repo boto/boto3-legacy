@@ -103,14 +103,17 @@ class BaseMethod(object):
                 # a list of structures (or something crazy).
                 if hasattr(possible_data, 'keys'):
                     # It's a dict (hence, a single Structure).
-                    new_struct = struct(**possible_data)
+                    new_struct = struct()
+                    new_struct.full_populate(possible_data)
                     dictpath.store(path, new_struct)
                 elif hasattr(possible_data, 'append'):
                     # It's a list.
                     revised_list = []
 
                     for item in possible_data:
-                        revised_list.append(struct(**item))
+                        new_struct = struct()
+                        new_struct.full_populate(item)
+                        revised_list.append(new_struct)
 
                     dictpath.store(path, revised_list)
                 else:

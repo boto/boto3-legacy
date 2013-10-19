@@ -55,8 +55,8 @@ class Structure(object):
         super(Structure, self).__init__()
         self._data = {}
 
-        if kwargs:
-            self.full_populate(kwargs)
+        for key, value in kwargs.items():
+            setattr(self, key, value)
 
     def __str__(self):
         return u'<{0}: {1}>'.format(
@@ -97,27 +97,19 @@ class Structure(object):
 
     def full_populate(self, data):
         """
-        Fires during initialization & when receiving data from the service.
+        Fires when receiving data from the service.
 
         Useful for verification & type conversion.
 
         For the end user, you'll typically define a ``post_populate()`` method
         that further works with the data.
         """
-        # TODO: Should this assign everything on the instance & chance
-        #       accidental typo-style errors?
-        #       Or should we only assign data for fields we recognize & throw
-        #       errors for anything else?
         for key, raw_value in data.items():
-            if not key in self.fields:
-                raise UnknownFieldError(
-                    "Tried assigning value to unknown field '{0}.".format(
-                        key
-                    )
-                )
-
-            # Allow the field to control the population of the value.
-            self.fields[key].set_python(self, raw_value)
+            for name, field in self.fields.items():
+                if field.api_name == key:
+                    # Allow the field to control the population of the value.
+                    self.fields[field.name].set_python(self, raw_value)
+                    break
 
         if hasattr(self, 'post_populate'):
             self.post_populate(data)
