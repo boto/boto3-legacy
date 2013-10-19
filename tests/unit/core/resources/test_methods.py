@@ -54,11 +54,29 @@ class TestCoreService(FakeService):
     ]
 
 
+class FakeStructure(object):
+    possible_paths = [
+        'Messages',
+        'Queue.Message',
+    ]
+
+    def __init__(self, **kwargs):
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+
+    def full_populate(self, data):
+        for key, value in data.items():
+            setattr(self, key, value)
+
+
 class FakeResource(object):
     fields = {
         'name': BaseField('QueueName'),
         'url': BaseField('QueueUrl', required=False),
     }
+    structures_to_use = [
+        FakeStructure,
+    ]
 
 
 class BaseMethodTestCase(unittest.TestCase):
@@ -193,9 +211,42 @@ class BaseMethodTestCase(unittest.TestCase):
         )
 
     def test_post_process_results(self):
-        # FIXME: For now, this does nothing in the implementation. If we remove
-        #        it there, we should remove it here.
-        self.assertEqual(self.create_method.post_process_results({}), {})
+        # If we don't recognize anything, just pass it through.
+        self.assertEqual(
+            self.create_method.post_process_results({
+                'this': 'is a test',
+            }),
+            {
+                'this': 'is a test',
+            }
+        )
+
+        # We find a single structure.
+        result = self.create_method.post_process_results({
+            'this': 'is a test',
+            'Queue': {
+                'Message': {
+                    'body': 'o hai',
+                }
+            }
+        })
+        self.assertEqual(result['Queue']['Message'].body, 'o hai')
+
+        # We find a list at a different key.
+        result = self.create_method.post_process_results({
+            'this': 'is a test',
+            'Messages': [
+                {
+                    'body': 'o hai',
+                },
+                {
+                    'body': 'another',
+                }
+            ]
+        })
+        self.assertEqual(len(result['Messages']), 2)
+        self.assertEqual(result['Messages'][0].body, 'o hai')
+        self.assertEqual(result['Messages'][1].body, 'another')
 
     def test_call(self):
         base = BaseMethod('create_queue')

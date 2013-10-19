@@ -23,6 +23,7 @@ class ResourceMetaclass(type):
         attrs = {
             'valid_api_versions': orig_attrs.pop('valid_api_versions', []),
             'service_name': orig_attrs.pop('service_name'),
+            'structures_to_use': orig_attrs.pop('structures_to_use', []),
             'fields': OrderedDict(),
             '_methods': OrderedDict(),
         }
@@ -62,6 +63,7 @@ class ResourceMetaclass(type):
 @six.add_metaclass(ResourceMetaclass)
 class Resource(ResourceBase):
     service_name = None
+    structures_to_use = []
 
     def __init__(self, session=None, connection=None):
         super(Resource, self).__init__()

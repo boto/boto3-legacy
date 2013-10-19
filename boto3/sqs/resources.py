@@ -59,6 +59,9 @@ class Attribute(Structure):
     valid_api_versions = [
         '2012-11-05',
     ]
+    possible_paths = [
+        'Attributes',
+    ]
 
     name = fields.BoundField('Name')
     value = fields.BoundField('Value')
@@ -67,6 +70,10 @@ class Attribute(Structure):
 class Message(Structure):
     valid_api_versions = [
         '2012-11-05',
+    ]
+    possible_paths = [
+        'Messages',
+        'Message',
     ]
 
     body = fields.BoundField('Body')

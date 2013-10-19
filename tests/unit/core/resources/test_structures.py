@@ -1,5 +1,5 @@
 from __future__ import unicode_literals
-from hashlib import md5
+import hashlib
 
 from boto3.core.exceptions import MD5ValidationError
 from boto3.core.exceptions import UnknownFieldError
@@ -45,7 +45,10 @@ class TestStructure(Structure):
         return data
 
     def post_populate(self, data):
-        md5_seen = md5(data['body'].encode('utf-8')).hexdigest()
+        if not 'MessageBody' in data:
+            return data
+
+        md5_seen = hashlib.md5(data['MessageBody'].encode('utf-8')).hexdigest()
 
         if md5_seen != self.md5:
             raise MD5ValidationError("Whoopsie!")
@@ -151,10 +154,10 @@ class StructureTestCase(unittest.TestCase):
         struct = TestStructure()
         # Explicit call, rather than ``__init__`` side-effect.
         struct.full_populate({
-            'name': 'another',
-            'md5': md5(body.encode('utf-8')).hexdigest(),
-            'body': body,
-            'tags': [],
+            'Name': 'another',
+            'TestMD5': hashlib.md5(body.encode('utf-8')).hexdigest(),
+            'MessageBody': body,
+            'Tags': [],
         })
         self.assertEqual(struct._data, {
             'body': 'texty text text',
@@ -168,20 +171,9 @@ class StructureTestCase(unittest.TestCase):
 
         with self.assertRaises(MD5ValidationError):
             struct.full_populate({
-                'name': 'another',
+                'Name': 'another',
                 # Bad MD5 value.
-                'md5': 'abc123',
-                'body': 'texty text text',
-                'tags': []
+                'TestMD5': 'abc123',
+                'MessageBody': 'texty text text',
+                'Tags': []
             })
-
-    def test_populate_extra_keys(self):
-        struct = TestStructure()
-
-        with self.assertRaises(UnknownFieldError) as cm:
-            struct.full_populate({
-                'this': 'is rubbish',
-            })
-
-        self.assertTrue('unknown field' in str(cm.exception))
-

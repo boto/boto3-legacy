@@ -4,6 +4,7 @@ from boto3.core.constants import NOTHING_PROVIDED
 from boto3.core.constants import NO_RESOURCE
 from boto3.core.exceptions import NoNameProvidedError
 from boto3.core.exceptions import NoResourceAttachedError
+from boto3.utils.dictpath import DictPath
 from boto3.utils.mangle import to_snake_case
 
 
@@ -89,9 +90,40 @@ class BaseMethod(object):
                     )
 
     def post_process_results(self, raw_results):
-        # TODO: For now, we're just passing through the results.
-        #       Again, this is pretty leaky as far as I'm concerned, but I'm
-        #       not sure how to generically mitigate this for the moment.
+        dictpath = DictPath(raw_results)
+
+        for struct in self.resource.structures_to_use:
+            for path in struct.possible_paths:
+                possible_data = dictpath.find(path)
+
+                if possible_data is None:
+                    continue
+
+                # We've got a match! It's either a single structure itself or
+                # a list of structures (or something crazy).
+                if hasattr(possible_data, 'keys'):
+                    # It's a dict (hence, a single Structure).
+                    new_struct = struct()
+                    new_struct.full_populate(possible_data)
+                    dictpath.store(path, new_struct)
+                elif hasattr(possible_data, 'append'):
+                    # It's a list.
+                    revised_list = []
+
+                    for item in possible_data:
+                        new_struct = struct()
+                        new_struct.full_populate(item)
+                        revised_list.append(new_struct)
+
+                    dictpath.store(path, revised_list)
+                else:
+                    # No clue what's here.
+                    # TODO: Perhaps raise an exception, since we have found
+                    #       data but don't know how to handle it?
+                    pass
+
+        # Because we had a reference to it, this should be updated if any
+        # structures were found.
         return raw_results
 
     def call(self, conn, **kwargs):

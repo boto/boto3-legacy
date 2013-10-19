@@ -5,6 +5,7 @@ from boto3.core.exceptions import APIVersionMismatchError
 from boto3.core.resources import fields
 from boto3.core.resources import methods
 from boto3.core.resources import Resource
+from boto3.core.resources import Structure
 from boto3.core.service import ServiceFactory
 from boto3.core.session import Session
 
@@ -150,15 +151,9 @@ class TestCoreService(FakeService):
                     {
                         'MessageId': 'msg-12346',
                         'ReceiptHandle': 'hndl-12346',
-                        'MD5OfBody': '6cd3556deb0da54bca060b4c39479839',
-                        'Body': 'Hello, world!',
-                        'Attributes': {
-                            'QueueArn': 'arn:aws:example:example:sqs:something',
-                            'ApproximateNumberOfMessagesDelayed': '2',
-                            'DelaySeconds': '10',
-                            'CreatedTimestamp': '2013-10-17T21:52:46Z',
-                            'LastModifiedTimestamp': '2013-10-17T21:52:46Z',
-                        },
+                        'MD5OfBody': '6cd355',
+                        'Body': 'Another message!',
+                        'Attributes': {},
                     },
                 ]
             })
@@ -175,15 +170,34 @@ class TestCoreService(FakeService):
     ]
 
 
+class TestMessage(Structure):
+    valid_api_versions = [
+        '2013-08-23',
+    ]
+    possible_paths = [
+        'Messages',
+    ]
+
+    message_id = fields.BoundField('MessageId', required=False)
+    body = fields.BoundField('Body')
+    md5 = fields.BoundField('MD5OfBody', required=False)
+    attributes = fields.ListBoundField('Attributes', data_class=None, required=False)
+    receipt_handle = fields.BoundField('ReceiptHandle', required=False)
+
+
 class TestResource(Resource):
     valid_api_versions = [
         '2013-08-23',
     ]
     service_name = 'test'
+    structures_to_use = [
+        TestMessage,
+    ]
 
     name = fields.BoundField('QueueName')
     url = fields.BoundField('QueueUrl', required=False)
 
+    receive = methods.InstanceMethod('receive_message')
     send = methods.InstanceMethod('send_message', message_type='json')
     delete = methods.InstanceMethod('delete_queue')
 
@@ -211,6 +225,7 @@ class ResourceTestCase(unittest.TestCase):
         # Make sure we picked up all the methods.
         self.assertEqual(sorted(TestResource._methods.keys()), [
             'delete',
+            'receive',
             'send',
         ])
         # Make sure the method objects are safely ferreted away.
@@ -337,3 +352,21 @@ class ResourceTestCase(unittest.TestCase):
         self.assertTrue(hasattr(test, 'now_known_but_poorly_understood'))
         del test.now_known_but_poorly_understood
         self.assertFalse(hasattr(test, 'now_known_but_poorly_understood'))
+
+    def test_response_parsing(self):
+        test = TestResource(connection=self.conn)
+        test.url = '/a-test/url'
+
+        result = test.receive()
+
+        self.assertEqual(len(result['Messages']), 2)
+        msg_0 = result['Messages'][0]
+        msg_1 = result['Messages'][1]
+        self.assertTrue(isinstance(msg_0, TestMessage))
+        self.assertTrue(isinstance(msg_1, TestMessage))
+        self.assertEqual(msg_0.message_id, 'msg-12345')
+        self.assertEqual(msg_0.body, 'Hello, world!')
+        self.assertEqual(msg_0.md5, '6cd3556deb0da54bca060b4c39479839')
+        self.assertEqual(msg_1.message_id, 'msg-12346')
+        self.assertEqual(msg_1.body, 'Another message!')
+        self.assertEqual(msg_1.md5, '6cd355')
