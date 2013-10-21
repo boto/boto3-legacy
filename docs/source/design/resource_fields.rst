@@ -4,20 +4,26 @@ Initial Reasons
 Why Descriptors
 ---------------
 
-+ More "Pythonic"
-+ Unsurprising - actual attributes on the class
-+ (Maybe) Metaclass needs to assign them as normal
+Pros
+~~~~
 
-    + This might actually make the logic simpler (just dict assignment rather
+* More "Pythonic"
+* Unsurprising - actual attributes on the class
+* (Maybe) Metaclass needs to assign them as normal
+
+    * This might actually make the logic simpler (just dict assignment rather
       than the ``fields`` dict)
 
-- No way to control the behavior without overriding ``__get__`` & co.
-- We'd lose the "sorted"-ness of the attributes?
+Cons
+~~~~
 
-    - Is this even the case? The ``attrs`` dict we get in ``__new__`` might
+* No way to control the behavior without overriding ``__get__`` & co.
+* We'd lose the "sorted"-ness of the attributes?
+
+    * Is this even the case? The ``attrs`` dict we get in ``__new__`` might
       already have has randomization or similar. This too needs verification.
 
-- Changing the fields post-init doesn't seem to work right?
+* Changing the fields post-init doesn't seem to work right?
 
     * This needs another test
 
@@ -25,14 +31,21 @@ Why Descriptors
 Why ``__getattr__``
 -------------------
 
-+ Can stow the fields
-+ Straight-forward-ish metaclass
-+ Another hook
-+ Can keep sort order? (Maybe, see above)
-+ (Maybe) Easier to extend or change the fields post-init
-- Descriptors-based fields no longer (natively) work
-- Would require it's own API
-- Not as "Pythonic"
+Pros
+~~~~
+
+* Can stow the fields
+* Straight-forward-ish metaclass
+* Another hook
+* Can keep sort order? (Maybe, see above)
+* (Maybe) Easier to extend or change the fields post-init
+
+Cons
+~~~~
+
+* Descriptors-based fields no longer (natively) work
+* Would require it's own API
+* Not as "Pythonic"
 
 
 Research
@@ -114,23 +127,37 @@ Revised Reasons
 Why Descriptors
 ---------------
 
-+ More "Pythonic"
-+ Unsurprising - actual attributes on the class
-+ (Indeterminate) Metaclass needs to assign them as normal
-- No way to control the behavior without overriding ``__get__`` & co.
-- Changing the fields post-init isn't easy/obvious
+Pros
+~~~~
+
+* More "Pythonic"
+* Unsurprising - actual attributes on the class
+* (Indeterminate) Metaclass needs to assign them as normal
+
+Cons
+~~~~
+
+* No way to control the behavior without overriding ``__get__`` & co.
+* Changing the fields post-init isn't easy/obvious
 
 
 Why ``__getattr__``
 -------------------
 
-+ Can stow the fields
-+ Another hook
-+ Easier to extend or change the fields post-init
-+ (Indeterminate) Slightly more complex metaclass
-- Descriptors-based fields no longer (natively) work
-- Would require it's own API
-- Not as "Pythonic"
+Pros
+~~~~
+
+* Can stow the fields
+* Another hook
+* Easier to extend or change the fields post-init
+* (Indeterminate) Slightly more complex metaclass
+
+Cons
+~~~~
+
+* Descriptors-based fields no longer (natively) work
+* Would require it's own API
+* Not as "Pythonic"
 
 
 Conclusion

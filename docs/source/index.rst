@@ -39,8 +39,6 @@ Design
 
 .. toctree::
 
-   design/boto3_architecture
-   design/boto3_proposal
    design/resource_objects
    design/resource_fields
 
