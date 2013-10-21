@@ -7,3 +7,4 @@ dist
 build
 tests/cover
 tests/.coverage
+*.egg-info

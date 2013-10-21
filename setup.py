@@ -28,9 +28,9 @@ requires = [
 
 setup(
     name='boto3',
-    version=boto3.__version__,
+    version=boto3.get_version(),
     description='Low-level, data-driven core of boto 3.',
-    long_description=open('README.md').read(),
+    long_description=open('README.rst').read(),
     author='Amazon Web Services',
     author_email='garnaat@amazon.com',
     url='https://github.com/boto/boto3',
@@ -45,7 +45,7 @@ setup(
     include_package_data=True,
     install_requires=requires,
     license=open("LICENSE").read(),
-    classifiers=(
+    classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',
         'Natural Language :: English',
@@ -55,5 +55,5 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
         'Programming Language :: Python :: 3.3',
-    ),
+    ],
 )
