@@ -14,14 +14,15 @@ try:
 except ImportError:
     from distutils.core import setup
 
+
 packages = [
     'boto3',
 ]
 
 requires = [
-    'botocore==0.12.0',
-    'six>=1.1.0',
-    'jmespath==0.0.2',
+    'botocore==0.16.0',
+    'six>=1.4.0',
+    'jmespath>=0.0.2',
     'python-dateutil>=2.1',
 ]
 
@@ -36,9 +37,7 @@ setup(
     scripts=[],
     packages=packages,
     package_data={
-        'boto3': [
-            'data/*.json',
-        ]
+        'boto3': []
     },
     package_dir={
         'boto3': 'boto3'

@@ -20,7 +20,7 @@ Requirements
 * Python 3.3+ first, but also works on Python 2.6+
 * botocore==0.16.0
 * six>=1.4.0
-* jmespath==0.0.2
+* jmespath>=0.0.2
 * python-dateutil>=2.1
 
 
