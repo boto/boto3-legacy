@@ -141,6 +141,9 @@ class BaseMethod(object):
         # Then update it with what was passed in (allowing overrides).
         built_params.update(kwargs)
 
+        # FIXME: This needs a call to ``full_prepare(...)``.
+        #        Some of the above logic may need to move there instead of here.
+
         # Now that we have all the data, check to make sure we've got all the
         # required parameters.
         self.check_required_params(expected_params, built_params)
@@ -148,6 +151,9 @@ class BaseMethod(object):
         # Call the connection method & get the results.
         conn_method = getattr(conn, self.conn_method_name)
         raw_results = conn_method(**built_params)
+
+        # FIXME: What's below actually collides with what ``full_populate``
+        #        does. This should be integrated with it & removed from here.
 
         # Check the output for bound data & update the instance.
         if hasattr(self.resource, 'fields'):

@@ -116,3 +116,49 @@ class Resource(ResourceBase):
 
         # Must be regular deletion.
         super(Resource, self).__delattr__(name)
+
+    def full_populate(self, data):
+        """
+        Fires when receiving data from the service.
+
+        Useful for verification & type conversion.
+
+        For the end user, you'll typically define a ``post_populate()`` method
+        that further works with the data.
+        """
+        for key, raw_value in data.items():
+            for name, field in self.fields.items():
+                if field.api_name == key:
+                    # Allow the field to control the population of the value.
+                    self.fields[field.name].set_python(self, raw_value)
+                    break
+
+        if hasattr(self, 'post_populate'):
+            self.post_populate(data)
+
+    def full_prepare(self):
+        """
+        Fires when data is about to be sent to the service.
+
+        For the end user, you'll typically define a ``prepare()`` method
+        that further works with the data.
+        """
+        data = {}
+
+        for fieldname in self.fields.keys():
+            field = self.fields[fieldname]
+
+            try:
+                data[fieldname] = field.get_api(self)
+            except KeyError as err:
+                if field.required is False:
+                    continue
+
+                # TODO: Consider a different exception here, since a
+                #       ``KeyError`` may not make much sense to the end user.
+                raise
+
+        if hasattr(self, 'prepare'):
+            data = self.prepare(data)
+
+        return data

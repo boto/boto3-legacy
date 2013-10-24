@@ -370,3 +370,37 @@ class ResourceTestCase(unittest.TestCase):
         self.assertEqual(msg_1.message_id, 'msg-12346')
         self.assertEqual(msg_1.body, 'Another message!')
         self.assertEqual(msg_1.md5, '6cd355')
+
+    def test_full_prepare(self):
+        test = TestResource(connection=self.conn)
+        test.name = 'test'
+        test.url = '/1b2a98376/test'
+
+        data = test.full_prepare()
+        self.assertEqual(data, {
+            'name': 'test',
+            'url': '/1b2a98376/test',
+        })
+
+    def test_prepare_failed(self):
+        test = TestResource(connection=self.conn)
+        test.name = 'going-away'
+        test.url = '/1c298c73/going-away'
+
+        # Delete a required key.
+        del test.name
+
+        with self.assertRaises(KeyError):
+            data = test.full_prepare()
+
+    def test_full_populate(self):
+        test = TestResource(connection=self.conn)
+        test.full_populate({
+            'QueueName': 'another',
+            'QueueUrl': '/98731bda/another',
+            'Ignored': 'whatever',
+        })
+        self.assertEqual(test._data, {
+            'url': '/98731bda/another',
+            'name': 'another',
+        })
