@@ -1,6 +1,6 @@
 import botocore.session
 
-from boto3.core.service import ServiceFactory
+from boto3.core.connection import ConnectionFactory
 
 
 class Session(object):
@@ -27,7 +27,7 @@ class Session(object):
             self.core_session = botocore.session.get_session()
 
         if not self.factory:
-            self.factory = ServiceFactory(session=self)
+            self.factory = ConnectionFactory(session=self)
 
     def get_service(self, service_name):
         classes = self.__class__.conn_classes
