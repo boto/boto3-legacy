@@ -17,6 +17,10 @@ class ResourceError(BotoException):
     pass
 
 
+class NoResourceJSONFound(ResourceError):
+    pass
+
+
 class APIVersionMismatchError(BotoException):
     pass
 
