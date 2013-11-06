@@ -2,13 +2,10 @@ import mock
 import os
 
 from boto3.core.connection import ConnectionFactory
-from boto3.core.constants import DEFAULT_RESOURCE_JSON_DIR
 from boto3.core.exceptions import APIVersionMismatchError
-from boto3.core.exceptions import NoResourceJSONFound
 from boto3.core.resources import ResourceJSONLoader, ResourceDetails
 from boto3.core.resources import Resource, ResourceFactory
 from boto3.core.session import Session
-from boto3.utils import json
 
 from tests import unittest
 from tests.unit.fakes import FakeParam, FakeOperation, FakeService, FakeSession
@@ -171,83 +168,6 @@ class TestCoreService(FakeService):
     ]
 
 
-class ResourceJSONLoaderTestCase(unittest.TestCase):
-    def setUp(self):
-        super(ResourceJSONLoaderTestCase, self).setUp()
-        self.default_dirs = [
-            DEFAULT_RESOURCE_JSON_DIR,
-        ]
-        self.test_dirs = [
-            os.path.join(os.path.dirname(__file__), 'test_data')
-        ] + self.default_dirs
-        self.default_loader = ResourceJSONLoader(self.default_dirs)
-        self.test_loader = ResourceJSONLoader(self.test_dirs)
-
-    def test_init(self):
-        self.assertEqual(self.default_loader.data_dirs, self.default_dirs)
-        self.assertEqual(self.default_loader._loaded_data, {})
-        self.assertEqual(self.test_loader.data_dirs, self.test_dirs)
-        self.assertEqual(self.test_loader._loaded_data, {})
-
-    def test_construct_filepath(self):
-        self.assertEqual(
-            self.test_loader.construct_filepath('/foo/bar', 'baz'),
-            '/foo/bar/baz.json'
-        )
-
-    def test_load(self):
-        self.assertEqual(len(self.test_loader._loaded_data), 0)
-
-        data = self.test_loader.load('test')
-        self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_versions' in data)
-
-        # Make sure it didn't get cached here.
-        self.assertEqual(len(self.test_loader._loaded_data), 0)
-
-    def test_load_fallback(self):
-        # This won't be found in the ``test_data`` directory but is in the
-        # main code. Make sure we eventually find it.
-        data = self.test_loader.load('elastictranscoder')
-        self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_versions' in data)
-
-    def test_getitem(self):
-        self.assertEqual(len(self.test_loader._loaded_data), 0)
-
-        # Note the change of calling format here (vs. above).
-        data = self.test_loader['test']
-        self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_versions' in data)
-
-        # Make sure it **DID** get cached.
-        self.assertEqual(len(self.test_loader._loaded_data), 1)
-        self.assertTrue('test' in self.test_loader._loaded_data)
-
-    def test_getitem_cached(self):
-        # Fake some data into the cache.
-        self.test_loader._loaded_data['nonexistent'] = {
-            'this is a': 'test',
-            'abc': 123,
-        }
-
-        # This wouldn't be loadable otherwise (not on the filesystem).
-        # However, since we faked it into the cache...
-        data = self.test_loader['nonexistent']
-        self.assertEqual(data['this is a'], 'test')
-
-    def test_contains(self):
-        self.test_loader._loaded_data['foo'] = 'bar'
-        self.assertEqual(len(self.test_loader._loaded_data), 1)
-
-        self.assertTrue('foo' in self.test_loader)
-        self.assertFalse('nopenopenope' in self.test_loader)
-
-    def test_not_found(self):
-        with self.assertRaises(NoResourceJSONFound):
-            data = self.test_loader.load('nopenopenope')
-
-
 class ResourceDetailsTestCase(unittest.TestCase):
     def setUp(self):
         super(ResourceDetailsTestCase, self).setUp()
@@ -260,7 +180,7 @@ class ResourceDetailsTestCase(unittest.TestCase):
         self.rd = ResourceDetails(
             self.session,
             'test',
-            'Whatever',
+            'Preset',
             loader=self.test_loader
         )
 
@@ -276,6 +196,15 @@ class ResourceDetailsTestCase(unittest.TestCase):
 
         data = self.rd.service_data
         self.assertEqual(len(data.keys()), 4)
+        self.assertTrue('api_versions' in self.rd._loaded_data)
+
+    def test_resource_data_uncached(self):
+        self.assertEqual(self.rd._loaded_data, None)
+
+        data = self.rd.resource_data
+        self.assertEqual(len(data.keys()), 4)
+        self.assertTrue('identifiers' in data)
+        self.assertTrue('operations' in data)
         self.assertTrue('api_versions' in self.rd._loaded_data)
 
     def test_api_version_uncached(self):
@@ -304,10 +233,151 @@ class ResourceDetailsTestCase(unittest.TestCase):
         self.assertTrue('20XX-MM-II' in av)
 
 
+class FakeConn(object):
+    def __init__(self, *args, **kwargs):
+        super(FakeConn, self).__init__()
+
+    def delete_pipeline(self, *args, **kwargs):
+        return {
+            'RequestId': '1234-1234-1234-1234',
+            'Id': '1872baf45',
+            'Title': 'A pipe',
+        }
+
+
+class PipeResource(Resource):
+    def update_params(self, conn_method_name, params):
+        params['global'] = True
+        return super(PipeResource, self).update_params(conn_method_name, params)
+
+    def update_params_delete(self, params):
+        params['id'] = self.get_identifier()
+        return params
+
+    def post_process(self, conn_method_name, result):
+        self.identifier = result.pop('Id')
+        return result
+
+    def post_process_delete(self, result):
+        self.deleted = True
+        return result
+
+
 class ResourceTestCase(unittest.TestCase):
     def setUp(self):
         super(ResourceTestCase, self).setUp()
         self.session = Session(FakeSession(TestCoreService()))
-        self.sf = ResourceFactory(session=self.session)
-        self.res_class = self.sf.construct_for('test')
-        self.res = self.conn_class()
+        self.fake_details = ResourceDetails(self.session, 'test', 'Pipe')
+        self.fake_details._loaded_data = {
+            'stuff': 'goes here',
+        }
+        self.fake_conn = FakeConn()
+        self.resource = PipeResource(
+            connection=self.fake_conn,
+            id='1872baf45'
+        )
+        self.resource._details = self.fake_details
+
+    def test_full_update_params(self):
+        params = {
+            'notify': True,
+        }
+        prepped = self.resource.full_update_params('delete', params)
+        self.assertEqual(prepped, {
+            'global': True,
+            'id': '1872baf45',
+            'notify': True,
+        })
+
+    def test_full_post_process(self):
+        results = {
+            'Id': '1872baf45',
+            'Title': 'A pipe',
+        }
+        processed = self.resource.full_post_process('delete', results)
+        self.assertEqual(processed, {
+            'Title': 'A pipe'
+        })
+        self.assertEqual(self.resource.deleted, True)
+
+
+class ResourceFactoryTestCase(unittest.TestCase):
+    def setUp(self):
+        super(ResourceFactoryTestCase, self).setUp()
+        self.session = Session(FakeSession(TestCoreService()))
+        self.test_dirs = [
+            os.path.join(os.path.dirname(__file__), 'test_data')
+        ]
+        self.test_loader = ResourceJSONLoader(self.test_dirs)
+        self.rd = ResourceDetails(
+            self.session,
+            'test',
+            'Preset',
+            loader=self.test_loader
+        )
+        self.rf = ResourceFactory(session=self.session, loader=self.test_loader)
+
+    def test_init(self):
+        self.assertEqual(self.rf.session, self.session)
+        self.assertTrue(isinstance(self.rf.loader, ResourceJSONLoader))
+        self.assertEqual(self.rf.base_resource_class, Resource)
+        self.assertEqual(self.rf.details_class, ResourceDetails)
+
+        # Test overrides (invalid for actual usage).
+        import boto3
+        rf = ResourceFactory(
+            loader=False,
+            base_resource_class=PipeResource,
+            details_class=True
+        )
+        self.assertEqual(rf.session, boto3.session)
+        self.assertEqual(rf.loader, False)
+        self.assertEqual(rf.base_resource_class, PipeResource)
+        self.assertEqual(rf.details_class, True)
+
+    def test_build_class_name(self):
+        self.assertEqual(
+            self.rf._build_class_name('Pipeline'),
+            'PipelineResource'
+        )
+        self.assertEqual(
+            self.rf._build_class_name('TestName'),
+            'TestNameResource'
+        )
+
+    def test_build_methods(self):
+        attrs = self.rf._build_methods(self.rd)
+        self.assertEqual(len(attrs), 1)
+        self.assertTrue('delete' in attrs)
+
+    def test_create_operation_method(self):
+        class StubbyResource(Resource):
+            pass
+
+        op_method = self.rf._create_operation_method('delete', {
+            "api_name": "DeletePipeline",
+            "docs": "Dusts off & nukes a pipeline from orbit.",
+            "params": {
+                "id": {
+                    "api_name": "Id",
+                    "type": "string"
+                }
+            }
+        })
+        self.assertEqual(op_method.__name__, 'delete')
+        self.assertEqual(
+            op_method.__doc__,
+            'Dusts off & nukes a pipeline from orbit.'
+        )
+
+        # Assign it & call it.
+        StubbyResource.delete = op_method
+        sr = StubbyResource(connection=FakeConn())
+        self.assertEqual(sr.delete(), {
+            'Id': '1872baf45',
+            'RequestId': '1234-1234-1234-1234',
+            'Title': 'A pipe'
+        })
+
+    def test_construct_for(self):
+        res_class = self.rf.construct_for('test', 'Pipeline')

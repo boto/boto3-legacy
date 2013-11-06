@@ -45,17 +45,23 @@ class ResourceDetails(object):
 
     @property
     @requires_loaded
+    def resource_data(self):
+        return self._loaded_data['resources'][self.resource_name]
+
+    @property
+    @requires_loaded
     def api_versions(self):
         self._api_versions = self._loaded_data.get('api_versions', '')
         return self._api_versions
 
 
 class Resource(object):
-    def __init__(self, connection=None):
+    def __init__(self, connection=None, **kwargs):
         self._data = {}
         self._connection = connection
 
-        # FIXME: Add more here as needed.
+        for key, value in kwargs.items():
+            self._data[key] = value
 
         if self._connection is None:
             self._connection = self._details.session.connect_to(
@@ -69,30 +75,46 @@ class Resource(object):
             self._connection.region_name
         )
 
-    def __getattr__(self, name):
-        if name in self._data:
-            return self._data[name]
+    def get_identifier(self):
+        return self._data['id']
 
-        raise AttributeError(
-            "{0} has no attribute {1}".format(
-                self,
-                name
-            )
-        )
+    def set_identifier(self, value):
+        self._data['id'] = value
 
-    def __setattr__(self, name, value):
-        if name in self._data:
-            self._data[name] = value
-            return
+    def full_update_params(self, conn_method_name, params):
+        # We'll check for custom methods to do addition, specific work.
+        custom_method_name = 'update_params_{0}'.format(conn_method_name)
+        custom_method = getattr(self, custom_method_name, None)
 
-        super(Resource, self).__setattr__(name, value)
+        if custom_method:
+            # Let the specific method further process the data.
+            params = custom_method(params)
 
-    def __delattr__(self, name):
-        if name in self._data:
-            del self._data[name]
-            return
+        # Now that all the method-specific data is there, apply any further
+        # service-wide changes here.
+        params = self.update_params(conn_method_name, params)
+        return params
 
-        super(Resource, self).__delattr__(name)
+    def update_params(self, conn_method_name, params):
+        # FIXME: Update this to incorporate identifier info.
+        return params
+
+    def full_post_process(self, conn_method_name, result):
+        result = self.post_process(conn_method_name, result)
+
+        # We'll check for custom methods to do addition, specific work.
+        custom_method_name = 'post_process_{0}'.format(conn_method_name)
+        custom_method = getattr(self, custom_method_name, None)
+
+        if custom_method:
+            # Let the specific method further process the data.
+            result = custom_method(result)
+
+        return result
+
+    def post_process(self, conn_method_name, result):
+        # Mostly a hook for post-processing as needed.
+        return result
 
 
 class ResourceFactory(object):
@@ -102,19 +124,14 @@ class ResourceFactory(object):
 
     Typically used as a foundation to elaborate on.
     """
-    default_data_dirs = [
-        DEFAULT_RESOURCE_JSON_DIR,
-    ]
     loader_class = ResourceJSONLoader
 
-    def __init__(self, session=None, connection=None, data_dirs=None,
-                 base_resource_class=Resource, loader=None,
+    def __init__(self, session=None, loader=None,
+                 base_resource_class=Resource,
                  details_class=ResourceDetails):
         self.session = session
-        self.connection = connection
-        self.data_dirs = data_dirs
-        self.base_resource_class = base_resource_class
         self.loader = loader
+        self.base_resource_class = base_resource_class
         self.details_class = details_class
 
         if self.session is None:
@@ -122,16 +139,11 @@ class ResourceFactory(object):
             import boto3
             self.session = boto3.session
 
-        if self.data_dirs is None:
-            self.data_dirs = self.default_data_dirs
+        if self.loader is None:
+            import boto3.core.loader
+            self.loader = boto3.core.loader.default_loader
 
     def construct_for(self, service_name, resource_name):
-        loader = self.loader
-
-        if loader is None:
-            loader = self.loader_class(self.data_dirs)
-
-        # FIXME: Resume here. We need to take the ``Resource`` name into account!
         details = self.details_class(
             self.session,
             service_name,
@@ -144,7 +156,7 @@ class ResourceFactory(object):
         }
 
         # Determine what we should call it.
-        klass_name = self._build_class_name(service_name)
+        klass_name = self._build_class_name(resource_name)
 
         # Construct what the class ought to have on it.
         attrs.update(self._build_methods(details))
@@ -152,19 +164,49 @@ class ResourceFactory(object):
         # Create the class.
         return type(
             klass_name,
-            (self.base_connection,),
+            (self.base_resource_class,),
             attrs
         )
 
-    def _build_class_name(self, service_name):
-        return '{0}Resource'.format(service_name.capitalize())
+    def _build_class_name(self, resource_name):
+        return '{0}Resource'.format(resource_name)
 
     def _build_methods(self, details):
         attrs = {}
+        ops = details.resource_data.get('operations', {}).items()
 
-        for method_name, op_data in details.service_data.items():
-            # First we make expand then we defense it.
-            # Construct a brand-new method & assign it on the class.
-            attrs[method_name] = self._create_operation_method(method_name, op_data)
+        for method_name, op_data in ops:
+            attrs[method_name] = self._create_operation_method(
+                method_name,
+                op_data
+            )
 
         return attrs
+
+    def _create_operation_method(factory_self, method_name, op_data):
+        # Determine the correct name for the method.
+        # This is because the method names will be standardized across
+        # resources, so we'll have to lean on the ``api_name`` to figure out
+        # what the correct underlying method name on the ``Connection`` should
+        # be.
+        # Map -> map -> unmap -> remap -> map :/
+        conn_method_name = to_snake_case(op_data['api_name'])
+
+        if not six.PY3:
+            method_name = str(method_name)
+
+        def _new_method(self, **kwargs):
+            params = self.full_update_params(method_name, kwargs)
+            method = getattr(self._connection, conn_method_name, None)
+
+            if not method:
+                msg = "Introspected method named '{0}' not available on " + \
+                      "the connection."
+                raise NoSuchMethod(msg.format(conn_method_name))
+
+            result = method(**params)
+            return self.full_post_process(method_name, result)
+
+        _new_method.__name__ = method_name
+        _new_method.__doc__ = op_data.get('docs', '')
+        return _new_method
