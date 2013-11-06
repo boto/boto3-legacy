@@ -54,14 +54,32 @@ class ResourceDetails(object):
         self._api_versions = self._loaded_data.get('api_versions', '')
         return self._api_versions
 
+    @property
+    def identifier_var_name(self):
+        # FIXME: This is a bug waiting to happen. However, we need more
+        #        information as to whether multiple identifiers are worth
+        #        having or not.
+        return self.resource_data['identifiers'][0]['var_name']
+
+    @property
+    def identifier_api_name(self):
+        # FIXME: This is a bug waiting to happen. However, we need more
+        #        information as to whether multiple identifiers are worth
+        #        having or not.
+        return self.resource_data['identifiers'][0]['api_name']
+
 
 class Resource(object):
     def __init__(self, connection=None, **kwargs):
+        self._identifier = None
         self._data = {}
         self._connection = connection
 
         for key, value in kwargs.items():
-            self._data[key] = value
+            if key == 'id':
+                self.set_identifier(value)
+            else:
+                self._data[key] = value
 
         if self._connection is None:
             self._connection = self._details.session.connect_to(
@@ -76,10 +94,10 @@ class Resource(object):
         )
 
     def get_identifier(self):
-        return self._data['id']
+        return self._identifier
 
     def set_identifier(self, value):
-        self._data['id'] = value
+        self._identifier = value
 
     def full_update_params(self, conn_method_name, params):
         # We'll check for custom methods to do addition, specific work.
@@ -96,7 +114,9 @@ class Resource(object):
         return params
 
     def update_params(self, conn_method_name, params):
-        # FIXME: Update this to incorporate identifier info.
+        # By default, this just sets the identifier info.
+        # We use ``var_name`` instead of ``api_name``. Because botocore.
+        params[self._details.identifier_var_name] = self.get_identifier()
         return params
 
     def full_post_process(self, conn_method_name, result):
@@ -148,7 +168,7 @@ class ResourceFactory(object):
             self.session,
             service_name,
             resource_name,
-            self.loader
+            loader=self.loader
         )
 
         attrs = {

@@ -269,7 +269,24 @@ class ResourceTestCase(unittest.TestCase):
         self.session = Session(FakeSession(TestCoreService()))
         self.fake_details = ResourceDetails(self.session, 'test', 'Pipe')
         self.fake_details._loaded_data = {
-            'stuff': 'goes here',
+            'api_versions': ['something'],
+            'resources': {
+                'Pipe': {
+                    'identifiers': [
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
+                    'operations': {
+                        'delete': {
+                            'api_name': 'DeletePipe',
+                            'docs': '',
+                            'params': {},
+                        }
+                    }
+                }
+            }
         }
         self.fake_conn = FakeConn()
         self.resource = PipeResource(
@@ -371,6 +388,7 @@ class ResourceFactoryTestCase(unittest.TestCase):
         )
 
         # Assign it & call it.
+        StubbyResource._details = self.rd
         StubbyResource.delete = op_method
         sr = StubbyResource(connection=FakeConn())
         self.assertEqual(sr.delete(), {
