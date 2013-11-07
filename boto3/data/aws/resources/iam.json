@@ -1,0 +1,1146 @@
+{
+    "api_versions": [
+        "2010-05-08"
+    ],
+    "collections": {
+        "AccessKeyCollection": {
+            "resource": "AccessKey",
+            "operations": {
+                "create": {
+                    "api_name": "CreateAccessKey",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListAccessKeys",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "AccountAliasCollection": {
+            "resource": "AccountAlias",
+            "operations": {
+                "create": {
+                    "api_name": "CreateAccountAlias",
+                    "docs": null,
+                    "params": {
+                        "account_alias": {
+                            "api_name": "AccountAlias",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListAccountAliases",
+                    "docs": null,
+                    "params": {
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "GroupCollection": {
+            "resource": "Group",
+            "operations": {
+                "create": {
+                    "api_name": "CreateGroup",
+                    "docs": null,
+                    "params": {
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        },
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetGroup",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListGroups",
+                    "docs": null,
+                    "params": {
+                        "path_prefix": {
+                            "api_name": "PathPrefix",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "all_by_user": {
+                    "api_name": "ListGroupsForUser",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "InstanceProfileCollection": {
+            "resource": "InstanceProfile",
+            "operations": {
+                "create": {
+                    "api_name": "CreateInstanceProfile",
+                    "docs": null,
+                    "params": {
+                        "instance_profile_name": {
+                            "api_name": "InstanceProfileName",
+                            "type": "string"
+                        },
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetInstanceProfile",
+                    "docs": null,
+                    "params": {
+                        "instance_profile_name": {
+                            "api_name": "InstanceProfileName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListInstanceProfiles",
+                    "docs": null,
+                    "params": {
+                        "path_prefix": {
+                            "api_name": "PathPrefix",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "all_by_role": {
+                    "api_name": "ListInstanceProfilesForRole",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "LoginProfileCollection": {
+            "resource": "LoginProfile",
+            "operations": {
+                "create": {
+                    "api_name": "CreateLoginProfile",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "password": {
+                            "api_name": "Password",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetLoginProfile",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "RoleCollection": {
+            "resource": "Role",
+            "operations": {
+                "create": {
+                    "api_name": "CreateRole",
+                    "docs": null,
+                    "params": {
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        },
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "assume_role_policydocument": {
+                            "api_name": "AssumeRolePolicyDocument",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetRole",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListRoles",
+                    "docs": null,
+                    "params": {
+                        "path_prefix": {
+                            "api_name": "PathPrefix",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "UserCollection": {
+            "resource": "User",
+            "operations": {
+                "change_password": {
+                    "api_name": "ChangePassword",
+                    "docs": "FIXME: This is hanging off the wrong Collection",
+                    "params": {
+                        "old_password": {
+                            "api_name": "OldPassword",
+                            "type": "string"
+                        },
+                        "new_password": {
+                            "api_name": "NewPassword",
+                            "type": "string"
+                        }
+                    }
+                },
+                "create": {
+                    "api_name": "CreateUser",
+                    "docs": null,
+                    "params": {
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        },
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_account_password_policy": {
+                    "api_name": "DeleteAccountPasswordPolicy",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {}
+                },
+                "delete_server_certificate": {
+                    "api_name": "DeleteServerCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "server_certificate_name": {
+                            "api_name": "ServerCertificateName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_signing_certificate": {
+                    "api_name": "DeleteSigningCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "certificate_id": {
+                            "api_name": "CertificateId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get_account_password_policy": {
+                    "api_name": "GetAccountPasswordPolicy",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {}
+                },
+                "get_account_summary": {
+                    "api_name": "GetAccountSummary",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {}
+                },
+                "get_server_certificate": {
+                    "api_name": "GetServerCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "server_certificate_name": {
+                            "api_name": "ServerCertificateName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetUser",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "list_server_certificates": {
+                    "api_name": "ListServerCertificates",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "path_prefix": {
+                            "api_name": "PathPrefix",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "list_signing_certificates": {
+                    "api_name": "ListSigningCertificates",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListUsers",
+                    "docs": null,
+                    "params": {
+                        "path_prefix": {
+                            "api_name": "PathPrefix",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "update_account_password_policy": {
+                    "api_name": "UpdateAccountPasswordPolicy",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "minimum_password_length": {
+                            "api_name": "MinimumPasswordLength",
+                            "type": "integer"
+                        },
+                        "require_symbols": {
+                            "api_name": "RequireSymbols",
+                            "type": "boolean"
+                        },
+                        "require_numbers": {
+                            "api_name": "RequireNumbers",
+                            "type": "boolean"
+                        },
+                        "require_uppercase_characters": {
+                            "api_name": "RequireUppercaseCharacters",
+                            "type": "boolean"
+                        },
+                        "require_lowercase_characters": {
+                            "api_name": "RequireLowercaseCharacters",
+                            "type": "boolean"
+                        },
+                        "allow_users_tochangepassword": {
+                            "api_name": "AllowUsersToChangePassword",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "update_server_certificate": {
+                    "api_name": "UpdateServerCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "server_certificate_name": {
+                            "api_name": "ServerCertificateName",
+                            "type": "string"
+                        },
+                        "new_path": {
+                            "api_name": "NewPath",
+                            "type": "string"
+                        },
+                        "new_server_certificatename": {
+                            "api_name": "NewServerCertificateName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update_signing_certificate": {
+                    "api_name": "UpdateSigningCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "certificate_id": {
+                            "api_name": "CertificateId",
+                            "type": "string"
+                        },
+                        "status": {
+                            "api_name": "Status",
+                            "type": "string"
+                        }
+                    }
+                },
+                "upload_server_certificate": {
+                    "api_name": "UploadServerCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        },
+                        "server_certificate_name": {
+                            "api_name": "ServerCertificateName",
+                            "type": "string"
+                        },
+                        "certificate_body": {
+                            "api_name": "CertificateBody",
+                            "type": "string"
+                        },
+                        "private_key": {
+                            "api_name": "PrivateKey",
+                            "type": "string"
+                        },
+                        "certificate_chain": {
+                            "api_name": "CertificateChain",
+                            "type": "string"
+                        }
+                    }
+                },
+                "upload_signing_certificate": {
+                    "api_name": "UploadSigningCertificate",
+                    "docs": "FIXME: This is hanging off the wrong Collection!",
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "certificate_body": {
+                            "api_name": "CertificateBody",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "VirtualMFADeviceCollection": {
+            "resource": "VirtualMFADevice",
+            "operations": {
+                "create": {
+                    "api_name": "CreateVirtualMFADevice",
+                    "docs": null,
+                    "params": {
+                        "path": {
+                            "api_name": "Path",
+                            "type": "string"
+                        },
+                        "virtual_mfa_devicename": {
+                            "api_name": "VirtualMFADeviceName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListVirtualMFADevices",
+                    "docs": null,
+                    "params": {
+                        "assignment_status": {
+                            "api_name": "AssignmentStatus",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "AccessKey": {
+            "shape_name": "AccessKey",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteAccessKey",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "access_key_id": {
+                            "api_name": "AccessKeyId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateAccessKey",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "access_key_id": {
+                            "api_name": "AccessKeyId",
+                            "type": "string"
+                        },
+                        "status": {
+                            "api_name": "Status",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "AccountAlias": {
+            "shape_name": "AccountAlias",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteAccountAlias",
+                    "docs": null,
+                    "params": {
+                        "account_alias": {
+                            "api_name": "AccountAlias",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Group": {
+            "shape_name": "Group",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "add_user": {
+                    "api_name": "AddUserToGroup",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete": {
+                    "api_name": "DeleteGroup",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_policy": {
+                    "api_name": "DeleteGroupPolicy",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get_policy": {
+                    "api_name": "GetGroupPolicy",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "list_policies": {
+                    "api_name": "ListGroupPolicies",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "put_policy": {
+                    "api_name": "PutGroupPolicy",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        },
+                        "policy_document": {
+                            "api_name": "PolicyDocument",
+                            "type": "string"
+                        }
+                    }
+                },
+                "remove_user": {
+                    "api_name": "RemoveUserFromGroup",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateGroup",
+                    "docs": null,
+                    "params": {
+                        "group_name": {
+                            "api_name": "GroupName",
+                            "type": "string"
+                        },
+                        "new_path": {
+                            "api_name": "NewPath",
+                            "type": "string"
+                        },
+                        "new_group_name": {
+                            "api_name": "NewGroupName",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "InstanceProfile": {
+            "shape_name": "InstanceProfile",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "add_role": {
+                    "api_name": "AddRoleToInstanceProfile",
+                    "docs": null,
+                    "params": {
+                        "instance_profile_name": {
+                            "api_name": "InstanceProfileName",
+                            "type": "string"
+                        },
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete": {
+                    "api_name": "DeleteInstanceProfile",
+                    "docs": null,
+                    "params": {
+                        "instance_profile_name": {
+                            "api_name": "InstanceProfileName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "remove_role": {
+                    "api_name": "RemoveRoleFromInstanceProfile",
+                    "docs": null,
+                    "params": {
+                        "instance_profile_name": {
+                            "api_name": "InstanceProfileName",
+                            "type": "string"
+                        },
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "LoginProfile": {
+            "shape_name": "LoginProfile",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteLoginProfile",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateLoginProfile",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "password": {
+                            "api_name": "Password",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Role": {
+            "shape_name": "Role",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteRole",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_policy": {
+                    "api_name": "DeleteRolePolicy",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get_policy": {
+                    "api_name": "GetRolePolicy",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "list_role_policies": {
+                    "api_name": "ListRolePolicies",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "put_policy": {
+                    "api_name": "PutRolePolicy",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        },
+                        "policy_document": {
+                            "api_name": "PolicyDocument",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update_assume_role_policy": {
+                    "api_name": "UpdateAssumeRolePolicy",
+                    "docs": null,
+                    "params": {
+                        "role_name": {
+                            "api_name": "RoleName",
+                            "type": "string"
+                        },
+                        "policy_document": {
+                            "api_name": "PolicyDocument",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "User": {
+            "shape_name": "User",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteUser",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_policy": {
+                    "api_name": "DeleteUserPolicy",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get_policy": {
+                    "api_name": "GetUserPolicy",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "list_policies": {
+                    "api_name": "ListUserPolicies",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "max_items": {
+                            "api_name": "MaxItems",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "put_policy": {
+                    "api_name": "PutUserPolicy",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "policy_name": {
+                            "api_name": "PolicyName",
+                            "type": "string"
+                        },
+                        "policy_document": {
+                            "api_name": "PolicyDocument",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateUser",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "new_path": {
+                            "api_name": "NewPath",
+                            "type": "string"
+                        },
+                        "new_user_name": {
+                            "api_name": "NewUserName",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "VirtualMFADevice": {
+            "shape_name": "VirtualMFADevice",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "deactivate": {
+                    "api_name": "DeactivateMFADevice",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "serial_number": {
+                            "api_name": "SerialNumber",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete": {
+                    "api_name": "DeleteVirtualMFADevice",
+                    "docs": null,
+                    "params": {
+                        "serial_number": {
+                            "api_name": "SerialNumber",
+                            "type": "string"
+                        }
+                    }
+                },
+                "enable": {
+                    "api_name": "EnableMFADevice",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "serial_number": {
+                            "api_name": "SerialNumber",
+                            "type": "string"
+                        },
+                        "authentication_code_1": {
+                            "api_name": "AuthenticationCode1",
+                            "type": "string"
+                        },
+                        "authentication_code_2": {
+                            "api_name": "AuthenticationCode2",
+                            "type": "string"
+                        }
+                    }
+                },
+                "resync": {
+                    "api_name": "ResyncMFADevice",
+                    "docs": null,
+                    "params": {
+                        "user_name": {
+                            "api_name": "UserName",
+                            "type": "string"
+                        },
+                        "serial_number": {
+                            "api_name": "SerialNumber",
+                            "type": "string"
+                        },
+                        "authentication_code_1": {
+                            "api_name": "AuthenticationCode1",
+                            "type": "string"
+                        },
+                        "authentication_code_2": {
+                            "api_name": "AuthenticationCode2",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        }
+    }
+}
