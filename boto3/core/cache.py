@@ -14,6 +14,17 @@ class ServiceCache(object):
     def __init__(self):
         self.services = {}
 
+    def __str__(self):
+        return 'ServiceCache: {0}'.format(
+            ', '.join(sorted(self.services.keys()))
+        )
+
+    def __len__(self):
+        return len(self.services)
+
+    def __contains__(self, service_name):
+        return service_name in self.services
+
     def get_connection(self, service_name):
         service = self.services.get(service_name, {})
         connection_class = service.get('connection', None)
