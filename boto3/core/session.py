@@ -57,7 +57,7 @@ class Session(object):
 
     def get_resource(self, service_name, resource_name):
         try:
-            return self.cache.get_resource(service_name)
+            return self.cache.get_resource(service_name, resource_name)
         except NotCached:
             pass
 
@@ -66,12 +66,12 @@ class Session(object):
             service_name,
             resource_name
         )
-        self.cache.set_resource(service_name, new_class)
+        self.cache.set_resource(service_name, resource_name, new_class)
         return new_class
 
     def get_collection(self, service_name, collection_name):
         try:
-            return self.cache.get_connection(service_name)
+            return self.cache.get_collection(service_name, collection_name)
         except NotCached:
             pass
 
@@ -80,7 +80,7 @@ class Session(object):
             service_name,
             collection_name
         )
-        self.cache.set_collection(service_name, new_class)
+        self.cache.set_collection(service_name, collection_name, new_class)
         return new_class
 
     def connect_to(self, service_name, **kwargs):

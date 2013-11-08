@@ -21,6 +21,37 @@ class ServiceCacheTestCase(unittest.TestCase):
     def test_init(self):
         self.assertEqual(self.cache.services, {})
 
+    def test_str(self):
+        self.assertEqual(str(self.cache), 'ServiceCache: ')
+
+        # Now register some stuff.
+        self.cache.set_connection('sqs', TestConnection)
+        self.cache.set_connection('sns', AnotherTestConnection)
+
+        self.assertEqual(str(self.cache), 'ServiceCache: sns, sqs')
+
+    def test_len(self):
+        self.assertEqual(len(self.cache), 0)
+
+        # Now register some stuff.
+        self.cache.set_connection('sqs', TestConnection)
+        self.cache.set_connection('sns', AnotherTestConnection)
+
+        self.assertEqual(len(self.cache), 2)
+
+        # Registering more under a service doesn't change the count.
+        self.cache.set_resource('sqs', 'Test', TestResource)
+        self.assertEqual(len(self.cache), 2)
+
+    def test_contains(self):
+        self.assertFalse('sqs' in self.cache)
+
+        # Now register some stuff.
+        self.cache.set_connection('sqs', TestConnection)
+        self.cache.set_connection('sns', AnotherTestConnection)
+
+        self.assertTrue('sqs' in self.cache)
+
     def test_get_connection(self):
         self.cache.services = {
             'sqs': {
