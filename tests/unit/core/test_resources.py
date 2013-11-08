@@ -287,11 +287,15 @@ class ResourceTestCase(unittest.TestCase):
             }
         }
         self.fake_conn = FakeConn()
+        PipeResource._details = self.fake_details
         self.resource = PipeResource(
             connection=self.fake_conn,
             id='1872baf45'
         )
-        self.resource._details = self.fake_details
+
+    def tearDown(self):
+        del PipeResource._details
+        super(ResourceTestCase, self).tearDown()
 
     def test_full_update_params(self):
         params = {

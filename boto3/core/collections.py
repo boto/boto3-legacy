@@ -109,7 +109,17 @@ class Collection(object):
 
     def post_process(self, conn_method_name, result):
         # Mostly a hook for post-processing as needed.
-        return result
+        snaked = {}
+
+        # TODO: This is shallow (only the top-level of keys).
+        #       We may need a deeper conversion.
+        for key, value in result.items():
+            snaked[to_snake_case(key)] = value
+
+        return snaked
+
+    def post_process_create(self, result):
+        return self.build_resource(result)
 
     def build_resource(self, data):
         res_class = self._details.session.get_resource(

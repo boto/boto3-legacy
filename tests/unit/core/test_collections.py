@@ -252,6 +252,12 @@ class FakeConn(object):
         }
 
 
+class FakePipeResource(object):
+    def __init__(self, **kwargs):
+        # Yuck yuck yuck. Fake fake fake.
+        self.__dict__.update(kwargs)
+
+
 class PipeCollection(Collection):
     def update_params(self, conn_method_name, params):
         params['global'] = True
@@ -283,7 +289,7 @@ class CollectionTestCase(unittest.TestCase):
             'api_versions': ['something'],
             'collections': {
                 'PipeCollection': {
-                    'resource': 'Pipe',
+                    'resource': 'Pipeline',
                     'identifier': {
                         'var_name': 'id',
                         'api_name': 'Id',
@@ -328,14 +334,9 @@ class CollectionTestCase(unittest.TestCase):
         self.assertEqual(self.collection.created, True)
 
     def build_resource(self):
-        class Pipe(object):
-            def __init__(self, **kwargs):
-                # Yuck yuck yuck. Fake fake fake.
-                self.__dict__.update(kwargs)
-
         # Reach in to fake some data.
         # We'll test proper behavior with the integration tests.
-        self.session.cache.set_resource('test', 'Pipe', Pipe)
+        self.session.cache.set_resource('test', 'Pipeline', Pipe)
 
         res_class = self.collection.build_resource({
             'test': 'data'
@@ -358,7 +359,13 @@ class CollectionFactoryTestCase(unittest.TestCase):
             'PipelineCollection',
             loader=self.test_loader
         )
-        self.cf = CollectionFactory(session=self.session, loader=self.test_loader)
+        self.cf = CollectionFactory(
+            session=self.session,
+            loader=self.test_loader
+        )
+
+        # Fake in the class.
+        self.session.cache.set_resource('test', 'Pipeline', FakePipeResource)
 
     def test_init(self):
         self.assertEqual(self.cf.session, self.session)
@@ -418,13 +425,11 @@ class CollectionFactoryTestCase(unittest.TestCase):
 
         # Assign it & call it.
         StubbyCollection._details = self.cd
-        StubbyCollection.delete = op_method
+        StubbyCollection.create = op_method
         sr = StubbyCollection(connection=FakeConn())
-        self.assertEqual(sr.delete(), {
-            'Id': '1872baf45',
-            'RequestId': '1234-1234-1234-1234',
-            'Title': 'A pipe'
-        })
+        fake_pipe = sr.create()
+        self.assertEqual(fake_pipe.id, '1872baf45')
+        self.assertEqual(fake_pipe.title, 'A pipe')
 
     def test_construct_for(self):
         col_class = self.cf.construct_for('test', 'PipelineCollection')
