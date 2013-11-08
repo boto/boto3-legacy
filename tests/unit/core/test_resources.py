@@ -203,7 +203,7 @@ class ResourceDetailsTestCase(unittest.TestCase):
 
         data = self.rd.resource_data
         self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('identifiers' in data)
+        self.assertTrue('identifier' in data)
         self.assertTrue('operations' in data)
         self.assertTrue('api_versions' in self.rd._loaded_data)
 
@@ -272,12 +272,10 @@ class ResourceTestCase(unittest.TestCase):
             'api_versions': ['something'],
             'resources': {
                 'Pipe': {
-                    'identifiers': [
-                        {
-                            'var_name': 'id',
-                            'api_name': 'Id',
-                        },
-                    ],
+                    'identifier': {
+                        'var_name': 'id',
+                        'api_name': 'Id',
+                    },
                     'operations': {
                         'delete': {
                             'api_name': 'DeletePipe',

@@ -296,12 +296,10 @@
     "resources": {
         "Bucket": {
             "shape_name": "Bucket",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteBucket",
@@ -688,12 +686,10 @@
         },
         "S3Object": {
             "shape_name": "S3Object",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "abort_multipart_upload": {
                     "api_name": "AbortMultipartUpload",

@@ -56,17 +56,11 @@ class ResourceDetails(object):
 
     @property
     def identifier_var_name(self):
-        # FIXME: This is a bug waiting to happen. However, we need more
-        #        information as to whether multiple identifiers are worth
-        #        having or not.
-        return self.resource_data['identifiers'][0]['var_name']
+        return self.resource_data['identifier']['var_name']
 
     @property
     def identifier_api_name(self):
-        # FIXME: This is a bug waiting to happen. However, we need more
-        #        information as to whether multiple identifiers are worth
-        #        having or not.
-        return self.resource_data['identifiers'][0]['api_name']
+        return self.resource_data['identifier']['api_name']
 
 
 class Resource(object):
@@ -76,7 +70,7 @@ class Resource(object):
         self._connection = connection
 
         for key, value in kwargs.items():
-            if key == 'id':
+            if key == self._details.identifier_var_name:
                 self.set_identifier(value)
             else:
                 self._data[key] = value

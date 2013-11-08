@@ -125,12 +125,10 @@
     "resources": {
         "Queue": {
             "shape_name": "Queue",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "add_permission": {
                     "api_name": "AddPermission",
@@ -209,12 +207,10 @@
         },
         "Message": {
             "shape_name": "Message",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "change_visibility": {
                     "api_name": "ChangeMessageVisibility",

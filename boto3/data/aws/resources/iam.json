@@ -576,12 +576,10 @@
     "resources": {
         "AccessKey": {
             "shape_name": "AccessKey",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteAccessKey",
@@ -620,12 +618,10 @@
         },
         "AccountAlias": {
             "shape_name": "AccountAlias",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteAccountAlias",
@@ -642,12 +638,10 @@
         },
         "Group": {
             "shape_name": "Group",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "add_user": {
                     "api_name": "AddUserToGroup",
@@ -774,12 +768,10 @@
         },
         "InstanceProfile": {
             "shape_name": "InstanceProfile",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "add_role": {
                     "api_name": "AddRoleToInstanceProfile",
@@ -824,12 +816,10 @@
         },
         "LoginProfile": {
             "shape_name": "LoginProfile",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteLoginProfile",
@@ -860,12 +850,10 @@
         },
         "Role": {
             "shape_name": "Role",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteRole",
@@ -960,12 +948,10 @@
         },
         "User": {
             "shape_name": "User",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteUser",
@@ -1064,12 +1050,10 @@
         },
         "VirtualMFADevice": {
             "shape_name": "VirtualMFADevice",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "deactivate": {
                     "api_name": "DeactivateMFADevice",

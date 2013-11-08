@@ -193,12 +193,10 @@
     "resources": {
         "PlatformApplication": {
             "shape_name": "PlatformApplication",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeletePlatformApplication",
@@ -229,12 +227,10 @@
         },
         "PlatformEndpoint": {
             "shape_name": "PlatformEndpoint",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "delete": {
                     "api_name": "DeleteEndpoint",
@@ -265,12 +261,10 @@
         },
         "Topic": {
             "shape_name": "Topic",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "add_permission": {
                     "api_name": "AddPermission",
@@ -367,12 +361,10 @@
         },
         "Subscription": {
             "shape_name": "Subscription",
-            "identifiers": [
-                {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
-                }
-            ],
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
             "operations": {
                 "confirm_subscription": {
                     "api_name": "ConfirmSubscription",

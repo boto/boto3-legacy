@@ -203,7 +203,7 @@ class CollectionDetailsTestCase(unittest.TestCase):
 
         data = self.cd.collection_data
         self.assertEqual(len(data.keys()), 2)
-        self.assertFalse('identifiers' in data)
+        self.assertFalse('identifier' in data)
         self.assertTrue('operations' in data)
         self.assertTrue('api_versions' in self.cd._loaded_data)
 
@@ -284,12 +284,10 @@ class CollectionTestCase(unittest.TestCase):
             'collections': {
                 'PipeCollection': {
                     'resource': 'Pipe',
-                    'identifiers': [
-                        {
-                            'var_name': 'id',
-                            'api_name': 'Id',
-                        },
-                    ],
+                    'identifier': {
+                        'var_name': 'id',
+                        'api_name': 'Id',
+                    },
                     'operations': {
                         'create': {
                             'api_name': 'CreatePipe',
