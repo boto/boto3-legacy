@@ -218,6 +218,13 @@ class CollectionDetailsTestCase(unittest.TestCase):
             '2012-09-25',
         ])
 
+    def test_resource_uncached(self):
+        self.assertEqual(self.cd._loaded_data, None)
+
+        res = self.cd.resource
+        self.assertEqual(res, 'Pipeline')
+        self.assertTrue('api_versions' in self.cd._loaded_data)
+
     def test_cached(self):
         # Fake in data.
         self.cd._loaded_data = {
@@ -267,11 +274,16 @@ class CollectionTestCase(unittest.TestCase):
     def setUp(self):
         super(CollectionTestCase, self).setUp()
         self.session = Session(FakeSession(TestCoreService()))
-        self.fake_details = CollectionDetails(self.session, 'test', 'Pipe')
+        self.fake_details = CollectionDetails(
+            self.session,
+            'test',
+            'PipeCollection'
+        )
         self.fake_details._loaded_data = {
             'api_versions': ['something'],
             'collections': {
                 'PipeCollection': {
+                    'resource': 'Pipe',
                     'identifiers': [
                         {
                             'var_name': 'id',
@@ -316,6 +328,22 @@ class CollectionTestCase(unittest.TestCase):
             'Title': 'A pipe'
         })
         self.assertEqual(self.collection.created, True)
+
+    def build_resource(self):
+        class Pipe(object):
+            def __init__(self, **kwargs):
+                # Yuck yuck yuck. Fake fake fake.
+                self.__dict__.update(kwargs)
+
+        # Reach in to fake some data.
+        # We'll test proper behavior with the integration tests.
+        self.session.cache.set_resource('test', 'Pipe', Pipe)
+
+        res_class = self.collection.build_resource({
+            'test': 'data'
+        })
+        self.assertTrue(isinstance(res_class, Pipe))
+        self.assertEqual(res_class.test, 'data')
 
 
 class CollectionFactoryTestCase(unittest.TestCase):

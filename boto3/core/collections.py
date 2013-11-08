@@ -54,6 +54,11 @@ class CollectionDetails(object):
         self._api_versions = self._loaded_data.get('api_versions', '')
         return self._api_versions
 
+    @property
+    @requires_loaded
+    def resource(self):
+        return self.collection_data.get('resource', None)
+
 
 class Collection(object):
     def __init__(self, connection=None, **kwargs):
@@ -105,6 +110,13 @@ class Collection(object):
     def post_process(self, conn_method_name, result):
         # Mostly a hook for post-processing as needed.
         return result
+
+    def build_resource(self, data):
+        res_class = self._details.session.get_resource(
+            self._details.service_name,
+            self._details.resource
+        )
+        return res_class(**data)
 
 
 class CollectionFactory(object):
