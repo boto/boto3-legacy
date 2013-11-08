@@ -13,6 +13,10 @@ class NoSuchMethod(BotoException):
     pass
 
 
+class NotCached(BotoException):
+    pass
+
+
 class ResourceError(BotoException):
     pass
 
