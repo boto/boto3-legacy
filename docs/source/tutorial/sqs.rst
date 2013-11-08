@@ -40,17 +40,20 @@ Resource API
 
 Sample::
 
-    from boto3.sqs.resources import SQSQueue, SQSMessage
+    from boto3.sqs.resources import QueueCollection, MessageCollection
 
-    queue = SQSQueue.collection.create(name='my_test_queue')
-    msg = SQSMessage(
+    queue = QueueCollection().create(
+        queue_name='my_test_queue'
+    )
+    msg = MessageCollection().create(
+        queue=queue,
         body='This is an example message.'
     )
-    queue.send_message(msg)
 
     read = queue.receive_message()
     print(read.body)
 
+    read.delete()
     queue.delete()
 
 
@@ -61,9 +64,8 @@ Sample::
 
     from boto3 import session
 
-    SQSConnection = session.get_service('sqs')
+    conn = session.connect_to('sqs', region_name='us-west-2')
 
-    conn = SQSConnection(region_name='us-west-2')
     q_details = conn.create_queue(queue_name='my_test_queue')
 
     queue_url = q_details['QueueUrl']

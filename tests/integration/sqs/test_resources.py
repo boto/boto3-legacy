@@ -9,8 +9,7 @@ from tests import unittest
 class SQSQueueTestCase(unittest.TestCase):
     def setUp(self):
         super(SQSQueueTestCase, self).setUp()
-        SQSConnection = session.get_service('sqs')
-        self.conn = SQSConnection(region_name='us-west-2')
+        self.conn = session.connect_to('sqs', region_name='us-west-2')
 
     def test_integration(self):
         # Do we default to the main session (dangerous)?
