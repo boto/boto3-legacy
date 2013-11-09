@@ -65,15 +65,11 @@ class ResourceDetails(object):
 
 class Resource(object):
     def __init__(self, connection=None, **kwargs):
-        self._identifier = None
         self._data = {}
         self._connection = connection
 
         for key, value in kwargs.items():
-            if key == self._details.identifier_var_name:
-                self.set_identifier(value)
-            else:
-                self._data[key] = value
+            self._data[key] = value
 
         if self._connection is None:
             self._connection = self._details.session.connect_to(
@@ -87,11 +83,17 @@ class Resource(object):
             self._connection.region_name
         )
 
+    def __getattr__(self, name):
+        if name in self._data:
+            return self._data[name]
+
+        raise AttributeError("No such attribute '{0}'".format(name))
+
     def get_identifier(self):
-        return self._identifier
+        return self._data.get(self._details.identifier_var_name)
 
     def set_identifier(self, value):
-        self._identifier = value
+        self._data[self._details.identifier_var_name] = value
 
     def full_update_params(self, conn_method_name, params):
         # We'll check for custom methods to do addition, specific work.

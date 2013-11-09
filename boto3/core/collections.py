@@ -126,7 +126,7 @@ class Collection(object):
             self._details.service_name,
             self._details.resource
         )
-        return res_class(**data)
+        return res_class(connection=self._connection, **data)
 
 
 class CollectionFactory(object):

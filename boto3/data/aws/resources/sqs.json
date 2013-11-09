@@ -91,6 +91,24 @@
                         }
                     }
                 },
+                "create": {
+                    "api_name": "SendMessage",
+                    "docs": null,
+                    "params": {
+                        "queue_url": {
+                            "api_name": "QueueUrl",
+                            "type": "string"
+                        },
+                        "message_body": {
+                            "api_name": "MessageBody",
+                            "type": "string"
+                        },
+                        "delay_seconds": {
+                            "api_name": "DelaySeconds",
+                            "type": "integer"
+                        }
+                    }
+                },
                 "delete_batch": {
                     "api_name": "DeleteMessageBatch",
                     "docs": null,
@@ -126,8 +144,8 @@
         "Queue": {
             "shape_name": "Queue",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "queue_url",
+                "api_name": "$shape_name.QueueUrl"
             },
             "operations": {
                 "add_permission": {
@@ -241,24 +259,6 @@
                         "receipt_handle": {
                             "api_name": "ReceiptHandle",
                             "type": "string"
-                        }
-                    }
-                },
-                "create": {
-                    "api_name": "SendMessage",
-                    "docs": null,
-                    "params": {
-                        "queue_url": {
-                            "api_name": "QueueUrl",
-                            "type": "string"
-                        },
-                        "message_body": {
-                            "api_name": "MessageBody",
-                            "type": "string"
-                        },
-                        "delay_seconds": {
-                            "api_name": "DelaySeconds",
-                            "type": "integer"
                         }
                     }
                 }
