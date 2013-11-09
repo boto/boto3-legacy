@@ -4,12 +4,12 @@ from boto3.core.introspection import Introspection
 from boto3.utils import six
 
 
-class ServiceDetails(object):
+class ConnectionDetails(object):
     service_name = 'unknown'
     session = None
 
     def __init__(self, service_name, session):
-        super(ServiceDetails, self).__init__()
+        super(ConnectionDetails, self).__init__()
         self.service_name = service_name
         self.session = session
         self._api_version = None
@@ -135,22 +135,22 @@ class Connection(object):
         return self._get_operation_data(method_name).get('params', [])
 
 
-class ServiceFactory(object):
-    def __init__(self, session, base_service=Connection,
-                 details_class=ServiceDetails):
-        super(ServiceFactory, self).__init__()
+class ConnectionFactory(object):
+    def __init__(self, session, base_connection=Connection,
+                 details_class=ConnectionDetails):
+        super(ConnectionFactory, self).__init__()
         self.session = session
-        self.base_service = base_service
-        self.details_class = ServiceDetails
+        self.base_connection = base_connection
+        self.details_class = ConnectionDetails
 
     def __str__(self):
         return self.__class__.__name__
 
     def construct_for(self, service_name):
-        # Construct a new ``ServiceDetails`` (or similar class) for storing
+        # Construct a new ``ConnectionDetails`` (or similar class) for storing
         # the relevant details about the service & its operations.
         details = self.details_class(service_name, self.session)
-        # Make sure the new class gets that ``ServiceDetails`` instance as a
+        # Make sure the new class gets that ``ConnectionDetails`` instance as a
         # ``cls._details`` attribute.
         attrs = {
             '_details': details,
@@ -165,7 +165,7 @@ class ServiceFactory(object):
         # Create the class.
         return type(
             klass_name,
-            (Connection,),
+            (self.base_connection,),
             attrs
         )
 

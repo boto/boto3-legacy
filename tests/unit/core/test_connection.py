@@ -1,4 +1,4 @@
-from boto3.core.service import ServiceDetails, ServiceFactory
+from boto3.core.connection import ConnectionDetails, ConnectionFactory
 from boto3.core.session import Session
 
 from tests import unittest
@@ -46,11 +46,11 @@ class ChangedTestCoreService(TestCoreService):
     operations = TestCoreService.operations[1:2]
 
 
-class ServiceDetailsTestCase(unittest.TestCase):
+class ConnectionDetailsTestCase(unittest.TestCase):
     def setUp(self):
-        super(ServiceDetailsTestCase, self).setUp()
+        super(ConnectionDetailsTestCase, self).setUp()
         self.session = Session(FakeSession(TestCoreService()))
-        self.sd = ServiceDetails(
+        self.sd = ConnectionDetails(
             service_name='test',
             session=self.session
         )
@@ -113,11 +113,11 @@ class ServiceDetailsTestCase(unittest.TestCase):
         ])
 
 
-class ServiceFactoryTestCase(unittest.TestCase):
+class ConnectionFactoryTestCase(unittest.TestCase):
     def setUp(self):
-        super(ServiceFactoryTestCase, self).setUp()
+        super(ConnectionFactoryTestCase, self).setUp()
         self.session = Session(FakeSession(TestCoreService()))
-        self.sf = ServiceFactory(session=self.session)
+        self.sf = ConnectionFactory(session=self.session)
         self.test_service_class = self.sf.construct_for('test')
 
     def test__check_method_params(self):
@@ -219,7 +219,7 @@ class ServiceFactoryTestCase(unittest.TestCase):
         )
 
     def test_late_binding(self):
-        # If the ``ServiceDetails`` data changes, it should be reflected in
+        # If the ``ConnectionDetails`` data changes, it should be reflected in
         # the dynamic methods.
         ts = self.test_service_class()
 

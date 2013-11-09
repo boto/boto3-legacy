@@ -8,7 +8,7 @@ from tests import unittest
 class SQSConnectionTestCase(unittest.TestCase):
     def setUp(self):
         super(SQSConnectionTestCase, self).setUp()
-        self.sqs_class = Session().get_service('sqs')
+        self.sqs_class = Session().get_connection('sqs')
         self.sqs = self.sqs_class()
 
     def test_op_methods(self):

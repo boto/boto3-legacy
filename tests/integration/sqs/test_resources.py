@@ -1,32 +1,63 @@
-from boto3 import session
-from boto3.sqs.resources import SQSQueue
-from boto3.sqs.resources import SQSQueueCollection
-from boto3.sqs.resources import SQSMessage
+import time
+
+import boto3
 
 from tests import unittest
 
 
-class SQSQueueTestCase(unittest.TestCase):
+class SQSIntegrationTestCase(unittest.TestCase):
     def setUp(self):
-        super(SQSQueueTestCase, self).setUp()
-        SQSConnection = session.get_service('sqs')
-        self.conn = SQSConnection(region_name='us-west-2')
+        super(SQSIntegrationTestCase, self).setUp()
+        self.conn = boto3.session.connect_to('sqs', region_name='us-west-2')
 
     def test_integration(self):
-        # Do we default to the main session (dangerous)?
-        #     queue = SQSQueue.collection.create('my_test_queue')
-        # ...or do you have to manually instantiate?
-        queue = SQSQueueCollection(connection=self.conn).create('my_test_queue')
+        QueueCollection = boto3.session.get_collection(
+            'sqs',
+            'QueueCollection'
+        )
+        Queue = boto3.session.get_resource('sqs', 'Queue')
+        MessageCollection = boto3.session.get_collection(
+            'sqs',
+            'MessageCollection'
+        )
+        Message = boto3.session.get_resource('sqs', 'Message')
+
+        queue = QueueCollection(connection=self.conn).create(
+            queue_name='my_test_queue'
+        )
         self.addCleanup(queue.delete)
 
-        self.assertTrue(isinstance(queue, SQSQueue))
-        self.assertEqual(queue.name, 'my_test_queue')
-        self.assertTrue('/my_test_queue' in queue.url)
+        # FIXME: Needs 100% more waiters.
+        time.sleep(5)
 
-        queue.send_message(
+        self.assertTrue(isinstance(queue, Queue))
+        self.assertTrue('/my_test_queue' in queue.queue_url)
+
+        msg = MessageCollection(connection=self.conn).create(
+            # FIXME: This should be passable as an object without having to
+            #        pass specific data.
+            queue_url=queue.queue_url,
             message_body="THIS IS A TRIUMPH"
         )
+        self.assertTrue(isinstance(msg, Message))
+        self.assertEqual(
+            msg.md5_of_message_body,
+            '07366f249e11262705e4964e03873078'
+        )
 
-        msg = queue.receive_message()
-        self.assertTrue(isinstance(msg, SQSMessage))
-        self.assertEqual(msg.body, "THIS IS A TRIUMPH")
+        # FIXME: Needs 100% more waiters.
+        time.sleep(5)
+
+        msgs = queue.receive_message(
+            queue_url=queue.queue_url
+        )
+        # FIXME: For now, this just returns a bag of data. :/
+        #        This test should go away & the below should take its place.
+        self.assertTrue(len(msgs['Messages']) > 0)
+        self.assertEqual(
+            msgs['Messages'][-1]['Body'],
+            "THIS IS A TRIUMPH"
+        )
+
+        # self.assertTrue(isinstance(msgs[0], Message))
+        # self.assertEqual(msgs[0].message_body, "THIS IS A TRIUMPH")

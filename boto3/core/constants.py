@@ -5,7 +5,7 @@ from boto3 import get_version
 
 
 # TODO: Assert if this is egg-safe (or if that matters to us)?
-BOTO3_ROOT = os.path.dirname(__file__)
+BOTO3_ROOT = os.path.dirname(os.path.dirname(__file__))
 
 USER_AGENT = 'Boto3/{0} ({1})'.format(get_version(full=True), sys.platform)
 
@@ -16,6 +16,9 @@ Please make an instance of this class to inspect the docstring.
 
 No underlying connection is yet available.
 """
+
+DEFAULT_DATA_DIR = os.path.join(BOTO3_ROOT, 'data', 'aws')
+DEFAULT_RESOURCE_JSON_DIR = os.path.join(DEFAULT_DATA_DIR, 'resources')
 
 
 class NOTHING_PROVIDED(object):

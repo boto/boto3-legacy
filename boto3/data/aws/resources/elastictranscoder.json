@@ -1,0 +1,338 @@
+{
+    "api_versions": [
+        "2012-09-25"
+    ],
+    "collections": {
+        "PipelineCollection": {
+            "resource": "Pipeline",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePipeline",
+                    "docs": null,
+                    "params": {
+                        "name": {
+                            "api_name": "Name",
+                            "type": "string"
+                        },
+                        "input_bucket": {
+                            "api_name": "InputBucket",
+                            "type": "string"
+                        },
+                        "output_bucket": {
+                            "api_name": "OutputBucket",
+                            "type": "string"
+                        },
+                        "role": {
+                            "api_name": "Role",
+                            "type": "string"
+                        },
+                        "notifications": {
+                            "api_name": "Notifications",
+                            "type": "structure"
+                        },
+                        "content_config": {
+                            "api_name": "ContentConfig",
+                            "type": "structure"
+                        },
+                        "thumbnail_config": {
+                            "api_name": "ThumbnailConfig",
+                            "type": "structure"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListPipelines",
+                    "docs": null,
+                    "params": {}
+                },
+                "get": {
+                    "api_name": "ReadPipeline",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                },
+                "test_role": {
+                    "api_name": "TestRole",
+                    "docs": null,
+                    "params": {
+                        "role": {
+                            "api_name": "Role",
+                            "type": "string"
+                        },
+                        "input_bucket": {
+                            "api_name": "InputBucket",
+                            "type": "string"
+                        },
+                        "output_bucket": {
+                            "api_name": "OutputBucket",
+                            "type": "string"
+                        },
+                        "topics": {
+                            "api_name": "Topics",
+                            "type": "list"
+                        }
+                    }
+                }
+            }
+        },
+        "PresetCollection": {
+            "resource": "Preset",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePreset",
+                    "docs": null,
+                    "params": {
+                        "name": {
+                            "api_name": "Name",
+                            "type": "string"
+                        },
+                        "description": {
+                            "api_name": "Description",
+                            "type": "string"
+                        },
+                        "container": {
+                            "api_name": "Container",
+                            "type": "string"
+                        },
+                        "video": {
+                            "api_name": "Video",
+                            "type": "structure"
+                        },
+                        "audio": {
+                            "api_name": "Audio",
+                            "type": "structure"
+                        },
+                        "thumbnails": {
+                            "api_name": "Thumbnails",
+                            "type": "structure"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListPresets",
+                    "docs": null,
+                    "params": {}
+                },
+                "get": {
+                    "api_name": "ReadPreset",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "JobCollection": {
+            "resource": "Job",
+            "operations": {
+                "create": {
+                    "api_name": "CreateJob",
+                    "docs": null,
+                    "params": {
+                        "pipeline_id": {
+                            "api_name": "PipelineId",
+                            "type": "string"
+                        },
+                        "input": {
+                            "api_name": "Input",
+                            "type": "structure"
+                        },
+                        "output": {
+                            "api_name": "Output",
+                            "type": "structure"
+                        },
+                        "outputs": {
+                            "api_name": "Outputs",
+                            "type": "list"
+                        },
+                        "output_key_prefix": {
+                            "api_name": "OutputKeyPrefix",
+                            "type": "string"
+                        },
+                        "playlists": {
+                            "api_name": "Playlists",
+                            "type": "list"
+                        }
+                    }
+                },
+                "all_by_pipeline": {
+                    "api_name": "ListJobsByPipeline",
+                    "docs": null,
+                    "params": {
+                        "pipeline_id": {
+                            "api_name": "PipelineId",
+                            "type": "string"
+                        },
+                        "ascending": {
+                            "api_name": "Ascending",
+                            "type": "string"
+                        },
+                        "page_token": {
+                            "api_name": "PageToken",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_by_status": {
+                    "api_name": "ListJobsByStatus",
+                    "docs": null,
+                    "params": {
+                        "status": {
+                            "api_name": "Status",
+                            "type": "string"
+                        },
+                        "ascending": {
+                            "api_name": "Ascending",
+                            "type": "string"
+                        },
+                        "page_token": {
+                            "api_name": "PageToken",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "ReadJob",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "Pipeline": {
+            "shape_name": "Pipeline",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeletePipeline",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdatePipeline",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        },
+                        "name": {
+                            "api_name": "Name",
+                            "type": "string"
+                        },
+                        "input_bucket": {
+                            "api_name": "InputBucket",
+                            "type": "string"
+                        },
+                        "role": {
+                            "api_name": "Role",
+                            "type": "string"
+                        },
+                        "notifications": {
+                            "api_name": "Notifications",
+                            "type": "structure"
+                        },
+                        "content_config": {
+                            "api_name": "ContentConfig",
+                            "type": "structure"
+                        },
+                        "thumbnail_config": {
+                            "api_name": "ThumbnailConfig",
+                            "type": "structure"
+                        }
+                    }
+                },
+                "update_notifications": {
+                    "api_name": "UpdatePipelineNotifications",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        },
+                        "notifications": {
+                            "api_name": "Notifications",
+                            "type": "structure"
+                        }
+                    }
+                },
+                "update_status": {
+                    "api_name": "UpdatePipelineStatus",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        },
+                        "status": {
+                            "api_name": "Status",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Preset": {
+            "shape_name": "Preset",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeletePreset",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Job": {
+            "shape_name": "Job",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "cancel": {
+                    "api_name": "CancelJob",
+                    "docs": null,
+                    "params": {
+                        "id": {
+                            "api_name": "Id",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        }
+    }
+}
