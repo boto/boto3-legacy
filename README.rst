@@ -8,8 +8,7 @@ This is not a port of boto_, but a ground-up rewrite. We hope to improve on boto
 in both consistency & maintainability.
 
 **WARNING**: This repo is very unstable & the API **WILL** shift as time goes
-on. This code is **NOT** yet production-ready. When the code is closer to ready
-for public consumption, we'll enable the GitHub issues on the repo.
+on. This code is **NOT** yet production-ready.
 
 .. _boto: https://docs.pythonboto.org/
 
@@ -18,9 +17,9 @@ Requirements
 ============
 
 * Python 3.3+ first, but also works on Python 2.6+
-* botocore==0.16.0
+* botocore==0.24.0
 * six>=1.4.0
-* jmespath>=0.0.2
+* jmespath==0.1.0
 * python-dateutil>=2.1
 
 
