@@ -1,6 +1,7 @@
 import botocore.session
 
 from boto3.core.cache import ServiceCache
+from boto3.core.constants import USER_AGENT_NAME, USER_AGENT_VERSION
 from boto3.core.exceptions import NotCached
 
 
@@ -31,6 +32,9 @@ class Session(object):
 
         if not self.core_session:
             self.core_session = botocore.session.get_session()
+
+        self.core_session.user_agent_name = USER_AGENT_NAME
+        self.core_session.user_agent_version = USER_AGENT_VERSION
 
         if not self.connection_factory:
             from boto3.core.connection import ConnectionFactory

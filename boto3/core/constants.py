@@ -7,7 +7,8 @@ from boto3 import get_version
 # TODO: Assert if this is egg-safe (or if that matters to us)?
 BOTO3_ROOT = os.path.dirname(os.path.dirname(__file__))
 
-USER_AGENT = 'Boto3/{0} ({1})'.format(get_version(full=True), sys.platform)
+USER_AGENT_NAME = 'Boto3'
+USER_AGENT_VERSION = get_version(full=True)
 
 DEFAULT_REGION = 'us-east-1'
 
