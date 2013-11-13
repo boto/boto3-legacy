@@ -28,33 +28,50 @@ Tutorials
 
    tutorial/sqs
 
+
 Design
 ------
 
 .. toctree::
+   :maxdepth: 1
 
    design/philosophy
    design/architecture
    design/resource_objects
    design/resource_fields
 
+
 Topics
 ------
 
 .. toctree::
+   :maxdepth: 1
 
    topics/connections
    topics/resources_collections
    topics/sessions
 
+
 API References
 --------------
 
+Services
+~~~~~~~~
+
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    :glob:
 
    reference/*
+
+Core
+~~~~
+
+.. toctree::
+   :maxdepth: 1
+   :glob:
+
+   reference/*/*
 
 
 Indices and tables
