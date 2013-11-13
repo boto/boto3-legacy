@@ -49,7 +49,7 @@ In-progress
       (leaning on the API docs a lot) & the responses are pretty raw
     * Needs more response parsing work
 
-* ``ResourceCollection`` objects
+* ``Collection`` objects
 
     * Abstracts working with collections of ``Resource`` objects
     * Basic functionality kinda works (creates/gets data) but not very useful

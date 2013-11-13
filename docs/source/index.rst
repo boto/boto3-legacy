@@ -13,8 +13,11 @@ Services.
 Requirements
 ------------
 
-* Python 2.6+ or Python 3.3+
-* botocore>=0.16.0
+* Python 3.3+ first, but also works on Python 2.6+
+* botocore==0.24.0
+* six>=1.4.0
+* jmespath==0.1.0
+* python-dateutil>=2.1
 
 
 Tutorials

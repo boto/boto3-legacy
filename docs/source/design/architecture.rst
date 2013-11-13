@@ -89,7 +89,7 @@ The ``Connection`` layer is a step above the "Underlying" layer. Each
 ``Ec2Connection`` covers all of the Amazon Elastic Compute Cloud service's API
 calls).
 
-A ``Connection`` object is built typically via a ``ConnectionFactory`` instance.
+A ``Connection`` object is typically built via a ``ConnectionFactory`` instance.
 The only things that are required are a configured ``Session`` & a service
 name (i.e. ``dynamodb``).
 

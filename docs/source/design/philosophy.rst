@@ -39,7 +39,7 @@ We support a wide range of Python installations, from the older Python 2.6/2.7
 series to the most recent releases of Python 3.3 & beyond. This is doable
 within a single codebase (see examples like ``aws-cli``, ``botocore`` & many
 popular community projects such as ``requests``, ``SQLAlchemy`` & ``Django``)
-without requiring tools lik ``2to3``.
+without requiring tools like ``2to3``.
 
 We will use things like ``six`` & our own wrappers to ensure that we write the
 code once & it works on all Python versions we support.
