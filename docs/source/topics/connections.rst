@@ -1,4 +1,4 @@
-.. ref: topics_connections
+.. _connections:
 
 ===========
 Connections

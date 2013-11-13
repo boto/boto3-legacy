@@ -1,4 +1,4 @@
-.. ref: topics_resources
+.. _resources_collections:
 
 =======================
 Resources & Collections

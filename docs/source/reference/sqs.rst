@@ -1,4 +1,4 @@
-.. ref-sqs
+.. _sqs:
 
 ================================
 Simple Queue Service (SQS) - API

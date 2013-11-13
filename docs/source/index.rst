@@ -25,6 +25,25 @@ Tutorials
 
    tutorial/sqs
 
+Design
+------
+
+.. toctree::
+
+   design/philosophy
+   design/architecture
+   design/resource_objects
+   design/resource_fields
+
+Topics
+------
+
+.. toctree::
+
+   topics/connections
+   topics/resources_collections
+   topics/sessions
+
 API References
 --------------
 
@@ -33,14 +52,6 @@ API References
    :glob:
 
    reference/*
-
-Design
-------
-
-.. toctree::
-
-   design/resource_objects
-   design/resource_fields
 
 
 Indices and tables

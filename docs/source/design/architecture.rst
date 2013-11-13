@@ -1,4 +1,4 @@
-.. ref: design_architecture
+.. _design_architecture:
 
 ============
 Architecture
@@ -183,7 +183,7 @@ available, populating new ``Resource`` objects as needed, having relations with
 other ``Resources`` or ``Collections`` for easy access & looks more like
 traditional objects.
 
-See the :ref:`topics_resources_collections` documentation for more information
+See the :ref:`resources_collections` documentation for more information
 on how to extend/override behavior, or the service tutorials for examples on
 usage of a given ``Resource/Collection``.
 
@@ -224,9 +224,10 @@ Example usage::
     >>> my_session = Session()
 
 ``boto`` ships with a default ``Session``, instantiated as ``boto3.session``.
-See :ref:`topics_sessions` documentation for more information
+See :ref:`sessions` documentation for more information
 on how to extend/override behavior.
 
+.. _`region`: http://docs.aws.amazon.com/general/latest/gr/rande.html
 
 ``Introspection``
 =================
