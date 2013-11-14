@@ -127,4 +127,6 @@ Returns an **uninstantiated** class for that given collection.
 Customizing
 ===========
 
-TBD
+.. warning::
+
+    TBD

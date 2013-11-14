@@ -191,7 +191,9 @@ usage of a given ``Resource/Collection``.
 ``Convenience`` Layer
 ---------------------
 
-TBD.
+.. warning::
+
+    TBD.
 
 
 General Infrastructure
@@ -260,6 +262,8 @@ given resource is either ready or has errored.
 
 Example::
 
-    TBD
+.. warning::
+
+    TBD.
 
 .. _`Polling Consumer`: http://www.eaipatterns.com/PollingConsumer.html
