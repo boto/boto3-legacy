@@ -43,6 +43,7 @@ setup(
         'boto3': [
             'data/*',
             'data/*/*',
+            'data/*/*/*',
         ]
     },
     include_package_data=True,
