@@ -10,3 +10,4 @@ boto3.core.cache
 .. automodule:: boto3.core.cache
    :members:
    :undoc-members:
+   :special-members: __init__

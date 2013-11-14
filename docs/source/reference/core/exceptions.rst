@@ -10,3 +10,4 @@ boto3.core.exceptions
 .. automodule:: boto3.core.exceptions
    :members:
    :undoc-members:
+   :special-members: __init__

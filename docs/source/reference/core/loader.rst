@@ -10,3 +10,4 @@ boto3.core.loader
 .. automodule:: boto3.core.loader
    :members:
    :undoc-members:
+   :special-members: __init__

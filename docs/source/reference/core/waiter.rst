@@ -10,3 +10,4 @@ boto3.core.waiter
 .. automodule:: boto3.core.waiter
    :members:
    :undoc-members:
+   :special-members: __init__
