@@ -18,22 +18,14 @@ except ImportError:
 packages = [
     'boto3',
     'boto3.core',
-    'boto3.core.resources',
-    'boto3.ec2',
-    'boto3.elastictranscoder',
-    'boto3.glacier',
-    'boto3.iam',
-    'boto3.s3',
-    'boto3.ses',
-    'boto3.sns',
     'boto3.sqs',
     'boto3.utils',
 ]
 
 requires = [
-    'botocore==0.16.0',
+    'botocore==0.24.0',
     'six>=1.4.0',
-    'jmespath>=0.0.2',
+    'jmespath==0.1.0',
     'python-dateutil>=2.1',
 ]
 
@@ -47,6 +39,12 @@ setup(
     url='https://github.com/boto/boto3',
     scripts=[],
     packages=packages,
+    package_data={
+        'boto3': [
+            'data/*',
+            'data/*/*',
+        ]
+    },
     include_package_data=True,
     install_requires=requires,
     license=open("LICENSE").read(),
