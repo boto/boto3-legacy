@@ -6,6 +6,11 @@ Simple Queue Service (SQS)
 Convenience API
 ===============
 
+.. warning::
+
+    The ``Convenience`` API is not yet in place. Consider the following to
+    be eventually consistent. ;D
+
 Sample::
 
     from boto3.sqs import Queue, Message
