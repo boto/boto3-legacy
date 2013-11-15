@@ -5,11 +5,35 @@ from boto3.utils import six
 
 
 class ResourceDetails(object):
+    """
+    A class that encapsulates the metadata about a given ``Resource``.
+
+    Usually hangs off a ``Resource`` as ``Resource._details``.
+    """
     service_name = ''
     resource_name = ''
     session = None
 
     def __init__(self, session, service_name, resource_name, loader=None):
+        """
+        Creates a ``ResourceDetails`` instance.
+
+        :param session: The configured ``Session`` object to refer to.
+        :type session: <class boto3.core.session.Session> instance
+
+        :param service_name: The service a given ``Resource`` talks to. Ex.
+            ``sqs``, ``sns``, ``dynamodb``, etc.
+        :type service_name: string
+
+        :param resource_name: The name of the ``Resource``. Ex.
+            ``Queue``, ``Notification``, ``Table``, etc.
+        :type resource_name: string
+
+        :param loader: (Optional) An instance of a ``ResourceJSONLoader`` class.
+            This can be swapped with a different instance or with a completely
+            different class with the same interface.
+        :type loader: <class boto3.core.loader.ResourceJSONLoader> instance
+        """
         super(ResourceDetails, self).__init__()
         self.session = session
         self.service_name = service_name
@@ -29,6 +53,9 @@ class ResourceDetails(object):
     # Kinda ugly (method within a class definition, but not static/classmethod)
     # but depends on internal state. Grump.
     def requires_loaded(func):
+        """
+        A decorator to ensure the resource data is loaded.
+        """
         def _wrapper(self, *args, **kwargs):
             # If we don't have data, go load it.
             if self._loaded_data is None:
@@ -41,30 +68,102 @@ class ResourceDetails(object):
     @property
     @requires_loaded
     def service_data(self):
+        """
+        Returns all introspected service data. This will include things like
+        other resources/collections that are part of the service. Typically,
+        using ``.resource_data`` is much more useful/relevant.
+
+        If the data has been previously accessed, a memoized version of the
+        data is returned.
+
+        :returns: A dict of introspected service data
+        :rtype: dict
+        """
         return self._loaded_data
 
     @property
     @requires_loaded
     def resource_data(self):
+        """
+        Returns all introspected resource data.
+
+        If the data has been previously accessed, a memoized version of the
+        data is returned.
+
+        :returns: A dict of introspected resource data
+        :rtype: dict
+        """
         return self._loaded_data['resources'][self.resource_name]
 
     @property
     @requires_loaded
     def api_versions(self):
+        """
+        Returns the API version(s) introspected from the resource data. This
+        is a list of all versions of the API to which this data can be used.
+        This is useful in preventing mismatching API versions between the
+        client code & service.
+
+        If the data has been previously accessed, a memoized version of the
+        API versions is returned.
+
+        :returns: The service's versions
+        :rtype: list of strings
+        """
         self._api_versions = self._loaded_data.get('api_versions', '')
         return self._api_versions
 
     @property
     def identifier_var_name(self):
+        """
+        Returns variable name of the identifier.
+
+        This should be the name the ``Resource`` should look for from the user
+        as the unique identifer for the resource server-side.
+
+        If the data has been previously accessed, a memoized version of the
+        variable name is returned.
+
+        :returns: The identifier's variable name (from Python)
+        :rtype: string
+        """
         return self.resource_data['identifier']['var_name']
 
     @property
     def identifier_api_name(self):
+        """
+        Returns API name of the identifier.
+
+        This should be the name the ``Resource`` should look for from the API
+        (server-side) as the unique identifer for the resource.
+
+        If the data has been previously accessed, a memoized version of the
+        API name is returned.
+
+        :returns: The identifier's API name (from server-side)
+        :rtype: string
+        """
         return self.resource_data['identifier']['api_name']
 
 
 class Resource(object):
+    """
+    A common base class for all the ``Resource`` objects.
+    """
     def __init__(self, connection=None, **kwargs):
+        """
+        Creates a new ``Resource`` instance.
+
+        :param connection: (Optional) Specifies what connection to use.
+            By default, this is a matching ``Connection`` subclass provided
+            by the ``session`` (i.e. within S3, ``BucketResource`` would get a
+            ``S3Connection`` from the session).
+        :type connection: <class boto3.core.connection.Connection> **SUBCLASS**
+
+        :param **kwargs: (Optional) Instance data to be specified on the
+            instance itself.
+        :type **kwargs: dict
+        """
         self._data = {}
         self._connection = connection
 
@@ -84,18 +183,58 @@ class Resource(object):
         )
 
     def __getattr__(self, name):
+        """
+        Attempts to return instance data for a given name if available.
+
+        :param name: The instance data's name
+        :type name: string
+        """
         if name in self._data:
             return self._data[name]
 
         raise AttributeError("No such attribute '{0}'".format(name))
 
     def get_identifier(self):
+        """
+        Returns the identifier (if present) from the instance data.
+
+        This identifier name is determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+        """
         return self._data.get(self._details.identifier_var_name)
 
     def set_identifier(self, value):
+        """
+        Sets the identifier within the instance data.
+
+        This identifier name is determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+
+        :param value: The value to be set.
+        """
         self._data[self._details.identifier_var_name] = value
 
     def full_update_params(self, conn_method_name, params):
+        """
+        When a API method on the resource is called, this goes through the
+        params & run a series of hooks to allow for updating those parameters.
+
+        Typically, this method is **NOT** call by the user. However, the user
+        may wish to define other methods (i.e. ``update_params`` to work with
+        multiple parameters at once or ``update_params_METHOD_NAME`` to
+        manipulate a single parameter) on their class, which this method
+        will call.
+
+        :param conn_method_name: The name of the underlying connection method
+            about to be called. Typically, this is a "snake_cased" variant of
+            the API name (i.e. ``update_bucket`` in place of ``UpdateBucket``).
+        :type conn_method_name: string
+
+        :param params: A dictionary of all the key/value pairs passed to the
+            method. This dictionary is transformed by this call into the final
+            params to be passed to the underlying connection.
+        :type params: dict
+        """
         # We'll check for custom methods to do addition, specific work.
         custom_method_name = 'update_params_{0}'.format(conn_method_name)
         custom_method = getattr(self, custom_method_name, None)
@@ -110,12 +249,52 @@ class Resource(object):
         return params
 
     def update_params(self, conn_method_name, params):
+        """
+        A hook to allow manipulation of multiple parameters at once.
+
+        By default, this just ensures the identifier data in in the parameters,
+        so that the user doesn't have to provide it.
+
+        You can override/extend this method (typically on your subclass)
+        to do additional checks, pre-populate values or remove unwanted data.
+
+        :param conn_method_name: The name of the underlying connection method
+            about to be called. Typically, this is a "snake_cased" variant of
+            the API name (i.e. ``update_bucket`` in place of ``UpdateBucket``).
+        :type conn_method_name: string
+
+        :param params: A dictionary of all the key/value pairs passed to the
+            method. This dictionary is transformed by this call into the final
+            params to be passed to the underlying connection.
+        :type params: dict
+        """
         # By default, this just sets the identifier info.
         # We use ``var_name`` instead of ``api_name``. Because botocore.
         params[self._details.identifier_var_name] = self.get_identifier()
         return params
 
     def full_post_process(self, conn_method_name, result):
+        """
+        When a response from an API method call is received, this goes through
+        the returned data & run a series of hooks to allow for handling that
+        data.
+
+        Typically, this method is **NOT** call by the user. However, the user
+        may wish to define other methods (i.e. ``post_process`` to work with
+        all the data at once or ``post_process_METHOD_NAME`` to
+        handle a single piece of data) on their class, which this method
+        will call.
+
+        :param conn_method_name: The name of the underlying connection method
+            about to be called. Typically, this is a "snake_cased" variant of
+            the API name (i.e. ``update_bucket`` in place of ``UpdateBucket``).
+        :type conn_method_name: string
+
+        :param result: A dictionary of all the key/value pairs passed back
+            from the API (server-side). This dictionary is transformed by this
+            call into the final data to be passed back to the user.
+        :type result: dict
+        """
         result = self.post_process(conn_method_name, result)
 
         # We'll check for custom methods to do addition, specific work.
@@ -129,6 +308,24 @@ class Resource(object):
         return result
 
     def post_process(self, conn_method_name, result):
+        """
+        A hook to allow manipulation of the entire returned data at once.
+
+        By default, this does nothing, just passing through the ``result``.
+
+        You can override/extend this method (typically on your subclass)
+        to do additional checks, alter the result or remove unwanted data.
+
+        :param conn_method_name: The name of the underlying connection method
+            about to be called. Typically, this is a "snake_cased" variant of
+            the API name (i.e. ``update_bucket`` in place of ``UpdateBucket``).
+        :type conn_method_name: string
+
+        :param result: A dictionary of all the key/value pairs passed back
+            from the API (server-side). This dictionary is transformed by this
+            call into the final data to be passed back to the user.
+        :type result: dict
+        """
         # Mostly a hook for post-processing as needed.
         return result
 
@@ -138,13 +335,42 @@ class ResourceFactory(object):
     Generates the underlying ``Resource`` classes based off the ``ResourceJSON``
     included in the SDK.
 
-    Typically used as a foundation to elaborate on.
+    Usage::
+
+        >>> rf = ResourceFactory()
+        >>> Bucket = rf.construct_for('s3', 'Bucket')
+
     """
     loader_class = ResourceJSONLoader
 
     def __init__(self, session=None, loader=None,
                  base_resource_class=Resource,
                  details_class=ResourceDetails):
+        """
+        Creates a new ``ResourceFactory`` instance.
+
+        :param session: The ``Session`` the factory should use.
+        :type session: <class boto3.session.Session> instance
+
+        :param loader: (Optional) An instance of a ``ResourceJSONLoader`` class.
+            This can be swapped with a different instance or with a completely
+            different class with the same interface.
+            By default, this is ``boto3.core.loader.default_loader``.
+        :type loader: <class boto3.core.loader.ResourceJSONLoader> instance
+
+        :param base_resource_class: (Optional) The base class to use when creating
+            the resource. By default, this is ``Resource``, but should
+            you need to globally change the behavior of all resources,
+            you'd simply specify this to provide your own class.
+        :type base_resource_class: <class boto3.core.resources.Resource>
+
+        :param details_class: (Optional) The metadata class used to store things
+            like service name & data. By default, this is ``ResourceDetails``,
+            but should you need to globally change the behavior (perhaps
+            modifying how the resource data is returned), you simply provide
+            your own class here.
+        :type details_class: <class boto3.core.resources.ResourceDetails>
+        """
         self.session = session
         self.loader = loader
         self.base_resource_class = base_resource_class
@@ -159,7 +385,28 @@ class ResourceFactory(object):
             import boto3.core.loader
             self.loader = boto3.core.loader.default_loader
 
+    def __str__(self):
+        return self.__class__.__name__
+
     def construct_for(self, service_name, resource_name):
+        """
+        Builds a new, specialized ``Resource`` subclass as part of a given
+        service.
+
+        This will load the ``ResourceJSON``, determine the correct
+        mappings/methods & constructs a brand new class with those methods on
+        it.
+
+        :param service_name: The name of the service to construct a resource
+            for. Ex. ``sqs``, ``sns``, ``dynamodb``, etc.
+        :type service_name: string
+
+        :param resource_name: The name of the ``Resource``. Ex.
+            ``Queue``, ``Notification``, ``Table``, etc.
+        :type resource_name: string
+
+        :returns: A new resource class for that service
+        """
         details = self.details_class(
             self.session,
             service_name,
