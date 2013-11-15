@@ -38,7 +38,6 @@ Design
    design/philosophy
    design/architecture
    design/resource_objects
-   design/resource_fields
 
 
 Topics
