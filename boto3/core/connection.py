@@ -5,10 +5,25 @@ from boto3.utils import six
 
 
 class ConnectionDetails(object):
+    """
+    A class that encapsulates the metadata about a given ``Connection``.
+
+    Usually hangs off a ``Connection`` as ``Connection._details``.
+    """
     service_name = 'unknown'
     session = None
 
     def __init__(self, service_name, session):
+        """
+        Creates a ``ConnectionDetails`` instance.
+
+        :param service_name: The service a given ``Connection`` talks to. Ex.
+            ``sqs``, ``sns``, ``dynamodb``, etc.
+        :type service_name: string
+
+        :param session: The configured ``Session`` object to refer to.
+        :type session: <class boto3.core.session.Session> instance
+        """
         super(ConnectionDetails, self).__init__()
         self.service_name = service_name
         self.session = session
@@ -24,6 +39,15 @@ class ConnectionDetails(object):
 
     @property
     def service_data(self):
+        """
+        Returns all introspected service data.
+
+        If the data has been previously accessed, a memoized version of the
+        data is returned.
+
+        :returns: A dict of introspected service data
+        :rtype: dict
+        """
         # Lean on the cache first.
         if self._loaded_service_data is not None:
             return self._loaded_service_data
@@ -41,6 +65,15 @@ class ConnectionDetails(object):
 
     @property
     def api_version(self):
+        """
+        Returns API version introspected from the service data.
+
+        If the data has been previously accessed, a memoized version of the
+        API version is returned.
+
+        :returns: The service's version
+        :rtype: string
+        """
         # Lean on the cache first.
         if self._api_version is not None:
             return self._api_version
@@ -64,6 +97,12 @@ class ConnectionDetails(object):
         return service.api_version
 
     def reload_service_data(self):
+        """
+        Wipes out & reloads the cached service data.
+
+        :returns: A dict of introspected service data
+        :rtype: dict
+        """
         self._loaded_service_data = None
         return self.service_data
 
@@ -120,6 +159,15 @@ class Connection(object):
 
     @classmethod
     def connect_to(cls, **kwargs):
+        """
+        Instantiates the class, passing all ``**kwargs`` along to the
+        constructor.
+
+        This is reserved for further extension.
+
+        :returns: An instance of the ``Connection``
+        :rtype: <class Connection>
+        """
         return cls(**kwargs)
 
     def _get_operation_data(self, method_name):
@@ -128,16 +176,41 @@ class Connection(object):
         """
         return self._details.service_data[method_name]
 
-    # TODO: Implement further convenience methods for accessing param info
-    #       & whatnot. (For the Resource layer to use.)
-
     def _get_operation_params(self, method_name):
         return self._get_operation_data(method_name).get('params', [])
 
 
 class ConnectionFactory(object):
+    """
+    Builds custom ``Connection`` subclasses based on the service's operations.
+
+    Usage::
+
+        >>> cf = ConnectionFactory()
+        >>> S3Connection = cf.construct_for('s3')
+
+    """
     def __init__(self, session, base_connection=Connection,
                  details_class=ConnectionDetails):
+        """
+        Creates a new ``ConnectionFactory`` instance.
+
+        :param session: The ``Session`` the factory should use.
+        :type session: <class boto3.session.Session> instance
+
+        :param base_connection: (Optional) The base class to use when creating
+            the connection. By default, this is ``Connection``, but should
+            you need to globally change the behavior of all connections,
+            you'd simply specify this to provide your own class.
+        :type base_connection: <class boto3.core.connection.Connection>
+
+        :param details_class: (Optional) The metadata class used to store things
+            like service name & data. By default, this is ``ConnectionDetails``,
+            but should you need to globally change the behavior (perhaps
+            modifying how the service data is returned), you simply provide
+            your own class here.
+        :type details_class: <class boto3.core.connection.ConnectionDetails>
+        """
         super(ConnectionFactory, self).__init__()
         self.session = session
         self.base_connection = base_connection
@@ -147,6 +220,18 @@ class ConnectionFactory(object):
         return self.__class__.__name__
 
     def construct_for(self, service_name):
+        """
+        Builds a new, specialized ``Connection`` subclass for a given service.
+
+        This will introspect a service, determine all the API calls it has &
+        constructs a brand new class with those methods on it.
+
+        :param service_name: The name of the service to construct a connection
+            for. Ex. ``sqs``, ``sns``, ``dynamodb``, etc.
+        :type service_name: string
+
+        :returns: A new connection class for that service
+        """
         # Construct a new ``ConnectionDetails`` (or similar class) for storing
         # the relevant details about the service & its operations.
         details = self.details_class(service_name, self.session)
