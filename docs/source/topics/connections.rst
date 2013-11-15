@@ -52,7 +52,7 @@ Using a connection is relatively straightforward once you have a class
 constructed. It also varies widely between services, as the services rarely
 expose common calls between them.
 
-.. warning:
+.. warning::
 
     TBD
 
