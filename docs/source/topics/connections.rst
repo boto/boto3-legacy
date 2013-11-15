@@ -62,7 +62,7 @@ expose common calls between them.
 Construction
 ============
 
-Construction of ``Connection`` objects takes place within a
+Construction of ``Connection`` class takes place within a
 ``boto3.core.connection.ConnectionFactory`` instance. Any instance (whether
 built into ``boto`` or instantiated by a user) can successfully create
 ``Connection`` subclasses.
@@ -78,7 +78,7 @@ Usage is trivial::
     >>> S3Connection = cf.construct_for('s3')
 
 However, to make things even easier, this functionality is also exposed through
-the :ref:`Session <sessions>` object itself. The ``Session`` has it's
+the :ref:`Session <sessions>` object itself. The ``Session`` has its
 own ``ConnectionFactory`` instance(s) & can handle the details for you.
 
 So typically, you'll actually do::
