@@ -10,4 +10,3 @@ boto3.core.session
 .. automodule:: boto3.core.session
    :members:
    :undoc-members:
-   :special-members: __init__
