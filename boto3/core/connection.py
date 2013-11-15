@@ -112,6 +112,14 @@ class Connection(object):
     A common base class for all the ``Connection`` objects.
     """
     def __init__(self, region_name=DEFAULT_REGION):
+        """
+        Creates a new connection instance.
+
+        :param region_name: (Optional) The name of the region to connect to.
+            By default, this is the value from
+            ``boto3.core.constants.DEFAULT_REGION``.
+        :type region_name: string
+        """
         super(Connection, self).__init__()
         self.region_name = region_name
 
