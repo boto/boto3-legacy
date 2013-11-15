@@ -41,9 +41,7 @@ setup(
     packages=packages,
     package_data={
         'boto3': [
-            'data/*',
-            'data/*/*',
-            'data/*/*/*',
+            'data/aws/resources/*.json',
         ]
     },
     include_package_data=True,
