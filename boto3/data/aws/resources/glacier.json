@@ -1,0 +1,411 @@
+{
+    "api_versions": [
+        "2012-06-01"
+    ],
+    "collections": {
+        "VaultCollection": {
+            "resource": "Vault",
+            "operations": {
+                "create": {
+                    "api_name": "CreateVault",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "DescribeVault",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListVaults",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "marker",
+                            "type": "string"
+                        },
+                        "limit": {
+                            "api_name": "limit",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "ArchiveCollection": {
+            "resource": "Archive",
+            "operations": {
+                "create": {
+                    "api_name": "UploadArchive",
+                    "docs": null,
+                    "params": {
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "archive_description": {
+                            "api_name": "archiveDescription",
+                            "type": "string"
+                        },
+                        "checksum": {
+                            "api_name": "checksum",
+                            "type": "string"
+                        },
+                        "body": {
+                            "api_name": "body",
+                            "type": "blob"
+                        }
+                    }
+                }
+            }
+        },
+        "MultipartUploadCollection": {
+            "resource": "MultipartUpload",
+            "operations": {
+                "create": {
+                    "api_name": "UploadMultipartPart",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "upload_id": {
+                            "api_name": "uploadId",
+                            "type": "string"
+                        },
+                        "checksum": {
+                            "api_name": "checksum",
+                            "type": "string"
+                        },
+                        "range": {
+                            "api_name": "range",
+                            "type": "string"
+                        },
+                        "body": {
+                            "api_name": "body",
+                            "type": "blob"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListMultipartUploads",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "limit": {
+                            "api_name": "limit",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "marker",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "JobCollection": {
+            "resource": "Job",
+            "operations": {
+                "get": {
+                    "api_name": "GetJobOutput",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "job_id": {
+                            "api_name": "jobId",
+                            "type": "string"
+                        },
+                        "range": {
+                            "api_name": "range",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListJobs",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "limit": {
+                            "api_name": "limit",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "marker",
+                            "type": "string"
+                        },
+                        "statuscode": {
+                            "api_name": "statuscode",
+                            "type": "string"
+                        },
+                        "completed": {
+                            "api_name": "completed",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "Vault": {
+            "shape_name": "Vault",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteVault",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete_notifications": {
+                    "api_name": "DeleteVaultNotifications",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get_notifications": {
+                    "api_name": "GetVaultNotifications",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "set_notifications": {
+                    "api_name": "SetVaultNotifications",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "vault_notification_config": {
+                            "api_name": "vaultNotificationConfig",
+                            "type": "structure"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Archive": {
+            "shape_name": "Archive",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteArchive",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "archive_id": {
+                            "api_name": "archiveId",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "MultipartUpload": {
+            "shape_name": "MultipartUpload",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "abort": {
+                    "api_name": "AbortMultipartUpload",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "upload_id": {
+                            "api_name": "uploadId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "complete": {
+                    "api_name": "CompleteMultipartUpload",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "upload_id": {
+                            "api_name": "uploadId",
+                            "type": "string"
+                        },
+                        "archive_size": {
+                            "api_name": "archiveSize",
+                            "type": "string"
+                        },
+                        "checksum": {
+                            "api_name": "checksum",
+                            "type": "string"
+                        }
+                    }
+                },
+                "list_parts": {
+                    "api_name": "ListParts",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "upload_id": {
+                            "api_name": "uploadId",
+                            "type": "string"
+                        },
+                        "marker": {
+                            "api_name": "marker",
+                            "type": "string"
+                        },
+                        "limit": {
+                            "api_name": "limit",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Job": {
+            "shape_name": "Job",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "create": {
+                    "api_name": "InitiateJob",
+                    "docs": null,
+                    "params": {
+                        "account_id": {
+                            "api_name": "accountId",
+                            "type": "string"
+                        },
+                        "vault_name": {
+                            "api_name": "vaultName",
+                            "type": "string"
+                        },
+                        "job_parameters": {
+                            "api_name": "jobParameters",
+                            "type": "structure"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        }
+    }
+}
