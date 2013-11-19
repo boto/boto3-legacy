@@ -1,0 +1,246 @@
+{
+    "api_versions": [
+        "2013-04-15"
+    ],
+    "collections": {
+        "CaseCollection": {
+            "resource": "Case",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCase",
+                    "docs": null,
+                    "params": {
+                        "subject": {
+                            "api_name": "subject",
+                            "type": "string"
+                        },
+                        "service_code": {
+                            "api_name": "serviceCode",
+                            "type": "string"
+                        },
+                        "severity_code": {
+                            "api_name": "severityCode",
+                            "type": "string"
+                        },
+                        "category_code": {
+                            "api_name": "categoryCode",
+                            "type": "string"
+                        },
+                        "communication_body": {
+                            "api_name": "communicationBody",
+                            "type": "string"
+                        },
+                        "cc_email_addresses": {
+                            "api_name": "ccEmailAddresses",
+                            "type": "list"
+                        },
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        },
+                        "issue_type": {
+                            "api_name": "issueType",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCases",
+                    "docs": null,
+                    "params": {
+                        "case_id_list": {
+                            "api_name": "caseIdList",
+                            "type": "list"
+                        },
+                        "display_id": {
+                            "api_name": "displayId",
+                            "type": "string"
+                        },
+                        "after_time": {
+                            "api_name": "afterTime",
+                            "type": "string"
+                        },
+                        "before_time": {
+                            "api_name": "beforeTime",
+                            "type": "string"
+                        },
+                        "include_resolved_cases": {
+                            "api_name": "includeResolvedCases",
+                            "type": "boolean"
+                        },
+                        "next_token": {
+                            "api_name": "nextToken",
+                            "type": "string"
+                        },
+                        "max_results": {
+                            "api_name": "maxResults",
+                            "type": "integer"
+                        },
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_services": {
+                    "api_name": "DescribeServices",
+                    "docs": null,
+                    "params": {
+                        "service_code_list": {
+                            "api_name": "serviceCodeList",
+                            "type": "list"
+                        },
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_severity_levels": {
+                    "api_name": "DescribeSeverityLevels",
+                    "docs": null,
+                    "params": {
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_trusted_advisor_check_refresh_statuses": {
+                    "api_name": "DescribeTrustedAdvisorCheckRefreshStatuses",
+                    "docs": null,
+                    "params": {
+                        "check_ids": {
+                            "api_name": "checkIds",
+                            "type": "list"
+                        }
+                    }
+                },
+                "trusted_advisor_check_result": {
+                    "api_name": "DescribeTrustedAdvisorCheckResult",
+                    "docs": null,
+                    "params": {
+                        "check_id": {
+                            "api_name": "checkId",
+                            "type": "string"
+                        },
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_trusted_advisor_check_summaries": {
+                    "api_name": "DescribeTrustedAdvisorCheckSummaries",
+                    "docs": null,
+                    "params": {
+                        "check_ids": {
+                            "api_name": "checkIds",
+                            "type": "list"
+                        }
+                    }
+                },
+                "all_trusted_advisor_checks": {
+                    "api_name": "DescribeTrustedAdvisorChecks",
+                    "docs": null,
+                    "params": {
+                        "language": {
+                            "api_name": "language",
+                            "type": "string"
+                        }
+                    }
+                },
+                "refresh_trusted_advisor_check": {
+                    "api_name": "RefreshTrustedAdvisorCheck",
+                    "docs": null,
+                    "params": {
+                        "check_id": {
+                            "api_name": "checkId",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "CommunicationCollection": {
+            "resource": "Communication",
+            "operations": {
+                "create": {
+                    "api_name": "AddCommunicationToCase",
+                    "docs": null,
+                    "params": {
+                        "case_id": {
+                            "api_name": "caseId",
+                            "type": "string"
+                        },
+                        "communication_body": {
+                            "api_name": "communicationBody",
+                            "type": "string"
+                        },
+                        "cc_email_addresses": {
+                            "api_name": "ccEmailAddresses",
+                            "type": "list"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCommunications",
+                    "docs": null,
+                    "params": {
+                        "case_id": {
+                            "api_name": "caseId",
+                            "type": "string"
+                        },
+                        "before_time": {
+                            "api_name": "beforeTime",
+                            "type": "string"
+                        },
+                        "after_time": {
+                            "api_name": "afterTime",
+                            "type": "string"
+                        },
+                        "next_token": {
+                            "api_name": "nextToken",
+                            "type": "string"
+                        },
+                        "max_results": {
+                            "api_name": "maxResults",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "Case": {
+            "shape_name": "Case",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "resolve": {
+                    "api_name": "ResolveCase",
+                    "docs": null,
+                    "params": {
+                        "case_id": {
+                            "api_name": "caseId",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Communication": {
+            "shape_name": "Communication",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {},
+            "relations": {}
+        }
+    }
+}

@@ -1,0 +1,768 @@
+{
+    "api_versions": [
+        "2013-06-15"
+    ],
+    "collections": {
+        "CacheClusterCollection": {
+            "resource": "CacheCluster",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheCluster",
+                    "docs": null,
+                    "params": {
+                        "cache_cluster_id": {
+                            "api_name": "CacheClusterId",
+                            "type": "string"
+                        },
+                        "replication_group_id": {
+                            "api_name": "ReplicationGroupId",
+                            "type": "string"
+                        },
+                        "num_cache_nodes": {
+                            "api_name": "NumCacheNodes",
+                            "type": "integer"
+                        },
+                        "cache_node_type": {
+                            "api_name": "CacheNodeType",
+                            "type": "string"
+                        },
+                        "engine": {
+                            "api_name": "Engine",
+                            "type": "string"
+                        },
+                        "engine_version": {
+                            "api_name": "EngineVersion",
+                            "type": "string"
+                        },
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "cache_subnet_groupname": {
+                            "api_name": "CacheSubnetGroupName",
+                            "type": "string"
+                        },
+                        "cache_security_groupnames": {
+                            "api_name": "CacheSecurityGroupNames",
+                            "type": "list"
+                        },
+                        "security_group_ids": {
+                            "api_name": "SecurityGroupIds",
+                            "type": "list"
+                        },
+                        "snapshot_arns": {
+                            "api_name": "SnapshotArns",
+                            "type": "list"
+                        },
+                        "preferred_availability_zone": {
+                            "api_name": "PreferredAvailabilityZone",
+                            "type": "string"
+                        },
+                        "preferred_maintenance_window": {
+                            "api_name": "PreferredMaintenanceWindow",
+                            "type": "string"
+                        },
+                        "port": {
+                            "api_name": "Port",
+                            "type": "integer"
+                        },
+                        "notification_topic_arn": {
+                            "api_name": "NotificationTopicArn",
+                            "type": "string"
+                        },
+                        "auto_minor_versionupgrade": {
+                            "api_name": "AutoMinorVersionUpgrade",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCacheClusters",
+                    "docs": null,
+                    "params": {
+                        "cache_cluster_id": {
+                            "api_name": "CacheClusterId",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "show_cache_nodeinfo": {
+                            "api_name": "ShowCacheNodeInfo",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "all_reserved_cache_nodes": {
+                    "api_name": "DescribeReservedCacheNodes",
+                    "docs": null,
+                    "params": {
+                        "reserved_cache_nodeid": {
+                            "api_name": "ReservedCacheNodeId",
+                            "type": "string"
+                        },
+                        "reserved_cache_nodesofferingid": {
+                            "api_name": "ReservedCacheNodesOfferingId",
+                            "type": "string"
+                        },
+                        "cache_node_type": {
+                            "api_name": "CacheNodeType",
+                            "type": "string"
+                        },
+                        "duration": {
+                            "api_name": "Duration",
+                            "type": "string"
+                        },
+                        "product_description": {
+                            "api_name": "ProductDescription",
+                            "type": "string"
+                        },
+                        "offering_type": {
+                            "api_name": "OfferingType",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all_reserved_cache_nodes_offerings": {
+                    "api_name": "DescribeReservedCacheNodesOfferings",
+                    "docs": null,
+                    "params": {
+                        "reserved_cache_nodesofferingid": {
+                            "api_name": "ReservedCacheNodesOfferingId",
+                            "type": "string"
+                        },
+                        "cache_node_type": {
+                            "api_name": "CacheNodeType",
+                            "type": "string"
+                        },
+                        "duration": {
+                            "api_name": "Duration",
+                            "type": "string"
+                        },
+                        "product_description": {
+                            "api_name": "ProductDescription",
+                            "type": "string"
+                        },
+                        "offering_type": {
+                            "api_name": "OfferingType",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                },
+                "purchase_reserved_cache_nodes_offering": {
+                    "api_name": "PurchaseReservedCacheNodesOffering",
+                    "docs": null,
+                    "params": {
+                        "reserved_cache_nodesofferingid": {
+                            "api_name": "ReservedCacheNodesOfferingId",
+                            "type": "string"
+                        },
+                        "reserved_cache_nodeid": {
+                            "api_name": "ReservedCacheNodeId",
+                            "type": "string"
+                        },
+                        "cache_node_count": {
+                            "api_name": "CacheNodeCount",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "CacheParameterGroupCollection": {
+            "resource": "CacheParameterGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheParameterGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "cache_parameter_groupfamily": {
+                            "api_name": "CacheParameterGroupFamily",
+                            "type": "string"
+                        },
+                        "description": {
+                            "api_name": "Description",
+                            "type": "string"
+                        }
+                    }
+                },
+                "describe_engine_versions": {
+                    "api_name": "DescribeCacheEngineVersions",
+                    "docs": "FIXME: Not sure this is right",
+                    "params": {
+                        "engine": {
+                            "api_name": "Engine",
+                            "type": "string"
+                        },
+                        "engine_version": {
+                            "api_name": "EngineVersion",
+                            "type": "string"
+                        },
+                        "cache_parameter_groupfamily": {
+                            "api_name": "CacheParameterGroupFamily",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        },
+                        "default_only": {
+                            "api_name": "DefaultOnly",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCacheParameterGroups",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                },
+                "describe_engine_default_parameters": {
+                    "api_name": "DescribeEngineDefaultParameters",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupfamily": {
+                            "api_name": "CacheParameterGroupFamily",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "CacheSecurityGroupCollection": {
+            "resource": "CacheSecurityGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheSecurityGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_security_groupname": {
+                            "api_name": "CacheSecurityGroupName",
+                            "type": "string"
+                        },
+                        "description": {
+                            "api_name": "Description",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCacheSecurityGroups",
+                    "docs": null,
+                    "params": {
+                        "cache_security_groupname": {
+                            "api_name": "CacheSecurityGroupName",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "CacheSubnetGroupCollection": {
+            "resource": "CacheSubnetGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheSubnetGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_subnet_groupname": {
+                            "api_name": "CacheSubnetGroupName",
+                            "type": "string"
+                        },
+                        "cache_subnet_groupdescription": {
+                            "api_name": "CacheSubnetGroupDescription",
+                            "type": "string"
+                        },
+                        "subnet_ids": {
+                            "api_name": "SubnetIds",
+                            "type": "list"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeCacheSubnetGroups",
+                    "docs": null,
+                    "params": {
+                        "cache_subnet_groupname": {
+                            "api_name": "CacheSubnetGroupName",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "ReplicationGroupCollection": {
+            "resource": "ReplicationGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateReplicationGroup",
+                    "docs": null,
+                    "params": {
+                        "replication_group_id": {
+                            "api_name": "ReplicationGroupId",
+                            "type": "string"
+                        },
+                        "primary_cluster_id": {
+                            "api_name": "PrimaryClusterId",
+                            "type": "string"
+                        },
+                        "replication_group_description": {
+                            "api_name": "ReplicationGroupDescription",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "DescribeReplicationGroups",
+                    "docs": null,
+                    "params": {
+                        "replication_group_id": {
+                            "api_name": "ReplicationGroupId",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "CacheCluster": {
+            "shape_name": "CacheCluster",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheCluster",
+                    "docs": null,
+                    "params": {
+                        "cache_cluster_id": {
+                            "api_name": "CacheClusterId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "describe_events": {
+                    "api_name": "DescribeEvents",
+                    "docs": null,
+                    "params": {
+                        "source_identifier": {
+                            "api_name": "SourceIdentifier",
+                            "type": "string"
+                        },
+                        "source_type": {
+                            "api_name": "SourceType",
+                            "type": "string"
+                        },
+                        "start_time": {
+                            "api_name": "StartTime",
+                            "type": "timestamp"
+                        },
+                        "end_time": {
+                            "api_name": "EndTime",
+                            "type": "timestamp"
+                        },
+                        "duration": {
+                            "api_name": "Duration",
+                            "type": "integer"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "ModifyCacheCluster",
+                    "docs": null,
+                    "params": {
+                        "cache_cluster_id": {
+                            "api_name": "CacheClusterId",
+                            "type": "string"
+                        },
+                        "num_cache_nodes": {
+                            "api_name": "NumCacheNodes",
+                            "type": "integer"
+                        },
+                        "cache_node_idstoremove": {
+                            "api_name": "CacheNodeIdsToRemove",
+                            "type": "list"
+                        },
+                        "cache_security_groupnames": {
+                            "api_name": "CacheSecurityGroupNames",
+                            "type": "list"
+                        },
+                        "security_group_ids": {
+                            "api_name": "SecurityGroupIds",
+                            "type": "list"
+                        },
+                        "preferred_maintenance_window": {
+                            "api_name": "PreferredMaintenanceWindow",
+                            "type": "string"
+                        },
+                        "notification_topic_arn": {
+                            "api_name": "NotificationTopicArn",
+                            "type": "string"
+                        },
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "notification_topic_status": {
+                            "api_name": "NotificationTopicStatus",
+                            "type": "string"
+                        },
+                        "apply_immediately": {
+                            "api_name": "ApplyImmediately",
+                            "type": "boolean"
+                        },
+                        "engine_version": {
+                            "api_name": "EngineVersion",
+                            "type": "string"
+                        },
+                        "auto_minor_versionupgrade": {
+                            "api_name": "AutoMinorVersionUpgrade",
+                            "type": "boolean"
+                        }
+                    }
+                },
+                "reboot": {
+                    "api_name": "RebootCacheCluster",
+                    "docs": null,
+                    "params": {
+                        "cache_cluster_id": {
+                            "api_name": "CacheClusterId",
+                            "type": "string"
+                        },
+                        "cache_node_idstoreboot": {
+                            "api_name": "CacheNodeIdsToReboot",
+                            "type": "list"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "CacheParameterGroup": {
+            "shape_name": "CacheParameterGroup",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheParameterGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "describe_parameters": {
+                    "api_name": "DescribeCacheParameters",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "source": {
+                            "api_name": "Source",
+                            "type": "string"
+                        },
+                        "max_records": {
+                            "api_name": "MaxRecords",
+                            "type": "integer"
+                        },
+                        "marker": {
+                            "api_name": "Marker",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "ModifyCacheParameterGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "parameter_name_values": {
+                            "api_name": "ParameterNameValues",
+                            "type": "list"
+                        }
+                    }
+                },
+                "reset": {
+                    "api_name": "ResetCacheParameterGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "reset_all_parameters": {
+                            "api_name": "ResetAllParameters",
+                            "type": "boolean"
+                        },
+                        "parameter_name_values": {
+                            "api_name": "ParameterNameValues",
+                            "type": "list"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "CacheSecurityGroup": {
+            "shape_name": "CacheSecurityGroup",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "authorize_ingress": {
+                    "api_name": "AuthorizeCacheSecurityGroupIngress",
+                    "docs": null,
+                    "params": {
+                        "cache_security_groupname": {
+                            "api_name": "CacheSecurityGroupName",
+                            "type": "string"
+                        },
+                        "ec2_security_groupname": {
+                            "api_name": "EC2SecurityGroupName",
+                            "type": "string"
+                        },
+                        "ec2_security_groupownerid": {
+                            "api_name": "EC2SecurityGroupOwnerId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "delete": {
+                    "api_name": "DeleteCacheSecurityGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_security_groupname": {
+                            "api_name": "CacheSecurityGroupName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "revoke_ingress": {
+                    "api_name": "RevokeCacheSecurityGroupIngress",
+                    "docs": null,
+                    "params": {
+                        "cache_security_groupname": {
+                            "api_name": "CacheSecurityGroupName",
+                            "type": "string"
+                        },
+                        "ec2_security_groupname": {
+                            "api_name": "EC2SecurityGroupName",
+                            "type": "string"
+                        },
+                        "ec2_security_groupownerid": {
+                            "api_name": "EC2SecurityGroupOwnerId",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "CacheSubnetGroup": {
+            "shape_name": "CacheSubnetGroup",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheSubnetGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_subnet_groupname": {
+                            "api_name": "CacheSubnetGroupName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "ModifyCacheSubnetGroup",
+                    "docs": null,
+                    "params": {
+                        "cache_subnet_groupname": {
+                            "api_name": "CacheSubnetGroupName",
+                            "type": "string"
+                        },
+                        "cache_subnet_groupdescription": {
+                            "api_name": "CacheSubnetGroupDescription",
+                            "type": "string"
+                        },
+                        "subnet_ids": {
+                            "api_name": "SubnetIds",
+                            "type": "list"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "ReplicationGroup": {
+            "shape_name": "ReplicationGroup",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteReplicationGroup",
+                    "docs": null,
+                    "params": {
+                        "replication_group_id": {
+                            "api_name": "ReplicationGroupId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "ModifyReplicationGroup",
+                    "docs": null,
+                    "params": {
+                        "replication_group_id": {
+                            "api_name": "ReplicationGroupId",
+                            "type": "string"
+                        },
+                        "replication_group_description": {
+                            "api_name": "ReplicationGroupDescription",
+                            "type": "string"
+                        },
+                        "cache_security_groupnames": {
+                            "api_name": "CacheSecurityGroupNames",
+                            "type": "list"
+                        },
+                        "security_group_ids": {
+                            "api_name": "SecurityGroupIds",
+                            "type": "list"
+                        },
+                        "preferred_maintenance_window": {
+                            "api_name": "PreferredMaintenanceWindow",
+                            "type": "string"
+                        },
+                        "notification_topic_arn": {
+                            "api_name": "NotificationTopicArn",
+                            "type": "string"
+                        },
+                        "cache_parameter_groupname": {
+                            "api_name": "CacheParameterGroupName",
+                            "type": "string"
+                        },
+                        "notification_topic_status": {
+                            "api_name": "NotificationTopicStatus",
+                            "type": "string"
+                        },
+                        "apply_immediately": {
+                            "api_name": "ApplyImmediately",
+                            "type": "boolean"
+                        },
+                        "engine_version": {
+                            "api_name": "EngineVersion",
+                            "type": "string"
+                        },
+                        "auto_minor_versionupgrade": {
+                            "api_name": "AutoMinorVersionUpgrade",
+                            "type": "boolean"
+                        },
+                        "primary_cluster_id": {
+                            "api_name": "PrimaryClusterId",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        }
+    }
+}
