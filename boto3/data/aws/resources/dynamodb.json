@@ -1,0 +1,353 @@
+{
+    "api_versions": [
+        "2012-08-10"
+    ],
+    "collections": {
+        "TableCollection": {
+            "resource": "Table",
+            "operations": {
+                "create": {
+                    "api_name": "CreateTable",
+                    "docs": null,
+                    "params": {
+                        "attribute_definitions": {
+                            "api_name": "AttributeDefinitions",
+                            "type": "list"
+                        },
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "key_schema": {
+                            "api_name": "KeySchema",
+                            "type": "list"
+                        },
+                        "local_secondary_indexes": {
+                            "api_name": "LocalSecondaryIndexes",
+                            "type": "list"
+                        },
+                        "provisioned_throughput": {
+                            "api_name": "ProvisionedThroughput",
+                            "type": "structure"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "DescribeTable",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "all": {
+                    "api_name": "ListTables",
+                    "docs": null,
+                    "params": {
+                        "exclusive_start_tablename": {
+                            "api_name": "ExclusiveStartTableName",
+                            "type": "string"
+                        },
+                        "limit": {
+                            "api_name": "Limit",
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "ItemCollection": {
+            "resource": "Item",
+            "operations": {
+                "get_batch": {
+                    "api_name": "BatchGetItem",
+                    "docs": null,
+                    "params": {
+                        "request_items": {
+                            "api_name": "RequestItems",
+                            "type": "map"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        }
+                    }
+                },
+                "create_batch": {
+                    "api_name": "BatchWriteItem",
+                    "docs": null,
+                    "params": {
+                        "request_items": {
+                            "api_name": "RequestItems",
+                            "type": "map"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        },
+                        "return_item_collectionmetrics": {
+                            "api_name": "ReturnItemCollectionMetrics",
+                            "type": "string"
+                        }
+                    }
+                },
+                "get": {
+                    "api_name": "GetItem",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "key": {
+                            "api_name": "Key",
+                            "type": "map"
+                        },
+                        "attributes_to_get": {
+                            "api_name": "AttributesToGet",
+                            "type": "list"
+                        },
+                        "consistent_read": {
+                            "api_name": "ConsistentRead",
+                            "type": "boolean"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        }
+                    }
+                },
+                "create": {
+                    "api_name": "PutItem",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "item": {
+                            "api_name": "Item",
+                            "type": "map"
+                        },
+                        "expected": {
+                            "api_name": "Expected",
+                            "type": "map"
+                        },
+                        "return_values": {
+                            "api_name": "ReturnValues",
+                            "type": "string"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        },
+                        "return_item_collectionmetrics": {
+                            "api_name": "ReturnItemCollectionMetrics",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "resources": {
+        "Table": {
+            "shape_name": "Table",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteTable",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        }
+                    }
+                },
+                "query": {
+                    "api_name": "Query",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "index_name": {
+                            "api_name": "IndexName",
+                            "type": "string"
+                        },
+                        "select": {
+                            "api_name": "Select",
+                            "type": "string"
+                        },
+                        "attributes_to_get": {
+                            "api_name": "AttributesToGet",
+                            "type": "list"
+                        },
+                        "limit": {
+                            "api_name": "Limit",
+                            "type": "integer"
+                        },
+                        "consistent_read": {
+                            "api_name": "ConsistentRead",
+                            "type": "boolean"
+                        },
+                        "key_conditions": {
+                            "api_name": "KeyConditions",
+                            "type": "map"
+                        },
+                        "scan_index_forward": {
+                            "api_name": "ScanIndexForward",
+                            "type": "boolean"
+                        },
+                        "exclusive_start_key": {
+                            "api_name": "ExclusiveStartKey",
+                            "type": "map"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        }
+                    }
+                },
+                "scan": {
+                    "api_name": "Scan",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "attributes_to_get": {
+                            "api_name": "AttributesToGet",
+                            "type": "list"
+                        },
+                        "limit": {
+                            "api_name": "Limit",
+                            "type": "integer"
+                        },
+                        "select": {
+                            "api_name": "Select",
+                            "type": "string"
+                        },
+                        "scan_filter": {
+                            "api_name": "ScanFilter",
+                            "type": "map"
+                        },
+                        "exclusive_start_key": {
+                            "api_name": "ExclusiveStartKey",
+                            "type": "map"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        },
+                        "total_segments": {
+                            "api_name": "TotalSegments",
+                            "type": "integer"
+                        },
+                        "segment": {
+                            "api_name": "Segment",
+                            "type": "integer"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateTable",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "provisioned_throughput": {
+                            "api_name": "ProvisionedThroughput",
+                            "type": "structure"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        },
+        "Item": {
+            "shape_name": "Item",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteItem",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "key": {
+                            "api_name": "Key",
+                            "type": "map"
+                        },
+                        "expected": {
+                            "api_name": "Expected",
+                            "type": "map"
+                        },
+                        "return_values": {
+                            "api_name": "ReturnValues",
+                            "type": "string"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        },
+                        "return_item_collectionmetrics": {
+                            "api_name": "ReturnItemCollectionMetrics",
+                            "type": "string"
+                        }
+                    }
+                },
+                "update": {
+                    "api_name": "UpdateItem",
+                    "docs": null,
+                    "params": {
+                        "table_name": {
+                            "api_name": "TableName",
+                            "type": "string"
+                        },
+                        "key": {
+                            "api_name": "Key",
+                            "type": "map"
+                        },
+                        "attribute_updates": {
+                            "api_name": "AttributeUpdates",
+                            "type": "map"
+                        },
+                        "expected": {
+                            "api_name": "Expected",
+                            "type": "map"
+                        },
+                        "return_values": {
+                            "api_name": "ReturnValues",
+                            "type": "string"
+                        },
+                        "return_consumed_capacity": {
+                            "api_name": "ReturnConsumedCapacity",
+                            "type": "string"
+                        },
+                        "return_item_collectionmetrics": {
+                            "api_name": "ReturnItemCollectionMetrics",
+                            "type": "string"
+                        }
+                    }
+                }
+            },
+            "relations": {}
+        }
+    }
+}
