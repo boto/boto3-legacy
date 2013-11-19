@@ -262,6 +262,8 @@ given resource is either ready or has errored.
 
 Example::
 
+    >>> from boto3.core.waiters import Waiter
+
 .. warning::
 
     TBD.
