@@ -5,7 +5,7 @@ Resources
 :author: Daniel Lindsley
 :status: Draft
 :created: 2013/08/06
-:updated: 2013/08/06
+:updated: 2013/11/18
 
 
 Goals
@@ -26,10 +26,10 @@ Concrete Goals
 Pie-In-The-Sky Goals
 --------------------
 
+* Sharable information between the various Amazon SDKs
+* Standardized (CRUD-like?) interfaces between different classes
+* Relations between classes for discovery/convenience
 * Can dynamically adapt to the "Connection" object?
-* Sharable information between SDKs?
-* Standardized (CRUD-like?) interfaces between different classes?
-* Relations between classes for discovery/convenience?
 
 
 Implementation Requirements
@@ -123,20 +123,18 @@ Issues
 
 * CRUD-like interfaces
 
-    * While this sounds nice in theory, the reality is that there's very uneven
-      support for this throughout the SDKs.
-    * This maps a subset, but not a very useful one
     * Still lots of other methods to write that aren't much different/more
       complex than the CRUD case
 
         * This is the actual heart of all of this, which is how do we map the
           "right" interface to the underlying "Connection" interface?
+        * ResourceJSON to the rescue.
 
-    * The only real benefit is standardization
+    * The real benefit is standardization
 
 * Method names
 
-    * To be "natural", we've got some painful mangling we're going to have to
+    * To be "natural", we've got some mangling we're going to have to
       do.
     * Just like below ("data appear on instance"), we have two options:
 
@@ -192,15 +190,19 @@ Where We've Been
 * Tried JSON, but it was too verbose & didn't work well for logic issues
 * Started a DSL, but quickly fell down the "don't-want-to-design-a-crappy-language"
   pithole & abandoned
+* Implemented everything as a declarative Python interface
+
+    * Judged to be too much effort to maintain
+    * Too Django-like
+
+* Back to JSON, but now just covering the 80% simple cases
+
+    * Where custom logic will be needed, we'll extend (or delegate) with custom
+      code
+    * This won't prevent SDK drift, but much of it can be shared
 
 
 Where To Go From Here
 =====================
-
-* The "attributes on classes" approach sounds the most promising at the moment
-
-    * Since it'll for-sure work
-    * Gets the SDK functional sooner
-    * Tooling can be developed later as we have time
 
 * Documentation is still huge & unsolved
