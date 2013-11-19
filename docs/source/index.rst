@@ -46,9 +46,11 @@ Topics
 .. toctree::
    :maxdepth: 1
 
+   topics/configuration
+   topics/sessions
    topics/connections
    topics/resources_collections
-   topics/sessions
+   topics/service_names
 
 
 API References

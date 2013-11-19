@@ -67,6 +67,9 @@ Construction of ``Connection`` class takes place within a
 built into ``boto`` or instantiated by a user) can successfully create
 ``Connection`` subclasses.
 
+The only necessary information is the service to which you'd like to connect
+to (see :ref:`service_names` for valid names).
+
 Usage is trivial::
 
     >>> import boto3
@@ -81,7 +84,7 @@ However, to make things even easier, this functionality is also exposed through
 the :ref:`Session <sessions>` object itself. The ``Session`` has its
 own ``ConnectionFactory`` instance(s) & can handle the details for you.
 
-So typically, you'll actually do::
+So typically, you'll do::
 
     >>> import boto3
     # Again, we're just using the default session, but you should feel free

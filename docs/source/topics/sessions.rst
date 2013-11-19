@@ -20,9 +20,23 @@ things like:
 In addition, it also maintains a cache of the dynamic classes constructed to
 talk to the AWS services.
 
-You can have as many ``Session`` objects as needed. By default, ``boto``
-includes a preconfigured instance as ``boto3.session`` as a useful shortcut,
-though you can construct your own instances in needed/desired.
+Default
+=======
+
+By default, ``boto`` includes a preconfigured instance as ``boto3.session`` as
+a useful shortcut.::
+
+    >>> import boto3
+    >>> boto3.session
+
+This session connects to the **default** region & leans on credentials from
+the user's ``~/.boto`` configuration file (or environment variables). See the
+:ref:`configuration` documentation.
+
+While this is convenient, you can construct your own instances in
+needed/desired. You can have as many ``Session`` objects as your usage
+of AWS requires.
+
 
 Common Usage
 ============
@@ -69,7 +83,8 @@ will be constructed on demand. This class will feature methods for all the API
 calls available for a given service.
 
 Requires a ``service_name`` parameter, which should be a string of the service
-to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc.
+to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc. See
+:ref:`service_names` for valid names.
 
 Returns an **uninstantiated** class for that given service.
 
@@ -96,7 +111,8 @@ communicating with a portion of a given service to which it is conceptually
 mapped.
 
 Requires a ``service_name`` parameter, which should be a string of the service
-to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc.
+to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc. See
+:ref:`service_names` for valid names.
 
 Requires a ``resource_name`` parameter, which should be a string of the resource
 to load. For example: ``Queue``, ``Notification``, ``Table``, etc.
@@ -115,7 +131,8 @@ communicating with a portion of a given service to which it is conceptually
 mapped.
 
 Requires a ``service_name`` parameter, which should be a string of the service
-to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc.
+to load. For example: ``sqs``, ``sns``, ``dynamodb``, etc. See
+:ref:`service_names` for valid names.
 
 Requires a ``collection_name`` parameter, which should be a string of the
 collection to load. For example: ``QueueCollection``,

@@ -31,7 +31,7 @@ have a ``Bucket`` instance (that represents a single S3 bucket), but if you
 wanted a list of all buckets under your account, you'd use ``BucketCollection``
 to fetch them all, to create new resources or to get specific ones.
 
-It may to help to think of ``Collection`` objects as the things you'd
+It may help to think of ``Collection`` objects as the things you'd
 expose as ``@classmethod`` interfaces in traditional OO.
 
 .. note::
@@ -145,7 +145,9 @@ Construction
 Construction of ``Resource`` class takes place within a
 ``boto3.core.resources.ResourceFactory`` instance. Any instance (whether
 built into ``boto`` or instantiated by a user) can successfully create
-``Resource`` subclass.
+``Resource`` subclass. The only information needed is the ``service_name``
+(see :ref:`service_names` for valid names) & the desired ``Resource`` object
+name.
 
 Usage is trivial::
 
