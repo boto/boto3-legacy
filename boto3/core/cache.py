@@ -144,7 +144,7 @@ class ServiceCache(object):
 
     def del_resource(self, service_name, resource_name):
         """
-        Deletes a connection for a given service.
+        Deletes a resource class for a given service.
 
         Fails silently if no connection is found in the cache.
 
