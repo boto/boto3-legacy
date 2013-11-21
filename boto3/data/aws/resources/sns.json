@@ -194,8 +194,8 @@
         "PlatformApplication": {
             "shape_name": "PlatformApplication",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "platform_application_arn",
+                "api_name": "$shape_name.PlatformApplicationArn"
             },
             "operations": {
                 "delete": {
@@ -228,8 +228,8 @@
         "PlatformEndpoint": {
             "shape_name": "PlatformEndpoint",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "endpoint_arn",
+                "api_name": "$shape_name.EndpointArn "
             },
             "operations": {
                 "delete": {
@@ -262,8 +262,8 @@
         "Topic": {
             "shape_name": "Topic",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "topic_arn",
+                "api_name": "$shape_name.TopicArn"
             },
             "operations": {
                 "add_permission": {
@@ -362,8 +362,8 @@
         "Subscription": {
             "shape_name": "Subscription",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "subscription_arn",
+                "api_name": "$shape_name.SubscriptionArn"
             },
             "operations": {
                 "confirm_subscription": {
