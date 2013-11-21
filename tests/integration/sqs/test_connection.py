@@ -12,36 +12,33 @@ class SQSConnectionTestCase(unittest.TestCase):
         self.sqs = self.sqs_class()
 
     def test_op_methods(self):
-        self.assertTrue(hasattr(self.sqs, 'add_permission'))
-        self.assertTrue(callable(self.sqs.add_permission))
-        self.assertTrue(hasattr(self.sqs, 'change_message_visibility'))
-        self.assertTrue(callable(self.sqs.change_message_visibility))
-        self.assertTrue(hasattr(self.sqs, 'change_message_visibility_batch'))
-        self.assertTrue(callable(self.sqs.change_message_visibility_batch))
-        self.assertTrue(hasattr(self.sqs, 'create_queue'))
-        self.assertTrue(callable(self.sqs.create_queue))
-        self.assertTrue(hasattr(self.sqs, 'delete_message'))
-        self.assertTrue(callable(self.sqs.delete_message))
-        self.assertTrue(hasattr(self.sqs, 'delete_message_batch'))
-        self.assertTrue(callable(self.sqs.delete_message_batch))
-        self.assertTrue(hasattr(self.sqs, 'delete_queue'))
-        self.assertTrue(callable(self.sqs.delete_queue))
-        self.assertTrue(hasattr(self.sqs, 'get_queue_attributes'))
-        self.assertTrue(callable(self.sqs.get_queue_attributes))
-        self.assertTrue(hasattr(self.sqs, 'get_queue_url'))
-        self.assertTrue(callable(self.sqs.get_queue_url))
-        self.assertTrue(hasattr(self.sqs, 'list_queues'))
-        self.assertTrue(callable(self.sqs.list_queues))
-        self.assertTrue(hasattr(self.sqs, 'receive_message'))
-        self.assertTrue(callable(self.sqs.receive_message))
-        self.assertTrue(hasattr(self.sqs, 'remove_permission'))
-        self.assertTrue(callable(self.sqs.remove_permission))
-        self.assertTrue(hasattr(self.sqs, 'send_message'))
-        self.assertTrue(callable(self.sqs.send_message))
-        self.assertTrue(hasattr(self.sqs, 'send_message_batch'))
-        self.assertTrue(callable(self.sqs.send_message_batch))
-        self.assertTrue(hasattr(self.sqs, 'set_queue_attributes'))
-        self.assertTrue(callable(self.sqs.set_queue_attributes))
+        ops = [
+            'add_permission',
+            'change_message_visibility',
+            'change_message_visibility_batch',
+            'create_queue',
+            'delete_message',
+            'delete_message_batch',
+            'delete_queue',
+            'get_queue_attributes',
+            'get_queue_url',
+            'list_queues',
+            'receive_message',
+            'remove_permission',
+            'send_message',
+            'send_message_batch',
+            'set_queue_attributes',
+        ]
+
+        for op_name in ops:
+            self.assertTrue(
+                hasattr(self.sqs, op_name),
+                msg="{0} is missing.".format(op_name)
+            )
+            self.assertTrue(
+                callable(self.sqs.add_permission),
+                msg="{0} is not callable.".format(op_name)
+            )
 
     def test_integration(self):
         name = 'boto3_lives'
