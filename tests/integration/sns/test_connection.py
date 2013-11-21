@@ -51,7 +51,7 @@ class SNSConnectionTestCase(unittest.TestCase):
                 msg="{0} is missing.".format(op_name)
             )
             self.assertTrue(
-                callable(self.sns.add_permission),
+                callable(getattr(self.s3, op_name)),
                 msg="{0} is not callable.".format(op_name)
             )
 
