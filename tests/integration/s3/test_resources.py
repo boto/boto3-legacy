@@ -1,63 +1,71 @@
 import time
 
 import boto3
+from boto3.s3.utils import force_delete_bucket
 
 from tests import unittest
 
 
-class SQSIntegrationTestCase(unittest.TestCase):
+class S3IntegrationTestCase(unittest.TestCase):
     def setUp(self):
-        super(SQSIntegrationTestCase, self).setUp()
-        self.conn = boto3.session.connect_to('sqs', region_name='us-west-2')
+        super(S3IntegrationTestCase, self).setUp()
+        self.conn = boto3.session.connect_to('s3', region_name='us-west-2')
 
     def test_integration(self):
-        QueueCollection = boto3.session.get_collection(
-            'sqs',
-            'QueueCollection'
-        )
-        Queue = boto3.session.get_resource('sqs', 'Queue')
-        MessageCollection = boto3.session.get_collection(
-            'sqs',
-            'MessageCollection'
-        )
-        Message = boto3.session.get_resource('sqs', 'Message')
+        bucket_name = 'boto3-s3-resources-{0}'.format(int(time.time()))
 
-        queue = QueueCollection(connection=self.conn).create(
-            queue_name='my_test_queue'
+        BucketCollection = boto3.session.get_collection(
+            's3',
+            'BucketCollection'
         )
-        self.addCleanup(queue.delete)
+        Bucket = boto3.session.get_resource('s3', 'Bucket')
+        S3ObjectCollection = boto3.session.get_collection(
+            's3',
+            'S3ObjectCollection'
+        )
+        S3Object = boto3.session.get_resource('s3', 'S3Object')
+
+        bucket = BucketCollection(connection=self.conn).create(
+            bucket=bucket_name,
+            create_bucket_configuration={
+                'LocationConstraint': 'us-west-2'
+            }
+        )
+        self.addCleanup(
+            force_delete_bucket,
+            conn=self.conn,
+            bucket_name=bucket_name
+        )
 
         # FIXME: Needs 100% more waiters.
         time.sleep(5)
 
-        self.assertTrue(isinstance(queue, Queue))
-        self.assertTrue('/my_test_queue' in queue.queue_url)
+        self.assertTrue(isinstance(bucket, Bucket))
+        self.assertTrue(bucket_name in bucket.location)
 
-        msg = MessageCollection(connection=self.conn).create(
+        import pdb; pdb.set_trace()
+        obj = S3ObjectCollection(connection=self.conn).create(
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
-            queue_url=queue.queue_url,
-            message_body="THIS IS A TRIUMPH"
+            bucket=bucket_name,
+            key='test_key',
+            body="THIS IS A TRIUMPH"
         )
-        self.assertTrue(isinstance(msg, Message))
-        self.assertEqual(
-            msg.md5_of_message_body,
-            '07366f249e11262705e4964e03873078'
-        )
+        self.assertTrue(isinstance(obj, S3Object))
 
         # FIXME: Needs 100% more waiters.
         time.sleep(5)
 
-        msgs = queue.receive_message(
-            queue_url=queue.queue_url
+        obj = S3ObjectCollection(connection=self.conn).get(
+            # FIXME: This should be passable as an object without having to
+            #        pass specific data.
+            bucket=bucket_name,
+            key='test_key'
         )
-        # FIXME: For now, this just returns a bag of data. :/
-        #        This test should go away & the below should take its place.
-        self.assertTrue(len(msgs['Messages']) > 0)
-        self.assertEqual(
-            msgs['Messages'][-1]['Body'],
-            "THIS IS A TRIUMPH"
-        )
+        self.assertTrue(isinstance(obj, S3Object))
+        self.assertEqual(obj.body, 'THIS IS A TRIUMPH')
 
-        # self.assertTrue(isinstance(msgs[0], Message))
-        # self.assertEqual(msgs[0].message_body, "THIS IS A TRIUMPH")
+        # Test travering relations.
+        obj = bucket.keys.get(key='test_key')
+        self.assertTrue(isinstance(obj, S3Object))
+        self.assertEqual(obj.body, 'THIS IS A TRIUMPH')
