@@ -1,3 +1,4 @@
+from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import NoSuchMethod
 from boto3.core.loader import ResourceJSONLoader
 from boto3.utils.mangle import to_snake_case
@@ -152,12 +153,41 @@ class Collection(object):
                 self._details.service_name
             )
 
+        # Now that we have a connection, we can update docstrings.
+        self._update_docstrings()
+
     def __str__(self):
         return "{0}: {1} in {2}".format(
             self.__class__.__name__,
             self._details.service_name,
             self._connection.region_name
         )
+
+    def _update_docstrings(self):
+        """
+        Runs through the operation methods & updates their docstrings if
+        necessary.
+
+        If the method has the default placeholder docstring, this will replace
+        it with the docstring from the underlying connection.
+        """
+        ops = self._details.collection_data['operations']
+
+        for method_name in ops.keys():
+            meth = getattr(self.__class__, method_name)
+
+            if meth.__doc__ != DEFAULT_DOCSTRING:
+                # It already has a custom docstring. Leave it alone.
+                continue
+
+            # Needs updating. So there's at least *something* vaguely useful
+            # there, use the docstring from the underlying ``Connection``
+            # method.
+            # FIXME: We need to figure out a way to make this more useful, if
+            #        possible.
+            api_name = ops[method_name]['api_name']
+            conn_meth = getattr(self._connection, to_snake_case(api_name))
+            meth.__doc__ = conn_meth.__doc__
 
     def full_update_params(self, conn_method_name, params):
         """
@@ -461,6 +491,14 @@ class CollectionFactory(object):
             result = method(**params)
             return self.full_post_process(method_name, result)
 
+        # Get the (possibly overridden) docs from the op_data.
+        # If it's not there **or** is ``null``, populate with the default
+        # docstring.
+        docs = op_data.get('docs', None)
+
+        if docs is None:
+            docs = DEFAULT_DOCSTRING
+
         _new_method.__name__ = method_name
-        _new_method.__doc__ = op_data.get('docs', '')
+        _new_method.__doc__ = docs
         return _new_method
