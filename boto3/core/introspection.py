@@ -110,6 +110,15 @@ class Introspection(object):
         return params
 
     def convert_docs(self, html):
+        """
+        Converts the service's HTML docs to reStructured Text.
+
+        :param html: The HTML to convert
+        :type html: string
+
+        :returns: The converted text
+        :rtype: string
+        """
         return html_to_rst(html)
 
     def introspect_operation(self, operation):
