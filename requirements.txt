@@ -2,3 +2,7 @@ botocore==0.24.0
 six>=1.4.0
 jmespath==0.1.0
 python-dateutil>=2.1
+
+# Someday...
+# bcdoc==0.12.0
+-e git+https://github.com/boto/bcdoc.git@3b160ee79d7eef1b6a6db7665603ba059b8f412d#egg=bcdoc

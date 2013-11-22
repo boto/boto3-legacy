@@ -109,6 +109,9 @@ class Introspection(object):
 
         return params
 
+    def convert_docs(self, html):
+        return html_to_rst(html)
+
     def introspect_operation(self, operation):
         """
         Introspects an entire operation, returning::
@@ -127,7 +130,7 @@ class Introspection(object):
         return {
             'method_name': operation.py_name,
             'api_name': operation.name,
-            'docs': html_to_rst(operation.documentation),
+            'docs': self.convert_docs(operation.documentation),
             'params': self.parse_params(operation.params),
             'output': operation.output,
         }
