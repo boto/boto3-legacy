@@ -297,8 +297,8 @@
         "Bucket": {
             "shape_name": "Bucket",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "bucket",
+                "api_name": "$shape_name.Bucket"
             },
             "operations": {
                 "delete": {
@@ -687,8 +687,8 @@
         "S3Object": {
             "shape_name": "S3Object",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "key",
+                "api_name": "$shape_name.Key"
             },
             "operations": {
                 "abort_multipart_upload": {
