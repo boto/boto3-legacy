@@ -141,6 +141,44 @@
                     }
                 },
                 "get": {
+                    "api_name": "GetObject",
+                    "docs": null,
+                    "params": {
+                        "bucket": {
+                            "api_name": "Bucket",
+                            "type": "string"
+                        },
+                        "if_match": {
+                            "api_name": "IfMatch",
+                            "type": "string"
+                        },
+                        "if_modified_since": {
+                            "api_name": "IfModifiedSince",
+                            "type": "timestamp"
+                        },
+                        "if_none_match": {
+                            "api_name": "IfNoneMatch",
+                            "type": "string"
+                        },
+                        "if_unmodified_since": {
+                            "api_name": "IfUnmodifiedSince",
+                            "type": "timestamp"
+                        },
+                        "key": {
+                            "api_name": "Key",
+                            "type": "string"
+                        },
+                        "range": {
+                            "api_name": "Range",
+                            "type": "string"
+                        },
+                        "version_id": {
+                            "api_name": "VersionId",
+                            "type": "string"
+                        }
+                    }
+                },
+                "head": {
                     "api_name": "HeadObject",
                     "docs": null,
                     "params": {
