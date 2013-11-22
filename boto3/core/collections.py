@@ -291,6 +291,18 @@ class Collection(object):
         """
         return self.build_resource(result)
 
+    def post_process_get(self, result):
+        """
+        An example of the ``post_process`` extensions, this returns an instance
+        of the ``Resource`` created (rather than just a bag of data).
+
+        :param result: The full data handed back from the API.
+        :type result: dict
+
+        :returns: A ``Resource`` subclass
+        """
+        return self.build_resource(result)
+
     def build_resource(self, data):
         """
         Given some data, builds the correct/matching ``Resource`` subclass
