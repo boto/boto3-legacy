@@ -133,6 +133,8 @@ class Collection(object):
     """
     A common base class for all the ``Collection`` objects.
     """
+    _res_class = None
+
     def __init__(self, connection=None, **kwargs):
         """
         Creates a new ``Collection`` instance.
@@ -162,6 +164,21 @@ class Collection(object):
             self._details.service_name,
             self._connection.region_name
         )
+
+    @classmethod
+    def change_resource(cls, resource_class):
+        """
+        Updates the default ``Resource`` class created when the ``Collection``
+        is returning instances.
+
+        Default behavior (without calling this method) is that the class
+        will return whatever the ``session`` can provide.
+
+        :param resource_class: The new ``Resource`` class to use during
+            construction.
+        :type resource_class: class
+        """
+        cls._res_class = resource_class
 
     def _update_docstrings(self):
         """
@@ -343,11 +360,13 @@ class Collection(object):
 
         :returns: A ``Resource`` subclass
         """
-        res_class = self._details.session.get_resource(
-            self._details.service_name,
-            self._details.resource
-        )
-        return res_class(connection=self._connection, **data)
+        if self._res_class is None:
+            self._res_class = self._details.session.get_resource(
+                self._details.service_name,
+                self._details.resource
+            )
+
+        return self._res_class(connection=self._connection, **data)
 
 
 class CollectionFactory(object):
@@ -408,7 +427,7 @@ class CollectionFactory(object):
     def __str__(self):
         return self.__class__.__name__
 
-    def construct_for(self, service_name, collection_name):
+    def construct_for(self, service_name, collection_name, base_class=None):
         """
         Builds a new, specialized ``Collection`` subclass as part of a given
         service.
@@ -445,10 +464,13 @@ class CollectionFactory(object):
         # Construct what the class ought to have on it.
         attrs.update(self._build_methods(details))
 
+        if base_class is None:
+            base_class = self.base_collection_class
+
         # Create the class.
         return type(
             klass_name,
-            (self.base_collection_class,),
+            (base_class,),
             attrs
         )
 
