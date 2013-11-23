@@ -38,13 +38,14 @@ class SessionTestCase(unittest.TestCase):
         self.session.cache.set_resource('test', 'Test', FakeConnection)
         self.assertEqual(len(self.session.cache), 1)
 
-        Test = self.session.get_resource('test', 'Test')
+        # Ugly, but needed due to our faking connections above.
+        Test = self.session.get_resource('test', 'Test', base_class=object)
         self.assertTrue(Test is FakeConnection)
 
     def test_get_resource_does_not_exist(self):
         self.assertEqual(len(self.session.cache), 0)
         Queue = self.session.get_resource('sqs', 'Queue')
-        self.assertEqual(Queue.__name__, 'QueueResource')
+        self.assertEqual(Queue.__name__, 'Queue')
         self.assertEqual(len(self.session.cache), 1)
 
     def test_get_collection_exists(self):
@@ -53,7 +54,12 @@ class SessionTestCase(unittest.TestCase):
         self.session.cache.set_collection('test', 'Test', FakeConnection)
         self.assertEqual(len(self.session.cache), 1)
 
-        TestCollection = self.session.get_collection('test', 'Test')
+        # Ugly, but needed due to our faking connections above.
+        TestCollection = self.session.get_collection(
+            'test',
+            'Test',
+            base_class=object
+        )
         self.assertTrue(TestCollection is FakeConnection)
 
     def test_get_collection_does_not_exist(self):

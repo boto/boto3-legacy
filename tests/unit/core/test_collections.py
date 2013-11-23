@@ -5,6 +5,7 @@ from boto3.core.connection import ConnectionFactory
 from boto3.core.exceptions import APIVersionMismatchError
 from boto3.core.collections import ResourceJSONLoader, CollectionDetails
 from boto3.core.collections import Collection, CollectionFactory
+from boto3.core.resources import Resource, ResourceDetails
 from boto3.core.session import Session
 
 from tests import unittest
@@ -259,6 +260,9 @@ class FakePipeResource(object):
 
 
 class PipeCollection(Collection):
+    def create(self, *args, **kwargs):
+        return {}
+
     def update_params(self, conn_method_name, params):
         params['global'] = True
         return super(PipeCollection, self).update_params(conn_method_name, params)
@@ -305,11 +309,11 @@ class CollectionTestCase(unittest.TestCase):
             }
         }
         self.fake_conn = FakeConn()
+        PipeCollection._details = self.fake_details
         self.collection = PipeCollection(
             connection=self.fake_conn,
             id='1872baf45'
         )
-        self.collection._details = self.fake_details
 
     def test_full_update_params(self):
         params = {
@@ -407,6 +411,14 @@ class CollectionFactoryTestCase(unittest.TestCase):
         class StubbyCollection(Collection):
             pass
 
+        class StubbyResource(Resource):
+            _details = ResourceDetails(
+                self.session,
+                'test',
+                'Pipeline',
+                loader=self.test_loader
+            )
+
         op_method = self.cf._create_operation_method('create', {
             "api_name": "CreatePipeline",
             "docs": "MAK U NU PIPLIN.",
@@ -426,6 +438,7 @@ class CollectionFactoryTestCase(unittest.TestCase):
         # Assign it & call it.
         StubbyCollection._details = self.cd
         StubbyCollection.create = op_method
+        StubbyCollection.change_resource(StubbyResource)
         sr = StubbyCollection(connection=FakeConn())
         fake_pipe = sr.create()
         self.assertEqual(fake_pipe.id, '1872baf45')

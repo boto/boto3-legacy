@@ -94,7 +94,7 @@ class Session(object):
         self.cache.set_connection(service_name, new_class)
         return new_class
 
-    def get_resource(self, service_name, resource_name):
+    def get_resource(self, service_name, resource_name, base_class=None):
         """
         Returns a ``Resource`` **class** for a given service.
 
@@ -106,22 +106,31 @@ class Session(object):
             class. Ex. ``Queue``, ``Notification``, ``Table``, etc.
         :type resource_name: string
 
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+        :type base_class: class
+
         :rtype: <boto3.core.resources.Resource subclass>
         """
         try:
-            return self.cache.get_resource(service_name, resource_name)
+            return self.cache.get_resource(
+                service_name,
+                resource_name,
+                base_class=base_class
+            )
         except NotCached:
             pass
 
         # We didn't find it. Construct it.
         new_class = self.resource_factory.construct_for(
             service_name,
-            resource_name
+            resource_name,
+            base_class=base_class
         )
         self.cache.set_resource(service_name, resource_name, new_class)
         return new_class
 
-    def get_collection(self, service_name, collection_name):
+    def get_collection(self, service_name, collection_name, base_class=None):
         """
         Returns a ``Collection`` **class** for a given service.
 
@@ -134,17 +143,26 @@ class Session(object):
             ``TableCollection``, etc.
         :type collection_name: string
 
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+        :type base_class: class
+
         :rtype: <boto3.core.collections.Collection subclass>
         """
         try:
-            return self.cache.get_collection(service_name, collection_name)
+            return self.cache.get_collection(
+                service_name,
+                collection_name,
+                base_class=base_class
+            )
         except NotCached:
             pass
 
         # We didn't find it. Construct it.
         new_class = self.collection_factory.construct_for(
             service_name,
-            collection_name
+            collection_name,
+            base_class=base_class
         )
         self.cache.set_collection(service_name, collection_name, new_class)
         return new_class

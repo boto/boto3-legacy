@@ -86,7 +86,7 @@ class IntrospectionTestCase(unittest.TestCase):
             'params'
         ])
         self.assertEqual(op_data['api_name'], 'CreateQueue')
-        self.assertEqual(op_data['docs'], ' <p>Creates a queue.</p>\n ')
+        self.assertEqual(op_data['docs'], ' \n\nCreates a queue.\n\n ')
         self.assertEqual(op_data['method_name'], 'create_queue')
         self.assertEqual(len(op_data['params']), 2)
         self.assertEqual(op_data['params'][0]['var_name'], 'queue_name')

@@ -209,7 +209,10 @@ class Resource(object):
         ops = self._details.resource_data['operations']
 
         for method_name in ops.keys():
-            meth = getattr(self.__class__, method_name)
+            meth = getattr(self.__class__, method_name, None)
+
+            if not meth:
+                continue
 
             if meth.__doc__ != DEFAULT_DOCSTRING:
                 # It already has a custom docstring. Leave it alone.
@@ -418,7 +421,7 @@ class ResourceFactory(object):
     def __str__(self):
         return self.__class__.__name__
 
-    def construct_for(self, service_name, resource_name):
+    def construct_for(self, service_name, resource_name, base_class=None):
         """
         Builds a new, specialized ``Resource`` subclass as part of a given
         service.
@@ -454,15 +457,18 @@ class ResourceFactory(object):
         # Construct what the class ought to have on it.
         attrs.update(self._build_methods(details))
 
+        if base_class is None:
+            base_class = self.base_resource_class
+
         # Create the class.
         return type(
             klass_name,
-            (self.base_resource_class,),
+            (base_class,),
             attrs
         )
 
     def _build_class_name(self, resource_name):
-        return '{0}Resource'.format(resource_name)
+        return resource_name
 
     def _build_methods(self, details):
         attrs = {}

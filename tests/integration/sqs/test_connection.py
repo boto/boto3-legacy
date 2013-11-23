@@ -36,7 +36,7 @@ class SQSConnectionTestCase(unittest.TestCase):
                 msg="{0} is missing.".format(op_name)
             )
             self.assertTrue(
-                callable(getattr(self.s3, op_name)),
+                callable(getattr(self.sqs, op_name)),
                 msg="{0} is not callable.".format(op_name)
             )
 
