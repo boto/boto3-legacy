@@ -96,7 +96,18 @@ class ServiceCache(object):
         except KeyError:
             pass
 
-    def get_resource(self, service_name, resource_name):
+    def build_classpath(self, klass=None):
+        if not klass:
+            classpath = 'default'
+        else:
+            classpath = "{0}.{1}".format(
+                klass.__module__,
+                klass.__name__
+            )
+
+        return classpath
+
+    def get_resource(self, service_name, resource_name, base_class=None):
         """
         Retrieves a resource class from the cache, if available.
 
@@ -108,11 +119,18 @@ class ServiceCache(object):
             ``Queue``, ``Notification``, ``Table``, etc.
         :type resource_name: string
 
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+            Default is ``default``.
+        :type base_class: class
+
         :returns: A <boto3.core.resources.Resource> subclass
         """
+        classpath = self.build_classpath(base_class)
         service = self.services.get(service_name, {})
         resources = service.get('resources', {})
-        resource_class = resources.get(resource_name, None)
+        resource_options = resources.get(resource_name, {})
+        resource_class = resource_options.get(classpath, None)
 
         if not resource_class:
             msg = "Resource '{0}' for {1} is not present in the cache."
@@ -140,9 +158,16 @@ class ServiceCache(object):
         """
         self.services.setdefault(service_name, {})
         self.services[service_name].setdefault('resources', {})
-        self.services[service_name]['resources'][resource_name] = to_cache
+        self.services[service_name]['resources'].setdefault(resource_name, {})
+        options = self.services[service_name]['resources'][resource_name]
+        classpath = self.build_classpath(to_cache.__bases__[0])
 
-    def del_resource(self, service_name, resource_name):
+        if classpath == 'boto3.core.resources.Resource':
+            classpath = 'default'
+
+        options[classpath] = to_cache
+
+    def del_resource(self, service_name, resource_name, base_class=None):
         """
         Deletes a resource class for a given service.
 
@@ -151,15 +176,22 @@ class ServiceCache(object):
         :param service_name: The service a given ``Resource`` talks to. Ex.
             ``sqs``, ``sns``, ``dynamodb``, etc.
         :type service_name: string
+
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+            Default is ``default``.
+        :type base_class: class
         """
          # Unlike ``get_resource``, this should be fire & forget.
         # We don't really care, as long as it's not in the cache any longer.
         try:
-            del self.services[service_name]['resources'][resource_name]
+            classpath = self.build_classpath(base_class)
+            opts = self.services[service_name]['resources'][resource_name]
+            del opts[classpath]
         except KeyError:
             pass
 
-    def get_collection(self, service_name, collection_name):
+    def get_collection(self, service_name, collection_name, base_class=None):
         """
         Retrieves a collection class from the cache, if available.
 
@@ -172,11 +204,18 @@ class ServiceCache(object):
             ``TableCollection``, etc.
         :type collection_name: string
 
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+            Default is ``default``.
+        :type base_class: class
+
         :returns: A <boto3.core.collections.Collection> subclass
         """
+        classpath = self.build_classpath(base_class)
         service = self.services.get(service_name, {})
         collections = service.get('collections', {})
-        collection_class = collections.get(collection_name, None)
+        collection_options = collections.get(collection_name, {})
+        collection_class = collection_options.get(classpath, None)
 
         if not collection_class:
             msg = "Collection '{0}' for {1} is not present in the cache."
@@ -205,9 +244,16 @@ class ServiceCache(object):
         """
         self.services.setdefault(service_name, {})
         self.services[service_name].setdefault('collections', {})
-        self.services[service_name]['collections'][collection_name] = to_cache
+        self.services[service_name]['collections'].setdefault(collection_name, {})
+        options = self.services[service_name]['collections'][collection_name]
+        classpath = self.build_classpath(to_cache.__bases__[0])
 
-    def del_collection(self, service_name, collection_name):
+        if classpath == 'boto3.core.collections.Collection':
+            classpath = 'default'
+
+        options[classpath] = to_cache
+
+    def del_collection(self, service_name, collection_name, base_class=None):
         """
         Deletes a collection for a given service.
 
@@ -221,10 +267,17 @@ class ServiceCache(object):
             ``QueueCollection``, ``NotificationCollection``,
             ``TableCollection``, etc.
         :type collection_name: string
+
+        :param base_class: (Optional) The base class of the object. Prevents
+            "magically" loading the wrong class (one with a different base).
+            Default is ``default``.
+        :type base_class: class
         """
          # Unlike ``get_collection``, this should be fire & forget.
         # We don't really care, as long as it's not in the cache any longer.
         try:
-            del self.services[service_name]['collections'][collection_name]
+            classpath = self.build_classpath(base_class)
+            opts = self.services[service_name]['collections'][collection_name]
+            del opts[classpath]
         except KeyError:
             pass

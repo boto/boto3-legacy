@@ -44,7 +44,7 @@ class SessionTestCase(unittest.TestCase):
     def test_get_resource_does_not_exist(self):
         self.assertEqual(len(self.session.cache), 0)
         Queue = self.session.get_resource('sqs', 'Queue')
-        self.assertEqual(Queue.__name__, 'QueueResource')
+        self.assertEqual(Queue.__name__, 'Queue')
         self.assertEqual(len(self.session.cache), 1)
 
     def test_get_collection_exists(self):

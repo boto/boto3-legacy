@@ -1,5 +1,7 @@
 from boto3.core.cache import ServiceCache
+from boto3.core.collections import Collection
 from boto3.core.exceptions import NotCached
+from boto3.core.resources import Resource
 
 from tests import unittest
 
@@ -7,10 +9,10 @@ from tests import unittest
 # Classes for identity tests.
 class TestConnection(object): pass
 class AnotherTestConnection(TestConnection): pass
-class TestResource(object): pass
-class AnotherTestResource(TestResource): pass
-class TestCollection(object): pass
-class AnotherTestCollection(TestCollection): pass
+class TestResource(Resource): pass
+class AnotherTestResource(Resource): pass
+class TestCollection(Collection): pass
+class AnotherTestCollection(Collection): pass
 
 
 class ServiceCacheTestCase(unittest.TestCase):
@@ -130,9 +132,11 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.services = {
             'sqs': {
                 'resources': {
-                    'Test': TestResource,
-                }
-            }
+                    'Test': {
+                        'default': TestResource,
+                    },
+                },
+            },
         }
 
         self.assertEqual(self.cache.get_resource('sqs', 'Test'), TestResource)
@@ -164,7 +168,9 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.assertEqual(self.cache.services, {
             'sqs': {
                 'resources': {
-                    'Test': TestResource,
+                    'Test': {
+                        'default': TestResource,
+                    },
                 },
             },
         })
@@ -174,12 +180,16 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.assertEqual(self.cache.services, {
             'sqs': {
                 'resources': {
-                    'Test': TestResource,
+                    'Test': {
+                        'default': TestResource,
+                    },
                 },
             },
             'sns': {
                 'resources': {
-                    'AnotherTest': AnotherTestResource,
+                    'AnotherTest': {
+                        'default': AnotherTestResource,
+                    },
                 },
             },
         })
@@ -188,12 +198,16 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.services = {
             'sqs': {
                 'resources': {
-                    'Test': TestResource,
+                    'Test': {
+                        'default': TestResource,
+                    },
                 },
             },
             'sns': {
                 'resources': {
-                    'AnotherTest': AnotherTestResource,
+                    'AnotherTest': {
+                        'default': AnotherTestResource,
+                    },
                 },
             },
         }
@@ -201,11 +215,15 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.del_resource('sqs', 'Test')
         self.assertEqual(self.cache.services, {
             'sqs': {
-                'resources': {},
+                'resources': {
+                    'Test': {},
+                },
             },
             'sns': {
                 'resources': {
-                    'AnotherTest': AnotherTestResource,
+                    'AnotherTest': {
+                        'default': AnotherTestResource,
+                    },
                 },
             },
         })
@@ -218,11 +236,15 @@ class ServiceCacheTestCase(unittest.TestCase):
 
         self.assertEqual(self.cache.services, {
             'sqs': {
-                'resources': {},
+                'resources': {
+                    'Test': {},
+                },
             },
             'sns': {
                 'resources': {
-                    'AnotherTest': AnotherTestResource,
+                    'AnotherTest': {
+                        'default': AnotherTestResource,
+                    },
                 },
             },
         })
@@ -231,7 +253,9 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.services = {
             'sqs': {
                 'collections': {
-                    'Test': TestCollection,
+                    'Test': {
+                        'default': TestCollection,
+                    },
                 },
             }
         }
@@ -261,7 +285,9 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.assertEqual(self.cache.services, {
             'sqs': {
                 'collections': {
-                    'Test': TestCollection,
+                    'Test': {
+                        'default': TestCollection,
+                    },
                 },
             },
         })
@@ -271,12 +297,16 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.assertEqual(self.cache.services, {
             'sqs': {
                 'collections': {
-                    'Test': TestCollection,
+                    'Test': {
+                        'default': TestCollection,
+                    },
                 },
             },
             'sns': {
                 'collections': {
-                    'AnotherTest': AnotherTestCollection,
+                    'AnotherTest': {
+                        'default': AnotherTestCollection,
+                    },
                 },
             },
         })
@@ -285,12 +315,16 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.services = {
             'sqs': {
                 'collections': {
-                    'Test': TestCollection,
+                    'Test': {
+                        'default': TestCollection,
+                    },
                 },
             },
             'sns': {
                 'collections': {
-                    'AnotherTest': AnotherTestCollection,
+                    'AnotherTest': {
+                        'default': AnotherTestCollection,
+                    },
                 },
             },
         }
@@ -298,11 +332,15 @@ class ServiceCacheTestCase(unittest.TestCase):
         self.cache.del_collection('sqs', 'Test')
         self.assertEqual(self.cache.services, {
             'sqs': {
-                'collections': {},
+                'collections': {
+                    'Test': {},
+                },
             },
             'sns': {
                 'collections': {
-                    'AnotherTest': AnotherTestCollection,
+                    'AnotherTest': {
+                        'default': AnotherTestCollection,
+                    },
                 },
             },
         })
@@ -315,11 +353,15 @@ class ServiceCacheTestCase(unittest.TestCase):
 
         self.assertEqual(self.cache.services, {
             'sqs': {
-                'collections': {},
+                'collections': {
+                    'Test': {},
+                },
             },
             'sns': {
                 'collections': {
-                    'AnotherTest': AnotherTestCollection,
+                    'AnotherTest': {
+                        'default': AnotherTestCollection,
+                    },
                 },
             },
         })
@@ -357,16 +399,24 @@ class ServiceCacheTestCase(unittest.TestCase):
             },
             'elastictranscoder': {
                 'collections': {
-                    'PipelineCollection': AnotherTestCollection,
+                    'PipelineCollection': {
+                        'default': AnotherTestCollection,
+                    },
                 },
             },
             'sqs': {
                 'resources': {
-                    'Message': TestResource,
-                    'Queue': TestResource,
+                    'Message': {
+                        'default': TestResource,
+                    },
+                    'Queue': {
+                        'default': TestResource,
+                    },
                 },
                 'collections': {
-                    'QueueCollection': AnotherTestCollection,
+                    'QueueCollection': {
+                        'default': AnotherTestCollection,
+                    },
                 },
                 'connection': TestConnection,
             }
