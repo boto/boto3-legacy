@@ -1,3 +1,5 @@
+import io
+
 import boto3
 from boto3.core.resources import Resource
 
@@ -10,7 +12,11 @@ class S3ObjectCustomizations(Resource):
         body = self._data['body']
 
         if hasattr(body, 'seek'):
-            body.seek(0)
+            try:
+                body.seek(0)
+            except io.UnsupportedOperation:
+                # Some things are not rewindable. Don't die as a result.
+                pass
 
         if hasattr(body, 'read'):
             return body.read()

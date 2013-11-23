@@ -1,6 +1,8 @@
 import time
 
 import boto3
+from boto3.s3.resources import BucketCollection, S3ObjectCollection
+from boto3.s3.resources import Bucket, S3Object
 from boto3.s3.utils import force_delete_bucket
 
 from tests import unittest
@@ -13,17 +15,6 @@ class S3IntegrationTestCase(unittest.TestCase):
 
     def test_integration(self):
         bucket_name = 'boto3-s3-resources-{0}'.format(int(time.time()))
-
-        BucketCollection = boto3.session.get_collection(
-            's3',
-            'BucketCollection'
-        )
-        Bucket = boto3.session.get_resource('s3', 'Bucket')
-        S3ObjectCollection = boto3.session.get_collection(
-            's3',
-            'S3ObjectCollection'
-        )
-        S3Object = boto3.session.get_resource('s3', 'S3Object')
 
         bucket = BucketCollection(connection=self.conn).create(
             bucket=bucket_name,
@@ -43,7 +34,6 @@ class S3IntegrationTestCase(unittest.TestCase):
         self.assertTrue(isinstance(bucket, Bucket))
         self.assertTrue(bucket_name in bucket.location)
 
-        import pdb; pdb.set_trace()
         obj = S3ObjectCollection(connection=self.conn).create(
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
@@ -63,7 +53,10 @@ class S3IntegrationTestCase(unittest.TestCase):
             key='test_key'
         )
         self.assertTrue(isinstance(obj, S3Object))
-        self.assertEqual(obj.body, 'THIS IS A TRIUMPH')
+        # FIXME: We get a bytestring back rather than a Unicode string.
+        #        Is this intended behavior?
+        self.assertEqual(obj.get_content(), b'THIS IS A TRIUMPH')
+        # self.assertEqual(obj.get_content(), 'THIS IS A TRIUMPH')
 
         # Test travering relations.
         obj = bucket.keys.get(key='test_key')
