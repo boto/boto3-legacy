@@ -191,7 +191,10 @@ class Collection(object):
         ops = self._details.collection_data['operations']
 
         for method_name in ops.keys():
-            meth = getattr(self.__class__, method_name)
+            meth = getattr(self.__class__, method_name, None)
+
+            if not meth:
+                continue
 
             if meth.__doc__ != DEFAULT_DOCSTRING:
                 # It already has a custom docstring. Leave it alone.

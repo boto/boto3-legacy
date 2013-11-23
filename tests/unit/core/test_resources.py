@@ -357,11 +357,11 @@ class ResourceFactoryTestCase(unittest.TestCase):
     def test_build_class_name(self):
         self.assertEqual(
             self.rf._build_class_name('Pipeline'),
-            'PipelineResource'
+            'Pipeline'
         )
         self.assertEqual(
             self.rf._build_class_name('TestName'),
-            'TestNameResource'
+            'TestName'
         )
 
     def test_build_methods(self):
