@@ -29,19 +29,7 @@ class APIVersionMismatchError(BotoException):
     pass
 
 
-class NoNameProvidedError(BotoException):
-    pass
-
-
-class NoResourceAttachedError(BotoException):
-    pass
-
-
 class ValidationError(BotoException):
-    pass
-
-
-class UnknownFieldError(BotoException):
     pass
 
 
