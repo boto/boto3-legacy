@@ -2,6 +2,8 @@
 boto3
 =====
 
+.. image:: https://travis-ci.org/boto/boto3.png?branch=develop   :target: https://travis-ci.org/boto/boto3
+
 An evolution of boto, supporting both Python 2 & 3.
 
 This is not a port of boto_, but a ground-up rewrite. We hope to improve on boto
@@ -32,8 +34,8 @@ Current Status
 Complete
 --------
 
-* Low-level ``Connection`` objects are relatively complete (need docstring work
-  and better argument handling if we can), but are usable *now*.
+* Low-level ``Connection`` objects are relatively complete, but are usable
+  *now*.
 
     * These are equivalent to the low-level ``*Connection`` objects in boto.
     * Relatively finalized, though they may eventually move down to botocore_
@@ -61,6 +63,9 @@ In-progress
 Running Tests
 =============
 
+Setup
+-----
+
 Setup looks like::
 
     $ virtualenv -p python3 env3
@@ -68,10 +73,23 @@ Setup looks like::
     $ pip install -r requirements.txt
     $ pip install nose
 
+Running Unit Tests
+------------------
+
 Running tests looks like::
 
     $ nosetests -s -v unit
 
-**WARNING:** Running integration tests (``nosetests -s -v integration``)
-requires a valid AWS account & **WILL** result in charges to that account
-based on usage.
+``boto3`` is in a state of flux, so while we strive for passing unit tests &
+good test coverage (currently 98%), there may be periods where some failures
+are present. This should no longer be the case once we reach beta.
+
+Running Integration Tests
+-------------------------
+
+Running **integration** tests (against AWS itself) looks like::
+
+    $ nosetests -s -v integration
+
+**WARNING:** Running integration tests requires a valid AWS account & **WILL**
+result in charges to that account based on usage.
