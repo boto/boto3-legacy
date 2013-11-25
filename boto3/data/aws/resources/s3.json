@@ -720,7 +720,13 @@
                     }
                 }
             },
-            "relations": {}
+            "relations": {
+                "S3Object": {
+                    "var_name": "keys",
+                    "required": false,
+                    "type": "1-M"
+                }
+            }
         },
         "S3Object": {
             "shape_name": "S3Object",
@@ -1162,7 +1168,13 @@
                     }
                 }
             },
-            "relations": {}
+            "relations": {
+                "Bucket": {
+                    "var_name": "bucket",
+                    "required": true,
+                    "type": "1-1"
+                }
+            }
         }
     }
 }
