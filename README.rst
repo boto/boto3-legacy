@@ -7,10 +7,13 @@ An evolution of boto, supporting both Python 2 & 3.
 This is not a port of boto_, but a ground-up rewrite. We hope to improve on boto
 in both consistency & maintainability.
 
-**WARNING**: This repo is very unstable & the API **WILL** shift as time goes
+You can find a current version of the documentation on `Read the Docs`_.
+
+**WARNING**: This repo is unstable & the API **WILL** shift as time goes
 on. This code is **NOT** yet production-ready.
 
 .. _boto: https://docs.pythonboto.org/
+.. _`Read the Docs`: https://boto3.readthedocs.org/en/latest/
 
 
 Requirements
@@ -47,13 +50,12 @@ In-progress
     * Easier/more natural to work with
     * Basic calls function, but you need to supply all parameters the right way
       (leaning on the API docs a lot) & the responses are pretty raw
-    * Needs more response parsing work
 
 * ``Collection`` objects
 
     * Abstracts working with collections of ``Resource`` objects
-    * Basic functionality kinda works (creates/gets data) but not very useful
-      yet
+    * Basic functionality works (creates/gets data)
+    * Processing list data (``.all(...)``)
 
 
 Running Tests
