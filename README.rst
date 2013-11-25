@@ -2,7 +2,7 @@
 boto3
 =====
 
-.. image:: https://travis-ci.org/boto/boto3.png?branch=develop   :target: https://travis-ci.org/boto/boto3
+|Build Status|
 
 An evolution of boto, supporting both Python 2 & 3.
 
@@ -16,7 +16,8 @@ on. This code is **NOT** yet production-ready.
 
 .. _boto: https://docs.pythonboto.org/
 .. _`Read the Docs`: https://boto3.readthedocs.org/en/latest/
-
+.. |Build Status| image:: https://travis-ci.org/boto/boto3.png?branch=develop
+   :target: https://travis-ci.org/boto/boto3
 
 Requirements
 ============
