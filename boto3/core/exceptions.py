@@ -25,6 +25,14 @@ class NoResourceJSONFound(ResourceError):
     pass
 
 
+class RelationError(BotoException):
+    pass
+
+
+class NoSuchRelationError(RelationError):
+    pass
+
+
 class APIVersionMismatchError(BotoException):
     pass
 
