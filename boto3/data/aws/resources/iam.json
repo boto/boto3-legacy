@@ -577,8 +577,8 @@
         "AccessKey": {
             "shape_name": "AccessKey",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "access_key",
+                "api_name": "$shape_name.AccessKey"
             },
             "operations": {
                 "delete": {
@@ -619,8 +619,8 @@
         "AccountAlias": {
             "shape_name": "AccountAlias",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "AccountAlias",
+                "api_name": "$shape_name.AccountAlias"
             },
             "operations": {
                 "delete": {
@@ -639,8 +639,8 @@
         "Group": {
             "shape_name": "Group",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "group",
+                "api_name": "$shape_name.Group"
             },
             "operations": {
                 "add_user": {
@@ -769,8 +769,8 @@
         "InstanceProfile": {
             "shape_name": "InstanceProfile",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "instance_profile",
+                "api_name": "$shape_name.InstanceProfile"
             },
             "operations": {
                 "add_role": {
@@ -817,8 +817,8 @@
         "LoginProfile": {
             "shape_name": "LoginProfile",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "login_profile",
+                "api_name": "$shape_name.LoginProfile"
             },
             "operations": {
                 "delete": {
@@ -851,8 +851,8 @@
         "Role": {
             "shape_name": "Role",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "role",
+                "api_name": "$shape_name.Role"
             },
             "operations": {
                 "delete": {
@@ -949,8 +949,8 @@
         "User": {
             "shape_name": "User",
             "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
+                "var_name": "user",
+                "api_name": "$shape_name.User"
             },
             "operations": {
                 "delete": {
