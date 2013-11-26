@@ -7,7 +7,7 @@ class BaseRelation(object):
 
     def __init__(self, related_class_name, var_name, required=False):
         self.related_class = None
-        self.parent_class = None
+        self.parent = None
 
         self.related_class_name = related_class_name
         self.var_name = var_name
@@ -21,10 +21,13 @@ class BaseRelation(object):
         )
 
     def add_to_instance(self, parent):
-        pass
+        self.parent = parent
+        self.parent._relations[self.var_name] = self
 
     def remove_from_instance(self):
-        pass
+        self.parent = None
+        # If we were already somehow previously removed, silently pass.
+        self.parent._relations.pop(self.var_name, None)
 
     def proxy_to_class(self, *args, **kwargs):
         pass
