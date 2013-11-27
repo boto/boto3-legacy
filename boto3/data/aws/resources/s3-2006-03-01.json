@@ -6,20 +6,8 @@
                 "create": {
                     "api_name": "CreateBucket"
                 },
-                "get": {
-                    "api_name": "HeadBucket"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListBuckets"
-                },
-                "put_tagging": {
-                    "api_name": "PutBucketTagging"
-                },
-                "put_versioning": {
-                    "api_name": "PutBucketVersioning"
-                },
-                "put_website": {
-                    "api_name": "PutBucketWebsite"
                 }
             }
         },
@@ -29,13 +17,7 @@
                 "delete_batch": {
                     "api_name": "DeleteObjects"
                 },
-                "get": {
-                    "api_name": "GetObject"
-                },
-                "head": {
-                    "api_name": "HeadObject"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListObjects"
                 },
                 "create": {
@@ -52,6 +34,18 @@
                 "api_name": "$shape_name.Bucket"
             },
             "operations": {
+                "get": {
+                    "api_name": "HeadBucket"
+                },
+                "put_tagging": {
+                    "api_name": "PutBucketTagging"
+                },
+                "put_versioning": {
+                    "api_name": "PutBucketVersioning"
+                },
+                "put_website": {
+                    "api_name": "PutBucketWebsite"
+                },
                 "delete": {
                     "api_name": "DeleteBucket"
                 },
@@ -146,6 +140,12 @@
                 "api_name": "$shape_name.Key"
             },
             "operations": {
+                "get": {
+                    "api_name": "GetObject"
+                },
+                "head": {
+                    "api_name": "HeadObject"
+                },
                 "abort_multipart_upload": {
                     "api_name": "AbortMultipartUpload"
                 },

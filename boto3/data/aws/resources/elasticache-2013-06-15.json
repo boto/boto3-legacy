@@ -6,13 +6,13 @@
                 "create": {
                     "api_name": "CreateCacheCluster"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCacheClusters"
                 },
-                "all_reserved_cache_nodes": {
+                "each_reserved_cache_nodes": {
                     "api_name": "DescribeReservedCacheNodes"
                 },
-                "all_reserved_cache_nodes_offerings": {
+                "each_reserved_cache_nodes_offerings": {
                     "api_name": "DescribeReservedCacheNodesOfferings"
                 },
                 "purchase_reserved_cache_nodes_offering": {
@@ -29,7 +29,7 @@
                 "describe_engine_versions": {
                     "api_name": "DescribeCacheEngineVersions"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCacheParameterGroups"
                 },
                 "describe_engine_default_parameters": {
@@ -43,7 +43,7 @@
                 "create": {
                     "api_name": "CreateCacheSecurityGroup"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCacheSecurityGroups"
                 }
             }
@@ -54,7 +54,7 @@
                 "create": {
                     "api_name": "CreateCacheSubnetGroup"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCacheSubnetGroups"
                 }
             }
@@ -65,7 +65,7 @@
                 "create": {
                     "api_name": "CreateReplicationGroup"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeReplicationGroups"
                 }
             }

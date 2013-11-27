@@ -6,10 +6,7 @@
                 "create": {
                     "api_name": "CreateVault"
                 },
-                "get": {
-                    "api_name": "DescribeVault"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListVaults"
                 }
             }
@@ -28,7 +25,7 @@
                 "create": {
                     "api_name": "UploadMultipartPart"
                 },
-                "all": {
+                "each": {
                     "api_name": "ListMultipartUploads"
                 }
             }
@@ -36,10 +33,10 @@
         "JobCollection": {
             "resource": "Job",
             "operations": {
-                "get": {
-                    "api_name": "GetJobOutput"
+                "create": {
+                    "api_name": "InitiateJob"
                 },
-                "all": {
+                "each": {
                     "api_name": "ListJobs"
                 }
             }
@@ -53,6 +50,9 @@
                 "api_name": "$shape_name.Id"
             },
             "operations": {
+                "get": {
+                    "api_name": "DescribeVault"
+                },
                 "delete": {
                     "api_name": "DeleteVault"
                 },
@@ -107,8 +107,8 @@
                 "api_name": "$shape_name.Id"
             },
             "operations": {
-                "create": {
-                    "api_name": "InitiateJob"
+                "get": {
+                    "api_name": "GetJobOutput"
                 }
             },
             "relations": {}

@@ -6,11 +6,8 @@
                 "create": {
                     "api_name": "CreatePipeline"
                 },
-                "all": {
+                "each": {
                     "api_name": "ListPipelines"
-                },
-                "get": {
-                    "api_name": "ReadPipeline"
                 },
                 "test_role": {
                     "api_name": "TestRole"
@@ -23,11 +20,8 @@
                 "create": {
                     "api_name": "CreatePreset"
                 },
-                "all": {
+                "each": {
                     "api_name": "ListPresets"
-                },
-                "get": {
-                    "api_name": "ReadPreset"
                 }
             }
         },
@@ -37,14 +31,11 @@
                 "create": {
                     "api_name": "CreateJob"
                 },
-                "all_by_pipeline": {
+                "each_by_pipeline": {
                     "api_name": "ListJobsByPipeline"
                 },
-                "all_by_status": {
+                "each_by_status": {
                     "api_name": "ListJobsByStatus"
-                },
-                "get": {
-                    "api_name": "ReadJob"
                 }
             }
         }
@@ -57,6 +48,9 @@
                 "api_name": "$shape_name.Id"
             },
             "operations": {
+                "get": {
+                    "api_name": "ReadPipeline"
+                },
                 "delete": {
                     "api_name": "DeletePipeline"
                 },
@@ -79,6 +73,9 @@
                 "api_name": "$shape_name.Id"
             },
             "operations": {
+                "get": {
+                    "api_name": "ReadPreset"
+                },
                 "delete": {
                     "api_name": "DeletePreset"
                 }
@@ -92,6 +89,9 @@
                 "api_name": "$shape_name.Id"
             },
             "operations": {
+                "get": {
+                    "api_name": "ReadJob"
+                },
                 "cancel": {
                     "api_name": "CancelJob"
                 }

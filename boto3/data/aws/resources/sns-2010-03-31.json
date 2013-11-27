@@ -6,13 +6,7 @@
                 "create": {
                     "api_name": "CreatePlatformApplication"
                 },
-                "get": {
-                    "api_name": "GetPlatformApplicationAttributes"
-                },
-                "get_topic_attributes": {
-                    "api_name": "GetTopicAttributes"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListPlatformApplications"
                 }
             }
@@ -23,10 +17,7 @@
                 "create": {
                     "api_name": "CreatePlatformEndpoint"
                 },
-                "get": {
-                    "api_name": "GetEndpointAttributes"
-                },
-                "all_by_platformapplication": {
+                "each_by_platform_application": {
                     "api_name": "ListEndpointsByPlatformApplication"
                 }
             }
@@ -37,7 +28,7 @@
                 "create": {
                     "api_name": "CreateTopic"
                 },
-                "all": {
+                "each": {
                     "api_name": "ListTopics"
                 }
             }
@@ -45,13 +36,10 @@
         "SubscriptionCollection": {
             "resource": "Subscription",
             "operations": {
-                "get": {
-                    "api_name": "GetSubscriptionAttributes"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListSubscriptions"
                 },
-                "all_by_topic": {
+                "each_by_topic": {
                     "api_name": "ListSubscriptionsByTopic"
                 },
                 "create": {
@@ -68,6 +56,9 @@
                 "api_name": "$shape_name.PlatformApplicationArn"
             },
             "operations": {
+                "get": {
+                    "api_name": "GetPlatformApplicationAttributes"
+                },
                 "delete": {
                     "api_name": "DeletePlatformApplication"
                 },
@@ -84,6 +75,9 @@
                 "api_name": "$shape_name.EndpointArn "
             },
             "operations": {
+                "get": {
+                    "api_name": "GetEndpointAttributes"
+                },
                 "delete": {
                     "api_name": "DeleteEndpoint"
                 },
@@ -100,6 +94,10 @@
                 "api_name": "$shape_name.TopicArn"
             },
             "operations": {
+
+                "get_topic_attributes": {
+                    "api_name": "GetTopicAttributes"
+                },
                 "add_permission": {
                     "api_name": "AddPermission"
                 },
@@ -125,6 +123,9 @@
                 "api_name": "$shape_name.SubscriptionArn"
             },
             "operations": {
+                "get": {
+                    "api_name": "GetSubscriptionAttributes"
+                },
                 "confirm_subscription": {
                     "api_name": "ConfirmSubscription"
                 },

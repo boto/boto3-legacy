@@ -6,13 +6,7 @@
                 "create": {
                     "api_name": "CreateQueue"
                 },
-                "get_attributes": {
-                    "api_name": "GetQueueAttributes"
-                },
-                "get": {
-                    "api_name": "GetQueueUrl"
-                },
-                "all": {
+                "each": {
                     "api_name": "ListQueues"
                 },
                 "remove_permission": {
@@ -46,6 +40,12 @@
                 "api_name": "$shape_name.QueueUrl"
             },
             "operations": {
+                "get_attributes": {
+                    "api_name": "GetQueueAttributes"
+                },
+                "get": {
+                    "api_name": "GetQueueUrl"
+                },
                 "add_permission": {
                     "api_name": "AddPermission"
                 },

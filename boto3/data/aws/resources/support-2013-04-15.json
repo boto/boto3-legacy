@@ -6,7 +6,7 @@
                 "create": {
                     "api_name": "CreateCase"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCases"
                 },
                 "all_services": {
@@ -38,7 +38,7 @@
                 "create": {
                     "api_name": "AddCommunicationToCase"
                 },
-                "all": {
+                "each": {
                     "api_name": "DescribeCommunications"
                 }
             }

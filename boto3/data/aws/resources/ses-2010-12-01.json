@@ -3,7 +3,7 @@
         "IdentityCollection": {
             "resource": "Identity",
             "operations": {
-                "all": {
+                "each": {
                     "api_name": "ListIdentities"
                 },
                 "create": {
@@ -14,7 +14,7 @@
         "VerifiedEmailAddressCollection": {
             "resource": "VerifiedEmailAddress",
             "operations": {
-                "all": {
+                "each": {
                     "api_name": "ListVerifiedEmailAddresses"
                 },
                 "create": {
