@@ -1,5 +1,6 @@
 import boto3
 from boto3.core.exceptions import NoSuchRelationError
+from boto3.core.proxy import Proxy
 
 
 class BaseRelation(object):
@@ -29,16 +30,67 @@ class BaseRelation(object):
         # If we were already somehow previously removed, silently pass.
         self.parent._relations.pop(self.var_name, None)
 
-    def proxy_to_class(self, *args, **kwargs):
-        pass
+    def get_session(self):
+        if not self.parent:
+            return boto3.session
+
+        if not hasattr(self.parent, '_details'):
+            return boto3.session
+
+        if not getattr(self.parent._details, 'session', None):
+            return boto3.session
+
+        return self.parent._details.session
+
+    def construct_related_class(self):
+        raise NotImplementedError(
+            "Subclasses must implement this method."
+        )
+
+    def update_with_identifier(self, kwargs):
+        # More bleh.
+        var_name = self.parent._details.identifier_var_name
+        kwargs[var_name] = self.parent.get_identifier()
+        return kwargs
+
+    def fetch(self, **kwargs):
+        klass = self.construct_related_class()
+        instance = klass(connection=self.parent._connection)
+        proxy = Proxy(
+            target=instance,
+            kwargs=self.update_with_identifier(kwargs)
+        )
+        return proxy
 
 
 class OneToOne(BaseRelation):
     is_one_to_one = True
 
+    def construct_related_class(self):
+        if not self.related_class:
+            session = self.get_session()
+            # Bleh.
+            self.related_class = session.get_resource(
+                self.parent._details.service_name,
+                self.related_class_name
+            )
+
+        return self.related_class
+
 
 class OneToMany(BaseRelation):
     is_one_to_many = True
+
+    def construct_related_class(self):
+        if not self.related_class:
+            session = self.get_session()
+            # Bleh.
+            self.related_class = session.get_collection(
+                self.parent._details.service_name,
+                self.related_class_name
+            )
+
+        return self.related_class
 
 
 class RelationsHandler(object):

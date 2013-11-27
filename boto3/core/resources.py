@@ -165,6 +165,7 @@ class Resource(object):
             instance itself.
         :type **kwargs: dict
         """
+        self._relations = {}
         self._data = {}
         self._connection = connection
 
@@ -193,6 +194,9 @@ class Resource(object):
         :param name: The instance data's name
         :type name: string
         """
+        if name in self._relations:
+            return self._relations[name].fetch()
+
         if name in self._data:
             return self._data[name]
 
