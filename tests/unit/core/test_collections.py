@@ -2,6 +2,7 @@ import mock
 import os
 
 from boto3.core.connection import ConnectionFactory
+from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import APIVersionMismatchError
 from boto3.core.collections import ResourceJSONLoader, CollectionDetails
 from boto3.core.collections import Collection, CollectionFactory
@@ -190,14 +191,14 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(self.cd.service_name, 'test')
         self.assertEqual(self.cd.loader, self.test_loader)
         self.assertEqual(self.cd._loaded_data, None)
-        self.assertEqual(self.cd._api_versions, None)
+        self.assertEqual(self.cd._api_version, None)
 
     def test_service_data_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
 
         data = self.cd.service_data
         self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_versions' in self.cd._loaded_data)
+        self.assertTrue('api_version' in self.cd._loaded_data)
 
     def test_collection_data_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
@@ -206,37 +207,31 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(len(data.keys()), 2)
         self.assertFalse('identifier' in data)
         self.assertTrue('operations' in data)
-        self.assertTrue('api_versions' in self.cd._loaded_data)
+        self.assertTrue('api_version' in self.cd._loaded_data)
 
     def test_api_version_uncached(self):
-        self.assertEqual(self.cd._api_versions, None)
+        self.assertEqual(self.cd._api_version, None)
 
-        av = self.cd.api_versions
-        self.assertEqual(av, [
-            '2012-09-25',
-        ])
-        self.assertEqual(self.cd._api_versions, [
-            '2012-09-25',
-        ])
+        av = self.cd.api_version
+        self.assertEqual(av, '2013-11-27')
+        self.assertEqual(self.cd._api_version, '2013-11-27')
 
     def test_resource_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
 
         res = self.cd.resource
         self.assertEqual(res, 'Pipeline')
-        self.assertTrue('api_versions' in self.cd._loaded_data)
+        self.assertTrue('api_version' in self.cd._loaded_data)
 
     def test_cached(self):
         # Fake in data.
         self.cd._loaded_data = {
-            'api_versions': [
-                '20XX-MM-II',
-            ],
+            'api_version': '20XX-MM-II',
             'hello': 'world',
         }
 
         data = self.cd.service_data
-        av = self.cd.api_versions
+        av = self.cd.api_version
         self.assertTrue('hello' in data)
         self.assertTrue('20XX-MM-II' in av)
 
@@ -290,7 +285,7 @@ class CollectionTestCase(unittest.TestCase):
             'PipeCollection'
         )
         self.fake_details._loaded_data = {
-            'api_versions': ['something'],
+            'api_version': 'something',
             'collections': {
                 'PipeCollection': {
                     'resource': 'Pipeline',
@@ -300,9 +295,7 @@ class CollectionTestCase(unittest.TestCase):
                     },
                     'operations': {
                         'create': {
-                            'api_name': 'CreatePipe',
-                            'docs': '',
-                            'params': {},
+                            'api_name': 'CreatePipe'
                         }
                     }
                 }
@@ -401,11 +394,10 @@ class CollectionFactoryTestCase(unittest.TestCase):
 
     def test_build_methods(self):
         attrs = self.cf._build_methods(self.cd)
-        self.assertEqual(len(attrs), 4)
+        self.assertEqual(len(attrs), 3)
         self.assertTrue('create' in attrs)
-        self.assertTrue('all' in attrs)
+        self.assertTrue('each' in attrs)
         self.assertTrue('test_role' in attrs)
-        self.assertTrue('get' in attrs)
 
     def test_create_operation_method(self):
         class StubbyCollection(Collection):
@@ -420,20 +412,10 @@ class CollectionFactoryTestCase(unittest.TestCase):
             )
 
         op_method = self.cf._create_operation_method('create', {
-            "api_name": "CreatePipeline",
-            "docs": "MAK U NU PIPLIN.",
-            "params": {
-                "id": {
-                    "api_name": "Id",
-                    "type": "string"
-                }
-            }
+            "api_name": "CreatePipeline"
         })
         self.assertEqual(op_method.__name__, 'create')
-        self.assertEqual(
-            op_method.__doc__,
-            'MAK U NU PIPLIN.'
-        )
+        self.assertEqual(op_method.__doc__, DEFAULT_DOCSTRING)
 
         # Assign it & call it.
         StubbyCollection._details = self.cd

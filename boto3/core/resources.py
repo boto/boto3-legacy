@@ -1,5 +1,6 @@
 from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import NoSuchMethod
+from boto3.core.introspection import Introspection
 from boto3.core.loader import ResourceJSONLoader
 from boto3.utils.mangle import to_snake_case
 from boto3.utils import six
@@ -40,7 +41,7 @@ class ResourceDetails(object):
         self.service_name = service_name
         self.resource_name = resource_name
         self.loader = loader
-        self._api_versions = None
+        self._api_version = None
         self._loaded_data = None
 
     def __str__(self):
@@ -60,7 +61,7 @@ class ResourceDetails(object):
         def _wrapper(self, *args, **kwargs):
             # If we don't have data, go load it.
             if self._loaded_data is None:
-                self._loaded_data = self.loader[self.service_name]
+                self._loaded_data = self.loader.load(self.service_name)
 
             return func(self, *args, **kwargs)
 
@@ -98,21 +99,20 @@ class ResourceDetails(object):
 
     @property
     @requires_loaded
-    def api_versions(self):
+    def api_version(self):
         """
-        Returns the API version(s) introspected from the resource data. This
-        is a list of all versions of the API to which this data can be used.
+        Returns the API version introspected from the resource data.
         This is useful in preventing mismatching API versions between the
         client code & service.
 
         If the data has been previously accessed, a memoized version of the
-        API versions is returned.
+        API version is returned.
 
-        :returns: The service's versions
-        :rtype: list of strings
+        :returns: The service's version
+        :rtype: string
         """
-        self._api_versions = self._loaded_data.get('api_versions', '')
-        return self._api_versions
+        self._api_version = self._loaded_data.get('api_version', '')
+        return self._api_version
 
     @property
     def identifier_var_name(self):
@@ -506,14 +506,6 @@ class ResourceFactory(object):
             result = method(**params)
             return self.full_post_process(method_name, result)
 
-        # Get the (possibly overridden) docs from the op_data.
-        # If it's not there **or** is ``null``, populate with the default
-        # docstring.
-        docs = op_data.get('docs', None)
-
-        if docs is None:
-            docs = DEFAULT_DOCSTRING
-
         _new_method.__name__ = method_name
-        _new_method.__doc__ = docs
+        _new_method.__doc__ = DEFAULT_DOCSTRING
         return _new_method
