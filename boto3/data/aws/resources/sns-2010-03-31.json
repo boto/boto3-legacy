@@ -1,0 +1,141 @@
+{
+    "collections": {
+        "PlatformApplicationCollection": {
+            "resource": "PlatformApplication",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePlatformApplication"
+                },
+                "get": {
+                    "api_name": "GetPlatformApplicationAttributes"
+                },
+                "get_topic_attributes": {
+                    "api_name": "GetTopicAttributes"
+                },
+                "all": {
+                    "api_name": "ListPlatformApplications"
+                }
+            }
+        },
+        "PlatformEndpointCollection": {
+            "resource": "PlatformEndpoint",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePlatformEndpoint"
+                },
+                "get": {
+                    "api_name": "GetEndpointAttributes"
+                },
+                "all_by_platformapplication": {
+                    "api_name": "ListEndpointsByPlatformApplication"
+                }
+            }
+        },
+        "TopicCollection": {
+            "resource": "Topic",
+            "operations": {
+                "create": {
+                    "api_name": "CreateTopic"
+                },
+                "all": {
+                    "api_name": "ListTopics"
+                }
+            }
+        },
+        "SubscriptionCollection": {
+            "resource": "Subscription",
+            "operations": {
+                "get": {
+                    "api_name": "GetSubscriptionAttributes"
+                },
+                "all": {
+                    "api_name": "ListSubscriptions"
+                },
+                "all_by_topic": {
+                    "api_name": "ListSubscriptionsByTopic"
+                },
+                "create": {
+                    "api_name": "Subscribe"
+                }
+            }
+        }
+    },
+    "resources": {
+        "PlatformApplication": {
+            "shape_name": "PlatformApplication",
+            "identifier": {
+                "var_name": "platform_application_arn",
+                "api_name": "$shape_name.PlatformApplicationArn"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeletePlatformApplication"
+                },
+                "update": {
+                    "api_name": "SetPlatformApplicationAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "PlatformEndpoint": {
+            "shape_name": "PlatformEndpoint",
+            "identifier": {
+                "var_name": "endpoint_arn",
+                "api_name": "$shape_name.EndpointArn "
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteEndpoint"
+                },
+                "update": {
+                    "api_name": "SetEndpointAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "Topic": {
+            "shape_name": "Topic",
+            "identifier": {
+                "var_name": "topic_arn",
+                "api_name": "$shape_name.TopicArn"
+            },
+            "operations": {
+                "add_permission": {
+                    "api_name": "AddPermission"
+                },
+                "delete": {
+                    "api_name": "DeleteTopic"
+                },
+                "publish": {
+                    "api_name": "Publish"
+                },
+                "remove_permission": {
+                    "api_name": "RemovePermission"
+                },
+                "update": {
+                    "api_name": "SetTopicAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "Subscription": {
+            "shape_name": "Subscription",
+            "identifier": {
+                "var_name": "subscription_arn",
+                "api_name": "$shape_name.SubscriptionArn"
+            },
+            "operations": {
+                "confirm_subscription": {
+                    "api_name": "ConfirmSubscription"
+                },
+                "update": {
+                    "api_name": "SetSubscriptionAttributes"
+                },
+                "delete": {
+                    "api_name": "Unsubscribe"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

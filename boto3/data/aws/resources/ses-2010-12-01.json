@@ -1,0 +1,95 @@
+{
+    "collections": {
+        "IdentityCollection": {
+            "resource": "Identity",
+            "operations": {
+                "all": {
+                    "api_name": "ListIdentities"
+                },
+                "create": {
+                    "api_name": "VerifyEmailIdentity"
+                }
+            }
+        },
+        "VerifiedEmailAddressCollection": {
+            "resource": "VerifiedEmailAddress",
+            "operations": {
+                "all": {
+                    "api_name": "ListVerifiedEmailAddresses"
+                },
+                "create": {
+                    "api_name": "VerifyEmailAddress"
+                }
+            }
+        },
+        "EmailCollection": {
+            "resource": "Email",
+            "operations": {
+                "get_send_quota": {
+                    "api_name": "GetSendQuota"
+                },
+                "get_send_statistics": {
+                    "api_name": "GetSendStatistics"
+                },
+                "create": {
+                    "api_name": "SendEmail"
+                },
+                "create_raw": {
+                    "api_name": "SendRawEmail"
+                },
+                "verify_domain_dkim": {
+                    "api_name": "VerifyDomainDkim"
+                },
+                "verify_domain_identity": {
+                    "api_name": "VerifyDomainIdentity"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Identity": {
+            "shape_name": "Identity",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteIdentity"
+                },
+                "get_dkim_attributes": {
+                    "api_name": "GetIdentityDkimAttributes"
+                },
+                "get_notification_attributes": {
+                    "api_name": "GetIdentityNotificationAttributes"
+                },
+                "get_verification_attributes": {
+                    "api_name": "GetIdentityVerificationAttributes"
+                },
+                "set_dkim_enabled": {
+                    "api_name": "SetIdentityDkimEnabled"
+                },
+                "set_feedback_forwarding_enabled": {
+                    "api_name": "SetIdentityFeedbackForwardingEnabled"
+                },
+                "set_notification_topic": {
+                    "api_name": "SetIdentityNotificationTopic"
+                }
+            },
+            "relations": {}
+        },
+        "VerifiedEmailAddress": {
+            "shape_name": "VerifiedEmailAddress",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteVerifiedEmailAddress"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

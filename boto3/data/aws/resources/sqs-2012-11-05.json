@@ -1,0 +1,81 @@
+{
+    "collections": {
+        "QueueCollection": {
+            "resource": "Queue",
+            "operations": {
+                "create": {
+                    "api_name": "CreateQueue"
+                },
+                "get_attributes": {
+                    "api_name": "GetQueueAttributes"
+                },
+                "get": {
+                    "api_name": "GetQueueUrl"
+                },
+                "all": {
+                    "api_name": "ListQueues"
+                },
+                "remove_permission": {
+                    "api_name": "RemovePermission"
+                }
+            }
+        },
+        "MessageCollection": {
+            "resource": "Message",
+            "operations": {
+                "change_visibility_batch": {
+                    "api_name": "ChangeMessageVisibilityBatch"
+                },
+                "create": {
+                    "api_name": "SendMessage"
+                },
+                "delete_batch": {
+                    "api_name": "DeleteMessageBatch"
+                },
+                "create_batch": {
+                    "api_name": "SendMessageBatch"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Queue": {
+            "shape_name": "Queue",
+            "identifier": {
+                "var_name": "queue_url",
+                "api_name": "$shape_name.QueueUrl"
+            },
+            "operations": {
+                "add_permission": {
+                    "api_name": "AddPermission"
+                },
+                "delete": {
+                    "api_name": "DeleteQueue"
+                },
+                "receive_message": {
+                    "api_name": "ReceiveMessage"
+                },
+                "set_attributes": {
+                    "api_name": "SetQueueAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "Message": {
+            "shape_name": "Message",
+            "identifier": {
+                "var_name": "id",
+                "api_name": "$shape_name.Id"
+            },
+            "operations": {
+                "change_visibility": {
+                    "api_name": "ChangeMessageVisibility"
+                },
+                "delete": {
+                    "api_name": "DeleteMessage"
+                }
+            },
+            "relations": {}
+        }
+    }
+}
