@@ -51,10 +51,12 @@
     "resources": {
         "PlatformApplication": {
             "shape_name": "PlatformApplication",
-            "identifier": {
-                "var_name": "platform_application_arn",
-                "api_name": "$shape_name.PlatformApplicationArn"
-            },
+            "identifiers": [
+                {
+                    "var_name": "platform_application_arn",
+                    "api_name": "$shape_name.PlatformApplicationArn"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetPlatformApplicationAttributes"
@@ -70,10 +72,12 @@
         },
         "PlatformEndpoint": {
             "shape_name": "PlatformEndpoint",
-            "identifier": {
-                "var_name": "endpoint_arn",
-                "api_name": "$shape_name.EndpointArn "
-            },
+            "identifiers": [
+                {
+                    "var_name": "endpoint_arn",
+                    "api_name": "$shape_name.EndpointArn "
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetEndpointAttributes"
@@ -89,12 +93,13 @@
         },
         "Topic": {
             "shape_name": "Topic",
-            "identifier": {
-                "var_name": "topic_arn",
-                "api_name": "$shape_name.TopicArn"
-            },
+            "identifiers": [
+                {
+                    "var_name": "topic_arn",
+                    "api_name": "$shape_name.TopicArn"
+                }
+            ],
             "operations": {
-
                 "get_topic_attributes": {
                     "api_name": "GetTopicAttributes"
                 },
@@ -118,10 +123,12 @@
         },
         "Subscription": {
             "shape_name": "Subscription",
-            "identifier": {
-                "var_name": "subscription_arn",
-                "api_name": "$shape_name.SubscriptionArn"
-            },
+            "identifiers": [
+                {
+                    "var_name": "subscription_arn",
+                    "api_name": "$shape_name.SubscriptionArn"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetSubscriptionAttributes"

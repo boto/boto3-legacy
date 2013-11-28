@@ -49,10 +49,12 @@
     "resources": {
         "Identity": {
             "shape_name": "Identity",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteIdentity"
@@ -80,10 +82,12 @@
         },
         "VerifiedEmailAddress": {
             "shape_name": "VerifiedEmailAddress",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteVerifiedEmailAddress"

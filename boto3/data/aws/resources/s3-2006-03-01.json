@@ -29,10 +29,12 @@
     "resources": {
         "Bucket": {
             "shape_name": "Bucket",
-            "identifier": {
-                "var_name": "bucket",
-                "api_name": "$shape_name.Bucket"
-            },
+            "identifiers": [
+                {
+                    "var_name": "bucket",
+                    "api_name": "$shape_name.Bucket"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "HeadBucket"
@@ -135,10 +137,16 @@
         },
         "S3Object": {
             "shape_name": "S3Object",
-            "identifier": {
-                "var_name": "key",
-                "api_name": "$shape_name.Key"
-            },
+            "identifiers": [
+                {
+                    "var_name": "bucket",
+                    "api_name": "$shape_name.Bucket"
+                },
+                {
+                    "var_name": "key",
+                    "api_name": "$shape_name.Key"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetObject"

@@ -204,7 +204,7 @@ class ResourceDetailsTestCase(unittest.TestCase):
 
         data = self.rd.resource_data
         self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('identifier' in data)
+        self.assertTrue('identifiers' in data)
         self.assertTrue('operations' in data)
         self.assertTrue('api_version' in self.rd._loaded_data)
 
@@ -246,7 +246,7 @@ class PipeResource(Resource):
         return super(PipeResource, self).update_params(conn_method_name, params)
 
     def update_params_delete(self, params):
-        params['id'] = self.get_identifier()
+        params.update(self.get_identifiers())
         return params
 
     def post_process(self, conn_method_name, result):
@@ -267,15 +267,15 @@ class ResourceTestCase(unittest.TestCase):
             'api_version': 'something',
             'resources': {
                 'Pipe': {
-                    'identifier': {
-                        'var_name': 'id',
-                        'api_name': 'Id',
-                    },
+                    'identifiers': [
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
                     'operations': {
                         'delete': {
-                            'api_name': 'DeletePipe',
-                            'docs': '',
-                            'params': {},
+                            'api_name': 'DeletePipe'
                         }
                     }
                 }

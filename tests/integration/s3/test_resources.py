@@ -46,12 +46,16 @@ class S3IntegrationTestCase(unittest.TestCase):
         # FIXME: Needs 100% more waiters.
         time.sleep(5)
 
-        obj = S3ObjectCollection(connection=self.conn).get(
+        obj = S3Object(
+            connection=self.conn,
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
             bucket=bucket_name,
             key='test_key'
         )
+        # Update from the service.
+        resp = obj.get()
+
         self.assertTrue(isinstance(obj, S3Object))
         # FIXME: We get a bytestring back rather than a Unicode string.
         #        Is this intended behavior?
@@ -59,6 +63,6 @@ class S3IntegrationTestCase(unittest.TestCase):
         # self.assertEqual(obj.get_content(), 'THIS IS A TRIUMPH')
 
         # Test travering relations.
-        obj = bucket.keys.get(key='test_key')
+        obj = bucket.objects.get(key='test_key')
         self.assertTrue(isinstance(obj, S3Object))
         self.assertEqual(obj.body, 'THIS IS A TRIUMPH')

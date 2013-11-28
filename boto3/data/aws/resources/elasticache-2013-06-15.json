@@ -74,10 +74,12 @@
     "resources": {
         "CacheCluster": {
             "shape_name": "CacheCluster",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteCacheCluster"
@@ -96,10 +98,12 @@
         },
         "CacheParameterGroup": {
             "shape_name": "CacheParameterGroup",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteCacheParameterGroup"
@@ -118,10 +122,12 @@
         },
         "CacheSecurityGroup": {
             "shape_name": "CacheSecurityGroup",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "authorize_ingress": {
                     "api_name": "AuthorizeCacheSecurityGroupIngress"
@@ -137,10 +143,12 @@
         },
         "CacheSubnetGroup": {
             "shape_name": "CacheSubnetGroup",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteCacheSubnetGroup"
@@ -153,10 +161,12 @@
         },
         "ReplicationGroup": {
             "shape_name": "ReplicationGroup",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteReplicationGroup"

@@ -35,10 +35,12 @@
     "resources": {
         "Queue": {
             "shape_name": "Queue",
-            "identifier": {
-                "var_name": "queue_url",
-                "api_name": "$shape_name.QueueUrl"
-            },
+            "identifiers": [
+                {
+                    "var_name": "queue_url",
+                    "api_name": "$shape_name.QueueUrl"
+                }
+            ],
             "operations": {
                 "get_attributes": {
                     "api_name": "GetQueueAttributes"
@@ -63,10 +65,12 @@
         },
         "Message": {
             "shape_name": "Message",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "change_visibility": {
                     "api_name": "ChangeMessageVisibility"

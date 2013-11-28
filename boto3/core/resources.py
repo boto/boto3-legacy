@@ -115,36 +115,17 @@ class ResourceDetails(object):
         return self._api_version
 
     @property
-    def identifier_var_name(self):
+    def identifiers(self):
         """
-        Returns variable name of the identifier.
-
-        This should be the name the ``Resource`` should look for from the user
-        as the unique identifer for the resource server-side.
+        Returns the identifiers.
 
         If the data has been previously accessed, a memoized version of the
         variable name is returned.
 
-        :returns: The identifier's variable name (from Python)
-        :rtype: string
+        :returns: The identifiers
+        :rtype: dict
         """
-        return self.resource_data['identifier']['var_name']
-
-    @property
-    def identifier_api_name(self):
-        """
-        Returns API name of the identifier.
-
-        This should be the name the ``Resource`` should look for from the API
-        (server-side) as the unique identifer for the resource.
-
-        If the data has been previously accessed, a memoized version of the
-        API name is returned.
-
-        :returns: The identifier's API name (from server-side)
-        :rtype: string
-        """
-        return self.resource_data['identifier']['api_name']
+        return self.resource_data['identifiers']
 
 
 class Resource(object):
@@ -227,25 +208,37 @@ class Resource(object):
             conn_meth = getattr(self._connection, to_snake_case(api_name))
             meth.__doc__ = conn_meth.__doc__
 
-    def get_identifier(self):
+    def get_identifiers(self):
         """
-        Returns the identifier (if present) from the instance data.
+        Returns the identifier(s) (if present) from the instance data.
 
-        This identifier name is determined from the ``ResourceDetails``
-        instance hanging off the class itself.
-        """
-        return self._data.get(self._details.identifier_var_name)
-
-    def set_identifier(self, value):
-        """
-        Sets the identifier within the instance data.
-
-        This identifier name is determined from the ``ResourceDetails``
+        The identifier name(s) is/are determined from the ``ResourceDetails``
         instance hanging off the class itself.
 
-        :param value: The value to be set.
+        :returns: All the identifier information
+        :rtype: dict
         """
-        self._data[self._details.identifier_var_name] = value
+        data = {}
+
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            data[var_name] = self._data.get(var_name)
+
+        return data
+
+    def set_identifiers(self, data):
+        """
+        Sets the identifier(s) within the instance data.
+
+        The identifier name(s) is/are determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+
+        :param data: The value(s) to be set.
+        :param data: dict
+        """
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            self._data[var_name] = data.get(var_name)
 
     def full_update_params(self, conn_method_name, params):
         """
@@ -303,7 +296,7 @@ class Resource(object):
         """
         # By default, this just sets the identifier info.
         # We use ``var_name`` instead of ``api_name``. Because botocore.
-        params[self._details.identifier_var_name] = self.get_identifier()
+        params.update(self.get_identifiers())
         return params
 
     def full_post_process(self, conn_method_name, result):
@@ -360,6 +353,12 @@ class Resource(object):
         :type result: dict
         """
         # Mostly a hook for post-processing as needed.
+        return result
+
+    def post_process_get(self, result):
+        for key, value in result.items():
+            self._data[to_snake_case(key)] = value
+
         return result
 
 

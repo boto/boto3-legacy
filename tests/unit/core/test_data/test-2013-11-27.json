@@ -43,10 +43,12 @@
     "resources": {
         "Pipeline": {
             "shape_name": "Pipeline",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "ReadPipeline"
@@ -68,10 +70,12 @@
         },
         "Preset": {
             "shape_name": "Preset",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "ReadPreset"
@@ -84,10 +88,12 @@
         },
         "Job": {
             "shape_name": "Job",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "ReadJob"

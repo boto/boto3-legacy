@@ -29,10 +29,12 @@
     "resources": {
         "Table": {
             "shape_name": "Table",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "DescribeTable"
@@ -54,10 +56,12 @@
         },
         "Item": {
             "shape_name": "Item",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetItem"

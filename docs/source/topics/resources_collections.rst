@@ -283,7 +283,12 @@ For example::
 
     rf = ResourceFactory(details_class=CustomIdentifierDetails)
     Bucket = rf.construct_for('s3', 'Bucket')
-    assert Bucket().get_identifier() == 'ID'
+    assert Bucket().get_identifiers() == [
+        {
+            'var_name': 'id',
+            'api_name': 'ID',
+        }
+    ]
 
 
 Per-Instance Alterations

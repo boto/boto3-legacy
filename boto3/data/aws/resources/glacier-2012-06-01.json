@@ -45,10 +45,12 @@
     "resources": {
         "Vault": {
             "shape_name": "Vault",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "DescribeVault"
@@ -70,10 +72,12 @@
         },
         "Archive": {
             "shape_name": "Archive",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteArchive"
@@ -83,10 +87,12 @@
         },
         "MultipartUpload": {
             "shape_name": "MultipartUpload",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "abort": {
                     "api_name": "AbortMultipartUpload"
@@ -102,10 +108,12 @@
         },
         "Job": {
             "shape_name": "Job",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetJobOutput"

@@ -23,10 +23,12 @@
     "resources": {
         "Domain": {
             "shape_name": "Domain",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "define_index_field": {
                     "api_name": "DefineIndexField"
@@ -84,10 +86,12 @@
         },
         "Document": {
             "shape_name": "Document",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {},
             "relations": {}
         }

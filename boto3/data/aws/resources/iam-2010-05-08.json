@@ -137,10 +137,12 @@
     "resources": {
         "AccessKey": {
             "shape_name": "AccessKey",
-            "identifier": {
-                "var_name": "access_key",
-                "api_name": "$shape_name.AccessKey"
-            },
+            "identifiers": [
+                {
+                    "var_name": "access_key",
+                    "api_name": "$shape_name.AccessKey"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteAccessKey"
@@ -153,10 +155,12 @@
         },
         "AccountAlias": {
             "shape_name": "AccountAlias",
-            "identifier": {
-                "var_name": "AccountAlias",
-                "api_name": "$shape_name.AccountAlias"
-            },
+            "identifiers": [
+                {
+                    "var_name": "AccountAlias",
+                    "api_name": "$shape_name.AccountAlias"
+                }
+            ],
             "operations": {
                 "delete": {
                     "api_name": "DeleteAccountAlias"
@@ -166,10 +170,12 @@
         },
         "Group": {
             "shape_name": "Group",
-            "identifier": {
-                "var_name": "group",
-                "api_name": "$shape_name.Group"
-            },
+            "identifiers": [
+                {
+                    "var_name": "group",
+                    "api_name": "$shape_name.Group"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetGroup"
@@ -203,10 +209,12 @@
         },
         "InstanceProfile": {
             "shape_name": "InstanceProfile",
-            "identifier": {
-                "var_name": "instance_profile",
-                "api_name": "$shape_name.InstanceProfile"
-            },
+            "identifiers": [
+                {
+                    "var_name": "instance_profile",
+                    "api_name": "$shape_name.InstanceProfile"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetInstanceProfile"
@@ -225,10 +233,12 @@
         },
         "LoginProfile": {
             "shape_name": "LoginProfile",
-            "identifier": {
-                "var_name": "login_profile",
-                "api_name": "$shape_name.LoginProfile"
-            },
+            "identifiers": [
+                {
+                    "var_name": "login_profile",
+                    "api_name": "$shape_name.LoginProfile"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetLoginProfile"
@@ -244,10 +254,12 @@
         },
         "Role": {
             "shape_name": "Role",
-            "identifier": {
-                "var_name": "role",
-                "api_name": "$shape_name.Role"
-            },
+            "identifiers": [
+                {
+                    "var_name": "role",
+                    "api_name": "$shape_name.Role"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetRole"
@@ -275,10 +287,12 @@
         },
         "User": {
             "shape_name": "User",
-            "identifier": {
-                "var_name": "user",
-                "api_name": "$shape_name.User"
-            },
+            "identifiers": [
+                {
+                    "var_name": "user",
+                    "api_name": "$shape_name.User"
+                }
+            ],
             "operations": {
                 "get": {
                     "api_name": "GetUser"
@@ -306,10 +320,12 @@
         },
         "VirtualMFADevice": {
             "shape_name": "VirtualMFADevice",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "deactivate": {
                     "api_name": "DeactivateMFADevice"

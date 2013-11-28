@@ -47,10 +47,12 @@
     "resources": {
         "Case": {
             "shape_name": "Case",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {
                 "resolve": {
                     "api_name": "ResolveCase"
@@ -60,10 +62,12 @@
         },
         "Communication": {
             "shape_name": "Communication",
-            "identifier": {
-                "var_name": "id",
-                "api_name": "$shape_name.Id"
-            },
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
             "operations": {},
             "relations": {}
         }
