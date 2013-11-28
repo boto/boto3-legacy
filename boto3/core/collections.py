@@ -206,7 +206,13 @@ class Collection(object):
             #        possible.
             api_name = ops[method_name]['api_name']
             conn_meth = getattr(self._connection, to_snake_case(api_name))
-            meth.__doc__ = conn_meth.__doc__
+
+            # We need to do detection here, because Py2 treats ``.__doc__``
+            # as a special read-only attribute. :/
+            if six.PY3:
+                meth.__doc__ = conn_meth.__doc__
+            else:
+                meth.__func__.__doc__ = conn_meth.__doc__
 
     def full_update_params(self, conn_method_name, params):
         """
