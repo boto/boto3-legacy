@@ -1,0 +1,149 @@
+{
+    "collections": {
+        "PlatformApplicationCollection": {
+            "resource": "PlatformApplication",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePlatformApplication"
+                },
+                "each": {
+                    "api_name": "ListPlatformApplications"
+                }
+            }
+        },
+        "PlatformEndpointCollection": {
+            "resource": "PlatformEndpoint",
+            "operations": {
+                "create": {
+                    "api_name": "CreatePlatformEndpoint"
+                },
+                "each_by_platform_application": {
+                    "api_name": "ListEndpointsByPlatformApplication"
+                }
+            }
+        },
+        "TopicCollection": {
+            "resource": "Topic",
+            "operations": {
+                "create": {
+                    "api_name": "CreateTopic"
+                },
+                "each": {
+                    "api_name": "ListTopics"
+                }
+            }
+        },
+        "SubscriptionCollection": {
+            "resource": "Subscription",
+            "operations": {
+                "each": {
+                    "api_name": "ListSubscriptions"
+                },
+                "each_by_topic": {
+                    "api_name": "ListSubscriptionsByTopic"
+                },
+                "create": {
+                    "api_name": "Subscribe"
+                }
+            }
+        }
+    },
+    "resources": {
+        "PlatformApplication": {
+            "shape_name": "PlatformApplication",
+            "identifiers": [
+                {
+                    "var_name": "platform_application_arn",
+                    "api_name": "$shape_name.PlatformApplicationArn"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetPlatformApplicationAttributes"
+                },
+                "delete": {
+                    "api_name": "DeletePlatformApplication"
+                },
+                "update": {
+                    "api_name": "SetPlatformApplicationAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "PlatformEndpoint": {
+            "shape_name": "PlatformEndpoint",
+            "identifiers": [
+                {
+                    "var_name": "endpoint_arn",
+                    "api_name": "$shape_name.EndpointArn "
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetEndpointAttributes"
+                },
+                "delete": {
+                    "api_name": "DeleteEndpoint"
+                },
+                "update": {
+                    "api_name": "SetEndpointAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "Topic": {
+            "shape_name": "Topic",
+            "identifiers": [
+                {
+                    "var_name": "topic_arn",
+                    "api_name": "$shape_name.TopicArn"
+                }
+            ],
+            "operations": {
+                "get_topic_attributes": {
+                    "api_name": "GetTopicAttributes"
+                },
+                "add_permission": {
+                    "api_name": "AddPermission"
+                },
+                "delete": {
+                    "api_name": "DeleteTopic"
+                },
+                "publish": {
+                    "api_name": "Publish"
+                },
+                "remove_permission": {
+                    "api_name": "RemovePermission"
+                },
+                "update": {
+                    "api_name": "SetTopicAttributes"
+                }
+            },
+            "relations": {}
+        },
+        "Subscription": {
+            "shape_name": "Subscription",
+            "identifiers": [
+                {
+                    "var_name": "subscription_arn",
+                    "api_name": "$shape_name.SubscriptionArn"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetSubscriptionAttributes"
+                },
+                "confirm_subscription": {
+                    "api_name": "ConfirmSubscription"
+                },
+                "update": {
+                    "api_name": "SetSubscriptionAttributes"
+                },
+                "delete": {
+                    "api_name": "Unsubscribe"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

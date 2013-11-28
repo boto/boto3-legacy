@@ -2,6 +2,7 @@ import mock
 import os
 
 from boto3.core.connection import ConnectionFactory
+from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import APIVersionMismatchError
 from boto3.core.resources import ResourceJSONLoader, ResourceDetails
 from boto3.core.resources import Resource, ResourceFactory
@@ -189,46 +190,40 @@ class ResourceDetailsTestCase(unittest.TestCase):
         self.assertEqual(self.rd.service_name, 'test')
         self.assertEqual(self.rd.loader, self.test_loader)
         self.assertEqual(self.rd._loaded_data, None)
-        self.assertEqual(self.rd._api_versions, None)
+        self.assertEqual(self.rd._api_version, None)
 
     def test_service_data_uncached(self):
         self.assertEqual(self.rd._loaded_data, None)
 
         data = self.rd.service_data
         self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_versions' in self.rd._loaded_data)
+        self.assertTrue('api_version' in self.rd._loaded_data)
 
     def test_resource_data_uncached(self):
         self.assertEqual(self.rd._loaded_data, None)
 
         data = self.rd.resource_data
         self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('identifier' in data)
+        self.assertTrue('identifiers' in data)
         self.assertTrue('operations' in data)
-        self.assertTrue('api_versions' in self.rd._loaded_data)
+        self.assertTrue('api_version' in self.rd._loaded_data)
 
     def test_api_version_uncached(self):
-        self.assertEqual(self.rd._api_versions, None)
+        self.assertEqual(self.rd._api_version, None)
 
-        av = self.rd.api_versions
-        self.assertEqual(av, [
-            '2012-09-25',
-        ])
-        self.assertEqual(self.rd._api_versions, [
-            '2012-09-25',
-        ])
+        av = self.rd.api_version
+        self.assertEqual(av, '2013-11-27')
+        self.assertEqual(self.rd._api_version, '2013-11-27')
 
     def test_cached(self):
         # Fake in data.
         self.rd._loaded_data = {
-            'api_versions': [
-                '20XX-MM-II',
-            ],
+            'api_version': '20XX-MM-II',
             'hello': 'world',
         }
 
         data = self.rd.service_data
-        av = self.rd.api_versions
+        av = self.rd.api_version
         self.assertTrue('hello' in data)
         self.assertTrue('20XX-MM-II' in av)
 
@@ -251,7 +246,7 @@ class PipeResource(Resource):
         return super(PipeResource, self).update_params(conn_method_name, params)
 
     def update_params_delete(self, params):
-        params['id'] = self.get_identifier()
+        params.update(self.get_identifiers())
         return params
 
     def post_process(self, conn_method_name, result):
@@ -269,18 +264,18 @@ class ResourceTestCase(unittest.TestCase):
         self.session = Session(FakeSession(TestCoreService()))
         self.fake_details = ResourceDetails(self.session, 'test', 'Pipe')
         self.fake_details._loaded_data = {
-            'api_versions': ['something'],
+            'api_version': 'something',
             'resources': {
                 'Pipe': {
-                    'identifier': {
-                        'var_name': 'id',
-                        'api_name': 'Id',
-                    },
+                    'identifiers': [
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
                     'operations': {
                         'delete': {
-                            'api_name': 'DeletePipe',
-                            'docs': '',
-                            'params': {},
+                            'api_name': 'DeletePipe'
                         }
                     }
                 }
@@ -331,7 +326,7 @@ class ResourceFactoryTestCase(unittest.TestCase):
         self.rd = ResourceDetails(
             self.session,
             'test',
-            'Preset',
+            'Pipeline',
             loader=self.test_loader
         )
         self.rf = ResourceFactory(session=self.session, loader=self.test_loader)
@@ -366,28 +361,20 @@ class ResourceFactoryTestCase(unittest.TestCase):
 
     def test_build_methods(self):
         attrs = self.rf._build_methods(self.rd)
-        self.assertEqual(len(attrs), 1)
+        self.assertEqual(len(attrs), 5)
         self.assertTrue('delete' in attrs)
+        self.assertTrue('get' in attrs)
+        self.assertTrue('update' in attrs)
 
     def test_create_operation_method(self):
         class StubbyResource(Resource):
             pass
 
         op_method = self.rf._create_operation_method('delete', {
-            "api_name": "DeletePipeline",
-            "docs": "Dusts off & nukes a pipeline from orbit.",
-            "params": {
-                "id": {
-                    "api_name": "Id",
-                    "type": "string"
-                }
-            }
+            "api_name": "DeletePipeline"
         })
         self.assertEqual(op_method.__name__, 'delete')
-        self.assertEqual(
-            op_method.__doc__,
-            'Dusts off & nukes a pipeline from orbit.'
-        )
+        self.assertEqual(op_method.__doc__, DEFAULT_DOCSTRING)
 
         # Assign it & call it.
         StubbyResource._details = self.rd

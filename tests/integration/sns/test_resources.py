@@ -56,7 +56,7 @@ class SNSIntegrationTestCase(unittest.TestCase):
         subscribe_sqs_queue(
             self.conn,
             self.sqs,
-            topic.get_identifier(),
+            topic.get_identifiers()['topic_arn'],
             url,
             queue_arn
         )

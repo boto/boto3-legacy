@@ -40,7 +40,7 @@ class CollectionDetails(object):
         self.service_name = service_name
         self.collection_name = collection_name
         self.loader = loader
-        self._api_versions = None
+        self._api_version = None
         self._loaded_data = None
 
     def __str__(self):
@@ -60,7 +60,7 @@ class CollectionDetails(object):
         def _wrapper(self, *args, **kwargs):
             # If we don't have data, go load it.
             if self._loaded_data is None:
-                self._loaded_data = self.loader[self.service_name]
+                self._loaded_data = self.loader.load(self.service_name)
 
             return func(self, *args, **kwargs)
 
@@ -98,21 +98,20 @@ class CollectionDetails(object):
 
     @property
     @requires_loaded
-    def api_versions(self):
+    def api_version(self):
         """
-        Returns the API version(s) introspected from the collection data. This
-        is a list of all versions of the API to which this data can be used.
+        Returns the API version introspected from the collection data.
         This is useful in preventing mismatching API versions between the
         client code & service.
 
         If the data has been previously accessed, a memoized version of the
-        API versions is returned.
+        API version is returned.
 
-        :returns: The service's versions
-        :rtype: list of strings
+        :returns: The service's version
+        :rtype: string
         """
-        self._api_versions = self._loaded_data.get('api_versions', '')
-        return self._api_versions
+        self._api_version = self._loaded_data.get('api_version', '')
+        return self._api_version
 
     @property
     @requires_loaded
@@ -207,7 +206,13 @@ class Collection(object):
             #        possible.
             api_name = ops[method_name]['api_name']
             conn_meth = getattr(self._connection, to_snake_case(api_name))
-            meth.__doc__ = conn_meth.__doc__
+
+            # We need to do detection here, because Py2 treats ``.__doc__``
+            # as a special read-only attribute. :/
+            if six.PY3:
+                meth.__doc__ = conn_meth.__doc__
+            else:
+                meth.__func__.__doc__ = conn_meth.__doc__
 
     def full_update_params(self, conn_method_name, params):
         """
@@ -516,14 +521,6 @@ class CollectionFactory(object):
             result = method(**params)
             return self.full_post_process(method_name, result)
 
-        # Get the (possibly overridden) docs from the op_data.
-        # If it's not there **or** is ``null``, populate with the default
-        # docstring.
-        docs = op_data.get('docs', None)
-
-        if docs is None:
-            docs = DEFAULT_DOCSTRING
-
         _new_method.__name__ = method_name
-        _new_method.__doc__ = docs
+        _new_method.__doc__ = DEFAULT_DOCSTRING
         return _new_method

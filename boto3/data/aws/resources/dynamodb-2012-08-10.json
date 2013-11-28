@@ -1,0 +1,79 @@
+{
+    "collections": {
+        "TableCollection": {
+            "resource": "Table",
+            "operations": {
+                "create": {
+                    "api_name": "CreateTable"
+                },
+                "each": {
+                    "api_name": "ListTables"
+                }
+            }
+        },
+        "ItemCollection": {
+            "resource": "Item",
+            "operations": {
+                "get_batch": {
+                    "api_name": "BatchGetItem"
+                },
+                "create_batch": {
+                    "api_name": "BatchWriteItem"
+                },
+                "create": {
+                    "api_name": "PutItem"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Table": {
+            "shape_name": "Table",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "DescribeTable"
+                },
+                "delete": {
+                    "api_name": "DeleteTable"
+                },
+                "query": {
+                    "api_name": "Query"
+                },
+                "scan": {
+                    "api_name": "Scan"
+                },
+                "update": {
+                    "api_name": "UpdateTable"
+                }
+            },
+            "relations": {}
+        },
+        "Item": {
+            "shape_name": "Item",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetItem"
+                },
+                "delete": {
+                    "api_name": "DeleteItem"
+                },
+                "update": {
+                    "api_name": "UpdateItem"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

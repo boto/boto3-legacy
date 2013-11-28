@@ -1,5 +1,6 @@
 from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import NoSuchMethod
+from boto3.core.introspection import Introspection
 from boto3.core.loader import ResourceJSONLoader
 from boto3.utils.mangle import to_snake_case
 from boto3.utils import six
@@ -40,7 +41,7 @@ class ResourceDetails(object):
         self.service_name = service_name
         self.resource_name = resource_name
         self.loader = loader
-        self._api_versions = None
+        self._api_version = None
         self._loaded_data = None
 
     def __str__(self):
@@ -60,7 +61,7 @@ class ResourceDetails(object):
         def _wrapper(self, *args, **kwargs):
             # If we don't have data, go load it.
             if self._loaded_data is None:
-                self._loaded_data = self.loader[self.service_name]
+                self._loaded_data = self.loader.load(self.service_name)
 
             return func(self, *args, **kwargs)
 
@@ -98,53 +99,33 @@ class ResourceDetails(object):
 
     @property
     @requires_loaded
-    def api_versions(self):
+    def api_version(self):
         """
-        Returns the API version(s) introspected from the resource data. This
-        is a list of all versions of the API to which this data can be used.
+        Returns the API version introspected from the resource data.
         This is useful in preventing mismatching API versions between the
         client code & service.
 
         If the data has been previously accessed, a memoized version of the
-        API versions is returned.
+        API version is returned.
 
-        :returns: The service's versions
-        :rtype: list of strings
+        :returns: The service's version
+        :rtype: string
         """
-        self._api_versions = self._loaded_data.get('api_versions', '')
-        return self._api_versions
+        self._api_version = self._loaded_data.get('api_version', '')
+        return self._api_version
 
     @property
-    def identifier_var_name(self):
+    def identifiers(self):
         """
-        Returns variable name of the identifier.
-
-        This should be the name the ``Resource`` should look for from the user
-        as the unique identifer for the resource server-side.
+        Returns the identifiers.
 
         If the data has been previously accessed, a memoized version of the
         variable name is returned.
 
-        :returns: The identifier's variable name (from Python)
-        :rtype: string
+        :returns: The identifiers
+        :rtype: dict
         """
-        return self.resource_data['identifier']['var_name']
-
-    @property
-    def identifier_api_name(self):
-        """
-        Returns API name of the identifier.
-
-        This should be the name the ``Resource`` should look for from the API
-        (server-side) as the unique identifer for the resource.
-
-        If the data has been previously accessed, a memoized version of the
-        API name is returned.
-
-        :returns: The identifier's API name (from server-side)
-        :rtype: string
-        """
-        return self.resource_data['identifier']['api_name']
+        return self.resource_data['identifiers']
 
 
 class Resource(object):
@@ -225,27 +206,45 @@ class Resource(object):
             #        possible.
             api_name = ops[method_name]['api_name']
             conn_meth = getattr(self._connection, to_snake_case(api_name))
-            meth.__doc__ = conn_meth.__doc__
 
-    def get_identifier(self):
+            # We need to do detection here, because Py2 treats ``.__doc__``
+            # as a special read-only attribute. :/
+            if six.PY3:
+                meth.__doc__ = conn_meth.__doc__
+            else:
+                meth.__func__.__doc__ = conn_meth.__doc__
+
+    def get_identifiers(self):
         """
-        Returns the identifier (if present) from the instance data.
+        Returns the identifier(s) (if present) from the instance data.
 
-        This identifier name is determined from the ``ResourceDetails``
-        instance hanging off the class itself.
-        """
-        return self._data.get(self._details.identifier_var_name)
-
-    def set_identifier(self, value):
-        """
-        Sets the identifier within the instance data.
-
-        This identifier name is determined from the ``ResourceDetails``
+        The identifier name(s) is/are determined from the ``ResourceDetails``
         instance hanging off the class itself.
 
-        :param value: The value to be set.
+        :returns: All the identifier information
+        :rtype: dict
         """
-        self._data[self._details.identifier_var_name] = value
+        data = {}
+
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            data[var_name] = self._data.get(var_name)
+
+        return data
+
+    def set_identifiers(self, data):
+        """
+        Sets the identifier(s) within the instance data.
+
+        The identifier name(s) is/are determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+
+        :param data: The value(s) to be set.
+        :param data: dict
+        """
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            self._data[var_name] = data.get(var_name)
 
     def full_update_params(self, conn_method_name, params):
         """
@@ -303,7 +302,7 @@ class Resource(object):
         """
         # By default, this just sets the identifier info.
         # We use ``var_name`` instead of ``api_name``. Because botocore.
-        params[self._details.identifier_var_name] = self.get_identifier()
+        params.update(self.get_identifiers())
         return params
 
     def full_post_process(self, conn_method_name, result):
@@ -360,6 +359,12 @@ class Resource(object):
         :type result: dict
         """
         # Mostly a hook for post-processing as needed.
+        return result
+
+    def post_process_get(self, result):
+        for key, value in result.items():
+            self._data[to_snake_case(key)] = value
+
         return result
 
 
@@ -506,14 +511,6 @@ class ResourceFactory(object):
             result = method(**params)
             return self.full_post_process(method_name, result)
 
-        # Get the (possibly overridden) docs from the op_data.
-        # If it's not there **or** is ``null``, populate with the default
-        # docstring.
-        docs = op_data.get('docs', None)
-
-        if docs is None:
-            docs = DEFAULT_DOCSTRING
-
         _new_method.__name__ = method_name
-        _new_method.__doc__ = docs
+        _new_method.__doc__ = DEFAULT_DOCSTRING
         return _new_method

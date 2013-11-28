@@ -1,0 +1,75 @@
+{
+    "collections": {
+        "CaseCollection": {
+            "resource": "Case",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCase"
+                },
+                "each": {
+                    "api_name": "DescribeCases"
+                },
+                "all_services": {
+                    "api_name": "DescribeServices"
+                },
+                "all_severity_levels": {
+                    "api_name": "DescribeSeverityLevels"
+                },
+                "all_trusted_advisor_check_refresh_statuses": {
+                    "api_name": "DescribeTrustedAdvisorCheckRefreshStatuses"
+                },
+                "trusted_advisor_check_result": {
+                    "api_name": "DescribeTrustedAdvisorCheckResult"
+                },
+                "all_trusted_advisor_check_summaries": {
+                    "api_name": "DescribeTrustedAdvisorCheckSummaries"
+                },
+                "all_trusted_advisor_checks": {
+                    "api_name": "DescribeTrustedAdvisorChecks"
+                },
+                "refresh_trusted_advisor_check": {
+                    "api_name": "RefreshTrustedAdvisorCheck"
+                }
+            }
+        },
+        "CommunicationCollection": {
+            "resource": "Communication",
+            "operations": {
+                "create": {
+                    "api_name": "AddCommunicationToCase"
+                },
+                "each": {
+                    "api_name": "DescribeCommunications"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Case": {
+            "shape_name": "Case",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "resolve": {
+                    "api_name": "ResolveCase"
+                }
+            },
+            "relations": {}
+        },
+        "Communication": {
+            "shape_name": "Communication",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {},
+            "relations": {}
+        }
+    }
+}

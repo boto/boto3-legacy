@@ -1,0 +1,346 @@
+{
+    "collections": {
+        "AccessKeyCollection": {
+            "resource": "AccessKey",
+            "operations": {
+                "create": {
+                    "api_name": "CreateAccessKey"
+                },
+                "each": {
+                    "api_name": "ListAccessKeys"
+                }
+            }
+        },
+        "AccountAliasCollection": {
+            "resource": "AccountAlias",
+            "operations": {
+                "create": {
+                    "api_name": "CreateAccountAlias"
+                },
+                "each": {
+                    "api_name": "ListAccountAliases"
+                }
+            }
+        },
+        "GroupCollection": {
+            "resource": "Group",
+            "operations": {
+                "create": {
+                    "api_name": "CreateGroup"
+                },
+                "each": {
+                    "api_name": "ListGroups"
+                },
+                "each_by_user": {
+                    "api_name": "ListGroupsForUser"
+                }
+            }
+        },
+        "InstanceProfileCollection": {
+            "resource": "InstanceProfile",
+            "operations": {
+                "create": {
+                    "api_name": "CreateInstanceProfile"
+                },
+                "each": {
+                    "api_name": "ListInstanceProfiles"
+                },
+                "each_by_role": {
+                    "api_name": "ListInstanceProfilesForRole"
+                }
+            }
+        },
+        "LoginProfileCollection": {
+            "resource": "LoginProfile",
+            "operations": {
+                "create": {
+                    "api_name": "CreateLoginProfile"
+                }
+            }
+        },
+        "RoleCollection": {
+            "resource": "Role",
+            "operations": {
+                "create": {
+                    "api_name": "CreateRole"
+                },
+                "each": {
+                    "api_name": "ListRoles"
+                }
+            }
+        },
+        "UserCollection": {
+            "resource": "User",
+            "operations": {
+                "change_password": {
+                    "api_name": "ChangePassword"
+                },
+                "create": {
+                    "api_name": "CreateUser"
+                },
+                "delete_account_password_policy": {
+                    "api_name": "DeleteAccountPasswordPolicy"
+                },
+                "delete_server_certificate": {
+                    "api_name": "DeleteServerCertificate"
+                },
+                "delete_signing_certificate": {
+                    "api_name": "DeleteSigningCertificate"
+                },
+                "get_account_password_policy": {
+                    "api_name": "GetAccountPasswordPolicy"
+                },
+                "get_account_summary": {
+                    "api_name": "GetAccountSummary"
+                },
+                "get_server_certificate": {
+                    "api_name": "GetServerCertificate"
+                },
+                "list_server_certificates": {
+                    "api_name": "ListServerCertificates"
+                },
+                "list_signing_certificates": {
+                    "api_name": "ListSigningCertificates"
+                },
+                "each": {
+                    "api_name": "ListUsers"
+                },
+                "update_account_password_policy": {
+                    "api_name": "UpdateAccountPasswordPolicy"
+                },
+                "update_server_certificate": {
+                    "api_name": "UpdateServerCertificate"
+                },
+                "update_signing_certificate": {
+                    "api_name": "UpdateSigningCertificate"
+                },
+                "upload_server_certificate": {
+                    "api_name": "UploadServerCertificate"
+                },
+                "upload_signing_certificate": {
+                    "api_name": "UploadSigningCertificate"
+                }
+            }
+        },
+        "VirtualMFADeviceCollection": {
+            "resource": "VirtualMFADevice",
+            "operations": {
+                "create": {
+                    "api_name": "CreateVirtualMFADevice"
+                },
+                "each": {
+                    "api_name": "ListVirtualMFADevices"
+                }
+            }
+        }
+    },
+    "resources": {
+        "AccessKey": {
+            "shape_name": "AccessKey",
+            "identifiers": [
+                {
+                    "var_name": "access_key",
+                    "api_name": "$shape_name.AccessKey"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteAccessKey"
+                },
+                "update": {
+                    "api_name": "UpdateAccessKey"
+                }
+            },
+            "relations": {}
+        },
+        "AccountAlias": {
+            "shape_name": "AccountAlias",
+            "identifiers": [
+                {
+                    "var_name": "AccountAlias",
+                    "api_name": "$shape_name.AccountAlias"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteAccountAlias"
+                }
+            },
+            "relations": {}
+        },
+        "Group": {
+            "shape_name": "Group",
+            "identifiers": [
+                {
+                    "var_name": "group",
+                    "api_name": "$shape_name.Group"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetGroup"
+                },
+                "add_user": {
+                    "api_name": "AddUserToGroup"
+                },
+                "delete": {
+                    "api_name": "DeleteGroup"
+                },
+                "delete_policy": {
+                    "api_name": "DeleteGroupPolicy"
+                },
+                "get_policy": {
+                    "api_name": "GetGroupPolicy"
+                },
+                "list_policies": {
+                    "api_name": "ListGroupPolicies"
+                },
+                "put_policy": {
+                    "api_name": "PutGroupPolicy"
+                },
+                "remove_user": {
+                    "api_name": "RemoveUserFromGroup"
+                },
+                "update": {
+                    "api_name": "UpdateGroup"
+                }
+            },
+            "relations": {}
+        },
+        "InstanceProfile": {
+            "shape_name": "InstanceProfile",
+            "identifiers": [
+                {
+                    "var_name": "instance_profile",
+                    "api_name": "$shape_name.InstanceProfile"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetInstanceProfile"
+                },
+                "add_role": {
+                    "api_name": "AddRoleToInstanceProfile"
+                },
+                "delete": {
+                    "api_name": "DeleteInstanceProfile"
+                },
+                "remove_role": {
+                    "api_name": "RemoveRoleFromInstanceProfile"
+                }
+            },
+            "relations": {}
+        },
+        "LoginProfile": {
+            "shape_name": "LoginProfile",
+            "identifiers": [
+                {
+                    "var_name": "login_profile",
+                    "api_name": "$shape_name.LoginProfile"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetLoginProfile"
+                },
+                "delete": {
+                    "api_name": "DeleteLoginProfile"
+                },
+                "update": {
+                    "api_name": "UpdateLoginProfile"
+                }
+            },
+            "relations": {}
+        },
+        "Role": {
+            "shape_name": "Role",
+            "identifiers": [
+                {
+                    "var_name": "role",
+                    "api_name": "$shape_name.Role"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetRole"
+                },
+                "delete": {
+                    "api_name": "DeleteRole"
+                },
+                "delete_policy": {
+                    "api_name": "DeleteRolePolicy"
+                },
+                "get_policy": {
+                    "api_name": "GetRolePolicy"
+                },
+                "list_role_policies": {
+                    "api_name": "ListRolePolicies"
+                },
+                "put_policy": {
+                    "api_name": "PutRolePolicy"
+                },
+                "update_assume_role_policy": {
+                    "api_name": "UpdateAssumeRolePolicy"
+                }
+            },
+            "relations": {}
+        },
+        "User": {
+            "shape_name": "User",
+            "identifiers": [
+                {
+                    "var_name": "user",
+                    "api_name": "$shape_name.User"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetUser"
+                },
+                "delete": {
+                    "api_name": "DeleteUser"
+                },
+                "delete_policy": {
+                    "api_name": "DeleteUserPolicy"
+                },
+                "get_policy": {
+                    "api_name": "GetUserPolicy"
+                },
+                "list_policies": {
+                    "api_name": "ListUserPolicies"
+                },
+                "put_policy": {
+                    "api_name": "PutUserPolicy"
+                },
+                "update": {
+                    "api_name": "UpdateUser"
+                }
+            },
+            "relations": {}
+        },
+        "VirtualMFADevice": {
+            "shape_name": "VirtualMFADevice",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "deactivate": {
+                    "api_name": "DeactivateMFADevice"
+                },
+                "delete": {
+                    "api_name": "DeleteVirtualMFADevice"
+                },
+                "enable": {
+                    "api_name": "EnableMFADevice"
+                },
+                "resync": {
+                    "api_name": "ResyncMFADevice"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

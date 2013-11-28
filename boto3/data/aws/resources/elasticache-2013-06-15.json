@@ -1,0 +1,181 @@
+{
+    "collections": {
+        "CacheClusterCollection": {
+            "resource": "CacheCluster",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheCluster"
+                },
+                "each": {
+                    "api_name": "DescribeCacheClusters"
+                },
+                "each_reserved_cache_nodes": {
+                    "api_name": "DescribeReservedCacheNodes"
+                },
+                "each_reserved_cache_nodes_offerings": {
+                    "api_name": "DescribeReservedCacheNodesOfferings"
+                },
+                "purchase_reserved_cache_nodes_offering": {
+                    "api_name": "PurchaseReservedCacheNodesOffering"
+                }
+            }
+        },
+        "CacheParameterGroupCollection": {
+            "resource": "CacheParameterGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheParameterGroup"
+                },
+                "describe_engine_versions": {
+                    "api_name": "DescribeCacheEngineVersions"
+                },
+                "each": {
+                    "api_name": "DescribeCacheParameterGroups"
+                },
+                "describe_engine_default_parameters": {
+                    "api_name": "DescribeEngineDefaultParameters"
+                }
+            }
+        },
+        "CacheSecurityGroupCollection": {
+            "resource": "CacheSecurityGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheSecurityGroup"
+                },
+                "each": {
+                    "api_name": "DescribeCacheSecurityGroups"
+                }
+            }
+        },
+        "CacheSubnetGroupCollection": {
+            "resource": "CacheSubnetGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateCacheSubnetGroup"
+                },
+                "each": {
+                    "api_name": "DescribeCacheSubnetGroups"
+                }
+            }
+        },
+        "ReplicationGroupCollection": {
+            "resource": "ReplicationGroup",
+            "operations": {
+                "create": {
+                    "api_name": "CreateReplicationGroup"
+                },
+                "each": {
+                    "api_name": "DescribeReplicationGroups"
+                }
+            }
+        }
+    },
+    "resources": {
+        "CacheCluster": {
+            "shape_name": "CacheCluster",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheCluster"
+                },
+                "describe_events": {
+                    "api_name": "DescribeEvents"
+                },
+                "update": {
+                    "api_name": "ModifyCacheCluster"
+                },
+                "reboot": {
+                    "api_name": "RebootCacheCluster"
+                }
+            },
+            "relations": {}
+        },
+        "CacheParameterGroup": {
+            "shape_name": "CacheParameterGroup",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheParameterGroup"
+                },
+                "describe_parameters": {
+                    "api_name": "DescribeCacheParameters"
+                },
+                "update": {
+                    "api_name": "ModifyCacheParameterGroup"
+                },
+                "reset": {
+                    "api_name": "ResetCacheParameterGroup"
+                }
+            },
+            "relations": {}
+        },
+        "CacheSecurityGroup": {
+            "shape_name": "CacheSecurityGroup",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "authorize_ingress": {
+                    "api_name": "AuthorizeCacheSecurityGroupIngress"
+                },
+                "delete": {
+                    "api_name": "DeleteCacheSecurityGroup"
+                },
+                "revoke_ingress": {
+                    "api_name": "RevokeCacheSecurityGroupIngress"
+                }
+            },
+            "relations": {}
+        },
+        "CacheSubnetGroup": {
+            "shape_name": "CacheSubnetGroup",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteCacheSubnetGroup"
+                },
+                "update": {
+                    "api_name": "ModifyCacheSubnetGroup"
+                }
+            },
+            "relations": {}
+        },
+        "ReplicationGroup": {
+            "shape_name": "ReplicationGroup",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "delete": {
+                    "api_name": "DeleteReplicationGroup"
+                },
+                "update": {
+                    "api_name": "ModifyReplicationGroup"
+                }
+            },
+            "relations": {}
+        }
+    }
+}

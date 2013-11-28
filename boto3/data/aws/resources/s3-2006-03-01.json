@@ -1,0 +1,203 @@
+{
+    "collections": {
+        "BucketCollection": {
+            "resource": "Bucket",
+            "operations": {
+                "create": {
+                    "api_name": "CreateBucket"
+                },
+                "each": {
+                    "api_name": "ListBuckets"
+                }
+            }
+        },
+        "S3ObjectCollection": {
+            "resource": "S3Object",
+            "operations": {
+                "delete_batch": {
+                    "api_name": "DeleteObjects"
+                },
+                "each": {
+                    "api_name": "ListObjects"
+                },
+                "create": {
+                    "api_name": "PutObject"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Bucket": {
+            "shape_name": "Bucket",
+            "identifiers": [
+                {
+                    "var_name": "bucket",
+                    "api_name": "$shape_name.Bucket"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "HeadBucket"
+                },
+                "put_tagging": {
+                    "api_name": "PutBucketTagging"
+                },
+                "put_versioning": {
+                    "api_name": "PutBucketVersioning"
+                },
+                "put_website": {
+                    "api_name": "PutBucketWebsite"
+                },
+                "delete": {
+                    "api_name": "DeleteBucket"
+                },
+                "delete_cors": {
+                    "api_name": "DeleteBucketCors"
+                },
+                "delete_lifecycle": {
+                    "api_name": "DeleteBucketLifecycle"
+                },
+                "delete_policy": {
+                    "api_name": "DeleteBucketPolicy"
+                },
+                "delete_tagging": {
+                    "api_name": "DeleteBucketTagging"
+                },
+                "delete_website": {
+                    "api_name": "DeleteBucketWebsite"
+                },
+                "get_acl": {
+                    "api_name": "GetBucketAcl"
+                },
+                "get_cors": {
+                    "api_name": "GetBucketCors"
+                },
+                "get_lifecycle": {
+                    "api_name": "GetBucketLifecycle"
+                },
+                "get_location": {
+                    "api_name": "GetBucketLocation"
+                },
+                "get_logging": {
+                    "api_name": "GetBucketLogging"
+                },
+                "get_notification": {
+                    "api_name": "GetBucketNotification"
+                },
+                "get_policy": {
+                    "api_name": "GetBucketPolicy"
+                },
+                "get_request_payment": {
+                    "api_name": "GetBucketRequestPayment"
+                },
+                "get_tagging": {
+                    "api_name": "GetBucketTagging"
+                },
+                "get_versioning": {
+                    "api_name": "GetBucketVersioning"
+                },
+                "get_website": {
+                    "api_name": "GetBucketWebsite"
+                },
+                "all_multipart_uploads": {
+                    "api_name": "ListMultipartUploads"
+                },
+                "all_object_versions": {
+                    "api_name": "ListObjectVersions"
+                },
+                "put_acl": {
+                    "api_name": "PutBucketAcl"
+                },
+                "put_cors": {
+                    "api_name": "PutBucketCors"
+                },
+                "put_lifecycle": {
+                    "api_name": "PutBucketLifecycle"
+                },
+                "put_logging": {
+                    "api_name": "PutBucketLogging"
+                },
+                "put_notification": {
+                    "api_name": "PutBucketNotification"
+                },
+                "put_policy": {
+                    "api_name": "PutBucketPolicy"
+                },
+                "put_request_payment": {
+                    "api_name": "PutBucketRequestPayment"
+                }
+            },
+            "relations": {
+                "S3Object": {
+                    "var_name": "keys",
+                    "required": false,
+                    "type": "1-M"
+                }
+            }
+        },
+        "S3Object": {
+            "shape_name": "S3Object",
+            "identifiers": [
+                {
+                    "var_name": "bucket",
+                    "api_name": "$shape_name.Bucket"
+                },
+                {
+                    "var_name": "key",
+                    "api_name": "$shape_name.Key"
+                }
+            ],
+            "operations": {
+                "get": {
+                    "api_name": "GetObject"
+                },
+                "head": {
+                    "api_name": "HeadObject"
+                },
+                "abort_multipart_upload": {
+                    "api_name": "AbortMultipartUpload"
+                },
+                "complete_multipart_upload": {
+                    "api_name": "CompleteMultipartUpload"
+                },
+                "copy": {
+                    "api_name": "CopyObject"
+                },
+                "create_multipart_upload": {
+                    "api_name": "CreateMultipartUpload"
+                },
+                "delete": {
+                    "api_name": "DeleteObject"
+                },
+                "get_acl": {
+                    "api_name": "GetObjectAcl"
+                },
+                "get_torrent": {
+                    "api_name": "GetObjectTorrent"
+                },
+                "all_parts": {
+                    "api_name": "ListParts"
+                },
+                "put_acl": {
+                    "api_name": "PutObjectAcl"
+                },
+                "restore": {
+                    "api_name": "RestoreObject"
+                },
+                "upload_part": {
+                    "api_name": "UploadPart"
+                },
+                "upload_part_copy": {
+                    "api_name": "UploadPartCopy"
+                }
+            },
+            "relations": {
+                "Bucket": {
+                    "var_name": "bucket",
+                    "required": true,
+                    "type": "1-1"
+                }
+            }
+        }
+    }
+}

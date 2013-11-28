@@ -1,0 +1,99 @@
+{
+    "collections": {
+        "DomainCollection": {
+            "resource": "Domain",
+            "operations": {
+                "create": {
+                    "api_name": "CreateDomain"
+                },
+                "each": {
+                    "api_name": "DescribeDomains"
+                }
+            }
+        },
+        "DocumentCollection": {
+            "resource": "Document",
+            "operations": {
+                "create_batch": {
+                    "api_name": "IndexDocuments"
+                }
+            }
+        }
+    },
+    "resources": {
+        "Domain": {
+            "shape_name": "Domain",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {
+                "define_index_field": {
+                    "api_name": "DefineIndexField"
+                },
+                "define_rank_expression": {
+                    "api_name": "DefineRankExpression"
+                },
+                "delete": {
+                    "api_name": "DeleteDomain"
+                },
+                "delete_index_field": {
+                    "api_name": "DeleteIndexField"
+                },
+                "delete_rank_expression": {
+                    "api_name": "DeleteRankExpression"
+                },
+                "get_default_search_field": {
+                    "api_name": "DescribeDefaultSearchField"
+                },
+                "all_index_fields": {
+                    "api_name": "DescribeIndexFields"
+                },
+                "all_rank_expressions": {
+                    "api_name": "DescribeRankExpressions"
+                },
+                "all_service_access_policies": {
+                    "api_name": "DescribeServiceAccessPolicies"
+                },
+                "all_stemming_options": {
+                    "api_name": "DescribeStemmingOptions"
+                },
+                "all_stopword_options": {
+                    "api_name": "DescribeStopwordOptions"
+                },
+                "all_synonym_options": {
+                    "api_name": "DescribeSynonymOptions"
+                },
+                "update_default_search_field": {
+                    "api_name": "UpdateDefaultSearchField"
+                },
+                "update_service_access_policies": {
+                    "api_name": "UpdateServiceAccessPolicies"
+                },
+                "update_stemming_options": {
+                    "api_name": "UpdateStemmingOptions"
+                },
+                "update_stopword_options": {
+                    "api_name": "UpdateStopwordOptions"
+                },
+                "update_synonym_options": {
+                    "api_name": "UpdateSynonymOptions"
+                }
+            },
+            "relations": {}
+        },
+        "Document": {
+            "shape_name": "Document",
+            "identifiers": [
+                {
+                    "var_name": "id",
+                    "api_name": "$shape_name.Id"
+                }
+            ],
+            "operations": {},
+            "relations": {}
+        }
+    }
+}
