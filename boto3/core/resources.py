@@ -363,6 +363,18 @@ class Resource(object):
         return result
 
     def post_process_get(self, result):
+        """
+        Given an object with identifiers, fetches the data for that object
+        from the service.
+
+        This alters the data on the object itself & simply passes through what
+        was received.
+
+        :param result: The response data
+        :type result: dict
+
+        :returns: The unmodified response data
+        """
         for key, value in result.items():
             self._data[to_snake_case(key)] = value
 
