@@ -186,6 +186,33 @@ class CollectionDetailsTestCase(unittest.TestCase):
             loader=self.test_loader
         )
 
+        # Fake some identifiers in.
+        self.alt_cd = CollectionDetails(
+            self.session,
+            'test',
+            'JobCollection',
+            loader=self.test_loader
+        )
+        self.alt_cd._loaded_data = {
+            'api_version': 'something',
+            'collections': {
+                'JobCollection': {
+                    'resource': 'Job',
+                    'identifiers': [
+                        {
+                            'var_name': 'pipeline',
+                            'api_name': '$whatever.Pipeline',
+                        },
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
+                    'operations': {}
+                }
+            }
+        }
+
     def test_init(self):
         self.assertEqual(self.cd.session, self.session)
         self.assertEqual(self.cd.service_name, 'test')
@@ -215,6 +242,21 @@ class CollectionDetailsTestCase(unittest.TestCase):
         av = self.cd.api_version
         self.assertEqual(av, '2013-11-27')
         self.assertEqual(self.cd._api_version, '2013-11-27')
+
+    def test_identifiers(self):
+        self.assertEqual(self.cd.identifiers, [])
+
+        # Now with something with identifiers.
+        self.assertEqual(self.alt_cd.identifiers, [
+            {
+                'api_name': '$whatever.Pipeline',
+                'var_name': 'pipeline',
+            },
+            {
+                'api_name': 'Id',
+                'var_name': 'id',
+            }
+        ])
 
     def test_resource_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
@@ -275,6 +317,10 @@ class PipeCollection(Collection):
         return result
 
 
+class JobCollection(Collection):
+    pass
+
+
 class CollectionTestCase(unittest.TestCase):
     def setUp(self):
         super(CollectionTestCase, self).setUp()
@@ -284,29 +330,79 @@ class CollectionTestCase(unittest.TestCase):
             'test',
             'PipeCollection'
         )
+        self.fake_alt_details = CollectionDetails(
+            self.session,
+            'test',
+            'JobCollection'
+        )
         self.fake_details._loaded_data = {
             'api_version': 'something',
             'collections': {
                 'PipeCollection': {
                     'resource': 'Pipeline',
-                    'identifier': {
-                        'var_name': 'id',
-                        'api_name': 'Id',
-                    },
                     'operations': {
                         'create': {
                             'api_name': 'CreatePipe'
                         }
                     }
+                },
+                'JobCollection': {
+                    'resource': 'Job',
+                    'identifiers': [
+                        {
+                            'var_name': 'pipeline',
+                            'api_name': '$whatever.Pipeline',
+                        },
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
+                    'operations': {}
                 }
             }
         }
+        self.fake_alt_details._loaded_data = self.fake_details._loaded_data
         self.fake_conn = FakeConn()
+
         PipeCollection._details = self.fake_details
         self.collection = PipeCollection(
             connection=self.fake_conn,
             id='1872baf45'
         )
+        JobCollection._details = self.fake_alt_details
+        self.alt_collection = JobCollection(
+            connection=self.fake_conn,
+            pipeline='fake-pipe',
+            id='8716fc26a'
+        )
+
+    def test_get_identifiers(self):
+        # No identifiers.
+        self.assertEqual(self.collection.get_identifiers(), {})
+
+        # Has identifiers.
+        self.assertEqual(self.alt_collection.get_identifiers(), {
+            'id': '8716fc26a',
+            'pipeline': 'fake-pipe',
+        })
+
+    def test_set_identifiers(self):
+        self.assertEqual(self.alt_collection._data, {
+            'id': '8716fc26a',
+            'pipeline': 'fake-pipe',
+        })
+
+        # Only sets things found in the identifiers, not random data.
+        self.alt_collection.set_identifiers({
+            'pipeline': 'something',
+            'id': 'hello!',
+            'bucket': 'something',
+        })
+        self.assertEqual(self.alt_collection._data, {
+            'id': 'hello!',
+            'pipeline': 'something',
+        })
 
     def test_full_update_params(self):
         params = {

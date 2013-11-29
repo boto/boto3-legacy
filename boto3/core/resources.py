@@ -115,6 +115,7 @@ class ResourceDetails(object):
         return self._api_version
 
     @property
+    @requires_loaded
     def identifiers(self):
         """
         Returns the identifiers.
@@ -123,7 +124,7 @@ class ResourceDetails(object):
         variable name is returned.
 
         :returns: The identifiers
-        :rtype: dict
+        :rtype: list
         """
         return self.resource_data['identifiers']
 

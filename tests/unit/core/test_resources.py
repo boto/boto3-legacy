@@ -215,6 +215,14 @@ class ResourceDetailsTestCase(unittest.TestCase):
         self.assertEqual(av, '2013-11-27')
         self.assertEqual(self.rd._api_version, '2013-11-27')
 
+    def test_identifiers(self):
+        self.assertEqual(self.rd.identifiers, [
+            {
+                'api_name': '$shape_name.Id',
+                'var_name': 'id',
+            }
+        ])
+
     def test_cached(self):
         # Fake in data.
         self.rd._loaded_data = {
@@ -291,6 +299,20 @@ class ResourceTestCase(unittest.TestCase):
     def tearDown(self):
         del PipeResource._details
         super(ResourceTestCase, self).tearDown()
+
+    def test_get_identifiers(self):
+        self.assertEqual(self.resource.get_identifiers(), {'id': '1872baf45'})
+
+    def test_set_identifiers(self):
+        self.assertEqual(self.resource._data, {
+            'id': '1872baf45',
+        })
+
+        # Only sets things found in the identifiers, not random data.
+        self.resource.set_identifiers({'id': 'hello!', 'bucket': 'something'})
+        self.assertEqual(self.resource._data, {
+            'id': 'hello!'
+        })
 
     def test_full_update_params(self):
         params = {

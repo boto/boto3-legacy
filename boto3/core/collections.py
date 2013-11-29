@@ -127,6 +127,22 @@ class CollectionDetails(object):
         """
         return self.collection_data.get('resource', None)
 
+    @property
+    @requires_loaded
+    def identifiers(self):
+        """
+        Returns the identifiers.
+
+        If the data has been previously accessed, a memoized version of the
+        variable name is returned.
+
+        :returns: The identifiers
+        :rtype: list
+        """
+        # Unlike, ``ResourceDetails``, ``identifiers`` is **optionally**
+        # present on ``Collections``.
+        return self.collection_data.get('identifiers', [])
+
 
 class Collection(object):
     """
@@ -147,7 +163,11 @@ class Collection(object):
         :param **kwargs: (Optional) Reserved for future use.
         :type **kwargs: dict
         """
+        self._data = {}
         self._connection = connection
+
+        for key, value in kwargs.items():
+            self._data[key] = value
 
         if self._connection is None:
             self._connection = self._details.session.connect_to(
@@ -163,6 +183,18 @@ class Collection(object):
             self._details.service_name,
             self._connection.region_name
         )
+
+    def __getattr__(self, name):
+        """
+        Attempts to return instance data for a given name if available.
+
+        :param name: The instance data's name
+        :type name: string
+        """
+        if name in self._data:
+            return self._data[name]
+
+        raise AttributeError("No such attribute '{0}'".format(name))
 
     @classmethod
     def change_resource(cls, resource_class):
@@ -213,6 +245,38 @@ class Collection(object):
                 meth.__doc__ = conn_meth.__doc__
             else:
                 meth.__func__.__doc__ = conn_meth.__doc__
+
+    def get_identifiers(self):
+        """
+        Returns the identifier(s) (if present) from the instance data.
+
+        The identifier name(s) is/are determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+
+        :returns: All the identifier information
+        :rtype: dict
+        """
+        data = {}
+
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            data[var_name] = self._data.get(var_name)
+
+        return data
+
+    def set_identifiers(self, data):
+        """
+        Sets the identifier(s) within the instance data.
+
+        The identifier name(s) is/are determined from the ``ResourceDetails``
+        instance hanging off the class itself.
+
+        :param data: The value(s) to be set.
+        :param data: dict
+        """
+        for id_info in self._details.identifiers:
+            var_name = id_info['var_name']
+            self._data[var_name] = data.get(var_name)
 
     def full_update_params(self, conn_method_name, params):
         """
