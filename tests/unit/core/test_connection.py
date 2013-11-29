@@ -12,7 +12,12 @@ class TestCoreService(FakeService):
             'CreateQueue',
             " <p>Creates a queue.</p>\n ",
             params=[
-                FakeParam('QueueName', required=True, ptype='string'),
+                FakeParam(
+                    'QueueName',
+                    required=True,
+                    ptype='string',
+                    documentation='\n    <p>The name for the queue to be created.</p>\n  '
+                ),
                 FakeParam('Attributes', required=False, ptype='map'),
             ],
             output={
@@ -177,7 +182,12 @@ class ConnectionFactoryTestCase(unittest.TestCase):
             'output': True,
         })
         self.assertEqual(func.__name__, 'test')
-        self.assertEqual(func.__doc__, 'This is a test.')
+        self.assertEqual(
+            func.__doc__,
+            'This is a test.\n:' + \
+            'returns: The response data received\n' + \
+            ':rtype: dict\n'
+        )
 
     def test__post_process_results(self):
         ppr = self.test_service_class()._post_process_results
@@ -216,6 +226,14 @@ class ConnectionFactoryTestCase(unittest.TestCase):
         self.assertEqual(
             [param['var_name'] for param in create_queue_params],
             ['queue_name', 'attributes']
+        )
+
+        # Check the docstring.
+        self.assertTrue(
+            ':param queue_name: The name' in ts.create_queue.__doc__
+        )
+        self.assertTrue(
+            ':type queue_name: string' in ts.create_queue.__doc__
         )
 
     def test_late_binding(self):

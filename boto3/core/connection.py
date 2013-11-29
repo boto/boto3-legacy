@@ -275,6 +275,29 @@ class ConnectionFactory(object):
 
         return attrs
 
+    def _generate_docstring(self, op_data):
+        docstring = op_data['docs']
+        params = []
+
+        for param_data in op_data['params']:
+            param_doc = ":param {0}: {1}\n".format(
+                param_data['var_name'],
+                param_data.get('docs', 'No documentation available')
+            )
+            type_doc = ":type {0}: {1}\n".format(
+                param_data['var_name'],
+                param_data['type']
+            )
+
+            docstring += '\n'
+            docstring += param_doc
+            docstring += type_doc
+
+        docstring += '\n'
+        docstring += ':returns: The response data received\n'
+        docstring += ':rtype: dict\n'
+        return docstring
+
     def _create_operation_method(factory_self, method_name, orig_op_data):
         if not six.PY3:
             method_name = str(method_name)
@@ -316,6 +339,6 @@ class ConnectionFactory(object):
         # Swap the name, so it looks right.
         _new_method.__name__ = method_name
         # Assign docstring.
-        _new_method.__doc__ = orig_op_data['docs']
+        _new_method.__doc__ = factory_self._generate_docstring(orig_op_data)
         # Return the newly constructed method.
         return _new_method
