@@ -111,12 +111,12 @@ Methods that have been standardized typically are:
 
 * ``Collection``
 
-    * ``all`` - lists all ``Resources`` present
-    * ``get`` - fetches an individual ``Resource`` by identifier
+    * ``each`` - lists all ``Resources`` present
     * ``create`` - creates a new ``Resource``
 
 * ``Resource``
 
+    * ``get`` - fetches an individual ``Resource`` by identifier
     * ``update`` - Where present within the service, this updates a given
       ``Resource``.
     * ``delete`` - Deletes a given ``Resource``
@@ -260,11 +260,21 @@ For example::
             return params
 
 
+    rf = ResourceFactory()
+    Bucket = rf.construct_for(
+        's3',
+        'Bucket',
+        base_class=AlwaysForceMyInstanceDataToWinResource
+    )
+    assert issubclass(Bucket, AlwaysForceMyInstanceDataToWinResource)
+
+    # Alternate syntax if you *don't* already have a factory or want it to
+    # *always* be applied to every call to ``construct_for``.
     rf = ResourceFactory(
         base_resource_class=AlwaysForceMyInstanceDataToWinResource
     )
     Bucket = rf.construct_for('s3', 'Bucket')
-    assert issubclass(Bucket, AlwaysForceMyInstanceDataToWinResource)
+
 
 You can do a similar thing for the ``ResourceDetails`` class to be used. It
 also is specified as part of the initialization of a ``ResourceFactory``.
