@@ -1,4 +1,7 @@
+import re
+
 from boto3.core.constants import DEFAULT_REGION
+from boto3.utils import six
 from boto3.utils.mangle import html_to_rst
 
 
@@ -21,6 +24,8 @@ class Introspection(object):
         }
 
     """
+    tag_re = re.compile(r'<.*?>')
+
     def __init__(self, session):
         """
         Creates a new ``Introspection`` instance.
@@ -76,6 +81,26 @@ class Introspection(object):
         """
         return service.get_operation(operation_name)
 
+    def strip_html(self, doc):
+        """
+        This method removes all HTML from a docstring.
+
+        Lighter than ``convert_docs``, this is intended for the documentation
+        on **parameters**, not the overall docs themselves.
+
+        :param doc: The initial docstring
+        :type doc: string
+
+        :returns: The stripped/cleaned docstring
+        :rtype: string
+        """
+        if not isinstance(doc, six.string_types):
+            return ''
+
+        doc = doc.strip()
+        doc = self.tag_re.sub('', doc)
+        return doc
+
     def parse_param(self, core_param):
         """
         Returns data about a specific parameter.
@@ -89,6 +114,7 @@ class Introspection(object):
             'var_name': core_param.py_name,
             'api_name': core_param.name,
             'required': core_param.required,
+            'docs': self.strip_html(core_param.documentation),
             'type': core_param.type,
         }
 

@@ -10,7 +10,12 @@ class TestService(FakeService):
             'CreateQueue',
             " <p>Creates a queue.</p>\n ",
             params=[
-                FakeParam('QueueName', required=True, ptype='string'),
+                FakeParam(
+                    'QueueName',
+                    required=True,
+                    ptype='string',
+                    documentation='\n    <p>The name for the queue to be created.</p>\n  '
+                ),
                 FakeParam('Attributes', required=False, ptype='map'),
             ],
             output={
@@ -40,6 +45,10 @@ class IntrospectionTestCase(unittest.TestCase):
         param_data = self.introspection.parse_param(param)
         self.assertEqual(param_data['var_name'], 'queue_name')
         self.assertEqual(param_data['api_name'], 'QueueName')
+        self.assertEqual(
+            param_data['docs'],
+            'The name for the queue to be created.'
+        )
         self.assertEqual(param_data['required'], True)
         self.assertEqual(param_data['type'], 'string')
 
@@ -52,10 +61,15 @@ class IntrospectionTestCase(unittest.TestCase):
         self.assertEqual(params_data[0]['api_name'], 'QueueName')
         self.assertEqual(params_data[0]['required'], True)
         self.assertEqual(params_data[0]['type'], 'string')
+        self.assertEqual(
+            params_data[0]['docs'],
+            'The name for the queue to be created.'
+        )
         self.assertEqual(params_data[1]['var_name'], 'attributes')
         self.assertEqual(params_data[1]['api_name'], 'Attributes')
         self.assertEqual(params_data[1]['required'], False)
         self.assertEqual(params_data[1]['type'], 'map')
+        self.assertEqual(params_data[1]['docs'], '')
 
     def test_get_endpoint(self):
         endpoint = self.introspection.get_endpoint(self.service)

@@ -2,11 +2,13 @@ from botocore import xform_name
 
 
 class FakeParam(object):
-    def __init__(self, name, required=False, ptype='string'):
+    def __init__(self, name, required=False, ptype='string',
+                 documentation=None):
         self.name = name
         self.py_name = xform_name(name)
         self.required = required
         self.type = ptype
+        self.documentation = documentation
 
 
 class FakeOperation(object):
