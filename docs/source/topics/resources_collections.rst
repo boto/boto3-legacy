@@ -244,10 +244,56 @@ Construction Alterations
 
 You can specify your own base ``Resource`` class. This allows you to
 alter the behavior of *every* resource that comes out of the factory. This
-class should be passed as an initialization parameter to the
+class can either be passed as a one-off value to
+``ResourceFactory.construct_for`` or as an initialization parameter to the
 ``ResourceFactory``.
 
-For example::
+For a one-off call (the typical use-case)::
+
+    import json
+
+    import boto3
+    from boto3.core.resources import Resource
+
+
+    class JSONS3Object(Resource):
+        # A class that automatically handles getting/setting the data as
+        # JSON.
+        def get_content(self):
+            raw_data = super(JSONS3Object, self).get_content()
+            return json.loads(raw_data)
+
+        def set_content(self, content):
+            raw_data = json.dumps(content)
+            return super(JSONS3Object, self).set_content(raw_data)
+
+
+    # Construct the class.
+    S3Object = boto3.session.get_resource(
+        's3',
+        'Bucket',
+        base_class=JSONS3Object
+    )
+    assert issubclass(S3Object, JSONS3Object)
+
+    # Using the new class.
+    obj = S3Object(bucket='some-bucket', key='my-auto-json.json')
+    # Give it a plain Python object.
+    obj.set_content({
+        'hello': 'world!',
+    })
+    # JSON is sent to S3.
+    obj.update()
+
+    # Now fetch it.
+    got_it = S3Object(bucket='some-bucket', key='my-auto-json.json').get()
+    # The JSON is automatically loaded.
+    data = got_it.get_content()
+    print(data['hello'])
+
+If you want the factory to **always** use a certain subclass (for instance,
+the changes should be applied to every class that comes out), you should
+pass it as an initialization parameter. For example::
 
     from boto3.core.resources import Resource, ResourceFactory
 
@@ -260,21 +306,17 @@ For example::
             return params
 
 
-    rf = ResourceFactory()
-    Bucket = rf.construct_for(
-        's3',
-        'Bucket',
-        base_class=AlwaysForceMyInstanceDataToWinResource
-    )
-    assert issubclass(Bucket, AlwaysForceMyInstanceDataToWinResource)
-
-    # Alternate syntax if you *don't* already have a factory or want it to
-    # *always* be applied to every call to ``construct_for``.
     rf = ResourceFactory(
         base_resource_class=AlwaysForceMyInstanceDataToWinResource
     )
     Bucket = rf.construct_for('s3', 'Bucket')
 
+    # Now anytime a request is sent, the instance data will be used in-place of
+    # parameters explicitly passed in.
+    bukkit = Bucket(bucket='they-be-stealin-mah')
+    # This parameter will be overwritten!
+    bukkit.update(bucket='nope-nope-nope')
+    # The bucket's name is still 'they-be-stealin-mah'
 
 You can do a similar thing for the ``ResourceDetails`` class to be used. It
 also is specified as part of the initialization of a ``ResourceFactory``.
