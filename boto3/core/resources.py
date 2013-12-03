@@ -306,6 +306,14 @@ class Resource(object):
         params.update(self.get_identifiers())
         return params
 
+    def update_params_get(self, params):
+        params.update(self.get_identifiers())
+        return params
+
+    def update_params_delete(self, params):
+        params.update(self.get_identifiers())
+        return params
+
     def full_post_process(self, conn_method_name, result):
         """
         When a response from an API method call is received, this goes through

@@ -172,8 +172,8 @@
             "shape_name": "Group",
             "identifiers": [
                 {
-                    "var_name": "group",
-                    "api_name": "$shape_name.Group"
+                    "var_name": "group_name",
+                    "api_name": "$shape_name.GroupName"
                 }
             ],
             "operations": {
@@ -289,8 +289,8 @@
             "shape_name": "User",
             "identifiers": [
                 {
-                    "var_name": "user",
-                    "api_name": "$shape_name.User"
+                    "var_name": "user_name",
+                    "api_name": "$shape_name.UserName"
                 }
             ],
             "operations": {
