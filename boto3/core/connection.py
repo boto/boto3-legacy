@@ -1,5 +1,6 @@
 from boto3.core.constants import DEFAULT_REGION
 from boto3.core.constants import NOTHING_PROVIDED
+from boto3.core.exceptions import ServerError
 from boto3.core.introspection import Introspection
 from boto3.utils import six
 
@@ -160,6 +161,33 @@ class Connection(object):
 
         return service_params
 
+    def _check_for_errors(self, results):
+        result_data = results[1]
+
+        if 'Errors' in result_data:
+            errs = result_data['Errors']
+
+            if not errs:
+                # Skip it if the errors are empty.
+                # For instance, S3 will send this key with nothing in it on a
+                # successful call.
+                return
+
+            if isinstance(errs, (list, tuple)):
+                error = errs[0]
+            elif hasattr(errs, 'items'):
+                error = errs
+            else:
+                error = {
+                    'Message': errs
+                }
+
+            raise ServerError(
+                code=error.get('Code', 'ConnectionError'),
+                message=error.get('Message', 'No details available.'),
+                full_response=result_data
+            )
+
     def _post_process_results(self, method_name, output, results):
         # TODO: Maybe build in an extension mechanism (like
         #      ``post_process_<op_name>_results``)?
@@ -277,7 +305,6 @@ class ConnectionFactory(object):
 
     def _generate_docstring(self, op_data):
         docstring = op_data['docs']
-        params = []
 
         for param_data in op_data['params']:
             param_doc = ":param {0}: {1}\n".format(
@@ -327,6 +354,9 @@ class ConnectionFactory(object):
                 op_data['api_name']
             )
             results = op.call(endpoint, **service_params)
+
+            # Check for error conditions.
+            self._check_for_errors(results)
 
             # Post-process results here
             post_processed = self._post_process_results(
