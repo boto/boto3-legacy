@@ -1,4 +1,5 @@
 from boto3.core.connection import ConnectionDetails, ConnectionFactory
+from boto3.core.exceptions import ServerError
 from boto3.core.session import Session
 
 from tests import unittest
@@ -42,7 +43,7 @@ class TestCoreService(FakeService):
                 FakeParam('QueueName', required=True, ptype='string'),
             ],
             output=True,
-            result=(None, True)
+            result=(None, {'success': True})
         ),
     ]
 
@@ -189,6 +190,44 @@ class ConnectionFactoryTestCase(unittest.TestCase):
             ':rtype: dict\n'
         )
 
+    def test__check_for_errors(self):
+        cfe = self.test_service_class()._check_for_errors
+
+        # Make sure a success call doesn't throw an exception.
+        cfe((None, {'success': True}))
+
+        # With a list of errors.
+        with self.assertRaises(ServerError) as cm:
+            cfe((None, {'Errors': [{'Message': 'Not much.'}]}))
+
+        self.assertEqual(cm.exception.code, 'ConnectionError')
+        self.assertEqual(cm.exception.message, 'Not much.')
+        self.assertEqual(cm.exception.full_response, {
+            'Errors': [{'Message': 'Not much.'}]
+        })
+
+        # With a single, detailed error.
+        with self.assertRaises(ServerError) as cm:
+            cfe((None, {
+                'Errors': {
+                    'Code': 'FellApart',
+                    'Message': 'The robot serving the request fell apart.'
+                }
+            }))
+
+        self.assertEqual(cm.exception.code, 'FellApart')
+        self.assertEqual(
+            cm.exception.message,
+            'The robot serving the request fell apart.'
+        )
+
+        # With an error string.
+        with self.assertRaises(ServerError) as cm:
+            cfe((None, {'Errors': 'Sadness.'}))
+
+        self.assertEqual(cm.exception.code, 'ConnectionError')
+        self.assertEqual(cm.exception.message, 'Sadness.')
+
     def test__post_process_results(self):
         ppr = self.test_service_class()._post_process_results
         self.assertEqual(ppr('whatever', {}, (None, True)), True)
@@ -219,7 +258,7 @@ class ConnectionFactoryTestCase(unittest.TestCase):
         self.assertEqual(ts.create_queue(queue_name='boo'), {
             'QueueUrl': 'http://example.com'
         })
-        self.assertEqual(ts.delete_queue(queue_name='boo'), True)
+        self.assertEqual(ts.delete_queue(queue_name='boo'), {'success': True})
 
         # Test the params.
         create_queue_params = ts._get_operation_params('create_queue')
