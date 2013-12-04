@@ -16,9 +16,14 @@ class IamIntegrationTestCase(unittest.TestCase):
         user_name = 'test_user'
         group_name = 'test_group'
 
+        # FIXME: The data on this user object is wrong (one level too high).
         group = GroupCollection(connection=self.conn).create(
             group_name=group_name
         )
+        # To deal with the above FIXME, for now, get the user again.
+        # Remove this once the above is fixed.
+        group = Group(connection=self.conn, group_name=group_name)
+        group.get()
 
         self.addCleanup(
             group.delete
@@ -29,9 +34,14 @@ class IamIntegrationTestCase(unittest.TestCase):
         groups = [group['GroupName'] for group in resp['groups']]
         self.assertTrue(group_name in groups)
 
+        # FIXME: The data on this user object is wrong (one level too high).
         user = UserCollection(connection=self.conn).create(
             user_name=user_name
         )
+        # To deal with the above FIXME, for now, get the user again.
+        # Remove this once the above is fixed.
+        user = User(connection=self.conn, user_name=user_name)
+        user.get()
 
         self.addCleanup(
             user.delete
@@ -43,12 +53,9 @@ class IamIntegrationTestCase(unittest.TestCase):
         self.assertTrue(user_name in users)
 
         # Make sure there are no users.
-        # FIXME: This fails for a couple reasons.
-        #        1. The identifier isn't present in the response, so we don't
-        #           extract the data & set it on the instance.
-        #        2. The 'Users' list is *outside* the ``Group`` data. Grump.
-        group = Group(group_name=group_name).get()
-        self.assertEqual(len(group['Users']), 0)
+        group = Group(connection=self.conn, group_name=group_name)
+        group.get()
+        self.assertEqual(len(group.users), 0)
 
         # Try adding the user to a group.
         resp = group.add_user(
@@ -59,6 +66,8 @@ class IamIntegrationTestCase(unittest.TestCase):
             user_name=user_name
         )
 
-        group = Group(group_name=group_name).get()
-        self.assertEqual(len(group.users), 0)
+        # Fetch the updated information
+        group = Group(connection=self.conn, group_name=group_name)
+        group.get()
+        self.assertEqual(len(group.users), 1)
         self.assertTrue(group.users[0]['UserName'], user_name)
