@@ -2,10 +2,8 @@
 import time
 
 import boto3
+from boto3.iam.constants import ASSUME_ROLE_POLICY_DOCUMENT
 from boto3.s3.utils import force_delete_bucket
-from boto3.sns.utils import subscribe_sqs_queue
-from boto3.sqs.utils import convert_queue_url_to_arn
-from boto3.utils import json
 
 from tests.integration.base import ConnectionTestCase
 from tests import unittest
@@ -32,18 +30,6 @@ class ElastictranscoderConnectionTestCase(ConnectionTestCase, unittest.TestCase)
         'update_pipeline_notifications',
         'update_pipeline_status'
     ]
-    # FIXME: From Boto v2. Perhaps this should move/be assumed elsewhere?
-    ASSUME_ROLE_POLICY_DOCUMENT = json.dumps({
-        'Statement': [
-            {
-                'Principal': {
-                    'Service': ['ec2.amazonaws.com']
-                },
-                'Effect': 'Allow',
-                'Action': ['sts:AssumeRole']
-            }
-        ]
-    })
 
     def test_integration(self):
         iam_conn = boto3.session.connect_to('iam')
@@ -58,7 +44,7 @@ class ElastictranscoderConnectionTestCase(ConnectionTestCase, unittest.TestCase)
         # Create the surrounding setup.
         resp = iam_conn.create_role(
             role_name=role_name,
-            assume_role_policy_document=self.ASSUME_ROLE_POLICY_DOCUMENT
+            assume_role_policy_document=ASSUME_ROLE_POLICY_DOCUMENT
         )
         self.addCleanup(iam_conn.delete_role, role_name=role_name)
         role_arn = resp['Role']['Arn']
@@ -79,7 +65,7 @@ class ElastictranscoderConnectionTestCase(ConnectionTestCase, unittest.TestCase)
         # Test the pipeline related methods.
         resp = self.conn.list_pipelines()
         initial_pipelines = [pipe['Name'] for pipe in resp['Pipelines']]
-        self.assertTrue(not pipeline_name in initial_pipelines)
+        self.assertFalse(pipeline_name in initial_pipelines)
 
         # Create a pipeline.
         resp = self.conn.create_pipeline(
