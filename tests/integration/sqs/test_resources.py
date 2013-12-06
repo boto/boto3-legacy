@@ -33,10 +33,12 @@ class SQSIntegrationTestCase(unittest.TestCase):
         self.assertTrue(isinstance(queue, Queue))
         self.assertTrue('/my_test_queue' in queue.queue_url)
 
-        msg = MessageCollection(connection=self.conn).create(
+        msg = MessageCollection(
+            connection=self.conn,
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
-            queue_url=queue.queue_url,
+            queue_url=queue.queue_url
+        ).create(
             message_body="THIS IS A TRIUMPH"
         )
         self.assertTrue(isinstance(msg, Message))
@@ -48,16 +50,9 @@ class SQSIntegrationTestCase(unittest.TestCase):
         # FIXME: Needs 100% more waiters.
         time.sleep(5)
 
-        msgs = queue.receive_message(
+        msgs = MessageCollection(
+            connection=self.conn,
             queue_url=queue.queue_url
-        )
-        # FIXME: For now, this just returns a bag of data. :/
-        #        This test should go away & the below should take its place.
-        self.assertTrue(len(msgs['Messages']) > 0)
-        self.assertEqual(
-            msgs['Messages'][-1]['Body'],
-            "THIS IS A TRIUMPH"
-        )
-
-        # self.assertTrue(isinstance(msgs[0], Message))
-        # self.assertEqual(msgs[0].message_body, "THIS IS A TRIUMPH")
+        ).each()
+        self.assertTrue(isinstance(msgs[0], Message))
+        self.assertEqual(msgs[0].body, "THIS IS A TRIUMPH")
