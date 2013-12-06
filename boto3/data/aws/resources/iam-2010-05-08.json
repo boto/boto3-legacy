@@ -4,10 +4,12 @@
             "resource": "AccessKey",
             "operations": {
                 "create": {
-                    "api_name": "CreateAccessKey"
+                    "api_name": "CreateAccessKey",
+                    "result_key": "AccessKey"
                 },
                 "each": {
-                    "api_name": "ListAccessKeys"
+                    "api_name": "ListAccessKeys",
+                    "result_key": "AccessKeyMetadata"
                 }
             }
         },
@@ -15,10 +17,12 @@
             "resource": "AccountAlias",
             "operations": {
                 "create": {
-                    "api_name": "CreateAccountAlias"
+                    "api_name": "CreateAccountAlias",
+                    "result_key": null
                 },
                 "each": {
-                    "api_name": "ListAccountAliases"
+                    "api_name": "ListAccountAliases",
+                    "result_key": "AccountAliases"
                 }
             }
         },
@@ -26,13 +30,16 @@
             "resource": "Group",
             "operations": {
                 "create": {
-                    "api_name": "CreateGroup"
+                    "api_name": "CreateGroup",
+                    "result_key": "Group"
                 },
                 "each": {
-                    "api_name": "ListGroups"
+                    "api_name": "ListGroups",
+                    "result_key": "Groups"
                 },
                 "each_by_user": {
-                    "api_name": "ListGroupsForUser"
+                    "api_name": "ListGroupsForUser",
+                    "result_key": "Groups"
                 }
             }
         },
@@ -40,13 +47,16 @@
             "resource": "InstanceProfile",
             "operations": {
                 "create": {
-                    "api_name": "CreateInstanceProfile"
+                    "api_name": "CreateInstanceProfile",
+                    "result_key": "InstanceProfile"
                 },
                 "each": {
-                    "api_name": "ListInstanceProfiles"
+                    "api_name": "ListInstanceProfiles",
+                    "result_key": "InstanceProfiles"
                 },
                 "each_by_role": {
-                    "api_name": "ListInstanceProfilesForRole"
+                    "api_name": "ListInstanceProfilesForRole",
+                    "result_key": "InstanceProfiles"
                 }
             }
         },
@@ -54,7 +64,8 @@
             "resource": "LoginProfile",
             "operations": {
                 "create": {
-                    "api_name": "CreateLoginProfile"
+                    "api_name": "CreateLoginProfile",
+                    "result_key": "LoginProfile"
                 }
             }
         },
@@ -62,10 +73,12 @@
             "resource": "Role",
             "operations": {
                 "create": {
-                    "api_name": "CreateRole"
+                    "api_name": "CreateRole",
+                    "result_key": "Role"
                 },
                 "each": {
-                    "api_name": "ListRoles"
+                    "api_name": "ListRoles",
+                    "result_key": "Roles"
                 }
             }
         },
@@ -76,7 +89,8 @@
                     "api_name": "ChangePassword"
                 },
                 "create": {
-                    "api_name": "CreateUser"
+                    "api_name": "CreateUser",
+                    "result_key": "User"
                 },
                 "delete_account_password_policy": {
                     "api_name": "DeleteAccountPasswordPolicy"
@@ -103,7 +117,8 @@
                     "api_name": "ListSigningCertificates"
                 },
                 "each": {
-                    "api_name": "ListUsers"
+                    "api_name": "ListUsers",
+                    "result_key": "Users"
                 },
                 "update_account_password_policy": {
                     "api_name": "UpdateAccountPasswordPolicy"
@@ -126,10 +141,12 @@
             "resource": "VirtualMFADevice",
             "operations": {
                 "create": {
-                    "api_name": "CreateVirtualMFADevice"
+                    "api_name": "CreateVirtualMFADevice",
+                    "result_key": "VirtualMFADevice"
                 },
                 "each": {
-                    "api_name": "ListVirtualMFADevices"
+                    "api_name": "ListVirtualMFADevices",
+                    "result_key": "VirtualMFADevices"
                 }
             }
         }
