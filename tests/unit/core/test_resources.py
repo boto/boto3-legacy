@@ -263,7 +263,7 @@ class PipeResource(Resource):
 
     def post_process(self, conn_method_name, result):
         result = result.copy()
-        self.identifier = result.pop('Id')
+        self.identifier = result.pop('Id', None)
         return result
 
     def post_process_delete(self, result):
@@ -350,15 +350,56 @@ class ResourceTestCase(unittest.TestCase):
         })
         self.assertEqual(self.resource.deleted, True)
 
-        # ``.get(...)`` has different behavior, in that the data gets
-        # post-processed & assigned.
-        self.assertEqual(self.resource._data, {'id': '1872baf45'})
+    def test_full_post_process_get(self):
+        # Without a result key.
+        results = {
+            'Id': '1872baf45',
+            'Title': 'A pipe',
+        }
         processed = self.resource.full_post_process('get', results)
         self.assertEqual(processed, {
             'Title': 'A pipe'
         })
+        # Note that what get's assigned has been snake_cased.
         self.assertEqual(self.resource.id, '1872baf45')
         self.assertEqual(self.resource.title, 'A pipe')
+
+    def test_full_post_process_get_result_key(self):
+        orig_fake_data = self.fake_details._loaded_data
+        self.addCleanup(
+            setattr, self.fake_details, '_loaded_data', orig_fake_data
+        )
+
+        result_key_fake_data = orig_fake_data.copy()
+        result_key_fake_data['resources']['Pipe']['operations']['get'] = {
+            'api_name': 'GetPipe',
+            'result_key': 'Pipe',
+        }
+
+        resource = PipeResource(
+            connection=self.fake_conn,
+            id='92aa36e5b'
+        )
+
+        # With a result key.
+        self.fake_details._loaded_data = result_key_fake_data
+        results = {
+            'pipe': {
+                'Id': '92aa36e5b',
+                'Title': 'Another pipe',
+            }
+        }
+        self.assertEqual(resource._data, {'id': '92aa36e5b'})
+        processed = resource.full_post_process('get', results)
+        self.assertEqual(processed, {
+            'pipe': {
+                'Id': '92aa36e5b',
+                'Title': 'Another pipe'
+            }
+        })
+        # Despite being nested in the response, the right data is assigned.
+        self.assertEqual(resource.id, '92aa36e5b')
+        self.assertEqual(resource.title, 'Another pipe')
 
 
 class ResourceFactoryTestCase(unittest.TestCase):

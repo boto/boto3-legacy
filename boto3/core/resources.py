@@ -128,6 +128,30 @@ class ResourceDetails(object):
         """
         return self.resource_data['identifiers']
 
+    @requires_loaded
+    def result_key_for(self, op_name):
+        """
+        Checks for the presence of a ``result_key``, which defines what data
+        should make up an instance.
+
+        Returns ``None`` if there is no ``result_key``.
+
+        :param op_name: The operation name to look for the ``result_key`` in.
+        :type op_name: string
+
+        :returns: The expected key to look for data within
+        :rtype: string or None
+        """
+        ops = self.resource_data.get('operations', {})
+        op = ops.get(op_name, {})
+        key = op.get('result_key', None)
+
+        if key is None:
+            return key
+
+        # Because botocore.
+        return to_snake_case(key)
+
 
 class Resource(object):
     """
@@ -306,14 +330,6 @@ class Resource(object):
         params.update(self.get_identifiers())
         return params
 
-    def update_params_get(self, params):
-        params.update(self.get_identifiers())
-        return params
-
-    def update_params_delete(self, params):
-        params.update(self.get_identifiers())
-        return params
-
     def full_post_process(self, conn_method_name, result):
         """
         When a response from an API method call is received, this goes through
@@ -383,7 +399,17 @@ class Resource(object):
 
         :returns: The unmodified response data
         """
-        for key, value in result.items():
+        # We need to possibly drill into the response & get out the data here.
+        # Check for a result key.
+        result_key = self._details.result_key_for('get')
+
+        if not result_key:
+            # There's no result_key. Just use the top-level data.
+            data = result
+        else:
+            data = result[result_key]
+
+        for key, value in data.items():
             self._data[to_snake_case(key)] = value
 
         return result
