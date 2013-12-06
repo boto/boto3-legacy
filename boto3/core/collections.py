@@ -143,6 +143,30 @@ class CollectionDetails(object):
         # present on ``Collections``.
         return self.collection_data.get('identifiers', [])
 
+    @requires_loaded
+    def result_key_for(self, op_name):
+        """
+        Checks for the presence of a ``result_key``, which defines what data
+        should make up an instance.
+
+        Returns ``None`` if there is no ``result_key``.
+
+        :param op_name: The operation name to look for the ``result_key`` in.
+        :type op_name: string
+
+        :returns: The expected key to look for data within
+        :rtype: string or None
+        """
+        ops = self.collection_data.get('operations', {})
+        op = ops.get(op_name, {})
+        key = op.get('result_key', None)
+
+        if key is None:
+            return key
+
+        # Because botocore.
+        return to_snake_case(key)
+
 
 class Collection(object):
     """
@@ -408,24 +432,39 @@ class Collection(object):
 
         :returns: A ``Resource`` subclass
         """
-        return self.build_resource(result)
+        # We need to possibly drill into the response & get out the data here.
+        # Check for a result key.
+        result_key = self._details.result_key_for('create')
 
-    def post_process_get(self, result):
+        if not result_key:
+            return result
+
+        return self.build_resource(result[result_key])
+
+    def post_process_each(self, result):
         """
-        An example of the ``post_process`` extensions, this returns an instance
-        of the ``Resource`` created (rather than just a bag of data).
+        An example of the ``post_process`` extensions, this returns a set
+        of instances of the ``Resource`` fetched (rather than just a bag of
+        data).
 
         :param result: The full data handed back from the API.
         :type result: dict
 
-        :returns: A ``Resource`` subclass
+        :returns: A list of ``Resource`` subclass
         """
-        return self.build_resource(result)
+        # We need to possibly drill into the response & get out the data here.
+        # Check for a result key.
+        result_key = self._details.result_key_for('each')
+
+        if not result_key:
+            return result
+
+        return [self.build_resource(res) for res in result[result_key]]
 
     def build_resource(self, data):
         """
         Given some data, builds the correct/matching ``Resource`` subclass
-        for the ``Collection``. Useful in things like ``create`` & ``get``.
+        for the ``Collection``. Useful in things like ``create`` & ``each``.
 
         :param result: The data for an instance handed back from the API.
         :type result: dict
@@ -438,7 +477,13 @@ class Collection(object):
                 self._details.resource
             )
 
-        return self._res_class(connection=self._connection, **data)
+        final_data = {}
+
+        # Lightly post-process the data, to look more Pythonic.
+        for key, value in data.items():
+            final_data[to_snake_case(key)] = value
+
+        return self._res_class(connection=self._connection, **final_data)
 
 
 class CollectionFactory(object):
