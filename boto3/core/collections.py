@@ -160,12 +160,7 @@ class CollectionDetails(object):
         ops = self.collection_data.get('operations', {})
         op = ops.get(op_name, {})
         key = op.get('result_key', None)
-
-        if key is None:
-            return key
-
-        # Because botocore.
-        return to_snake_case(key)
+        return key
 
 
 class Collection(object):
@@ -340,7 +335,8 @@ class Collection(object):
         """
         A hook to allow manipulation of multiple parameters at once.
 
-        By default, this does nothing & simply passes through the parameters.
+        By default, this just ensures the identifier data in in the parameters,
+        so that the user doesn't have to provide it.
 
         You can override/extend this method (typically on your subclass)
         to do additional checks, pre-populate values or remove unwanted data.
@@ -355,7 +351,9 @@ class Collection(object):
             params to be passed to the underlying connection.
         :type params: dict
         """
-        # By default, this is just a pass-through.
+        # By default, this just sets the identifier info.
+        # We use ``var_name`` instead of ``api_name``. Because botocore.
+        params.update(self.get_identifiers())
         return params
 
     def full_post_process(self, conn_method_name, result):
@@ -412,15 +410,7 @@ class Collection(object):
             call into the final data to be passed back to the user.
         :type result: dict
         """
-        # Mostly a hook for post-processing as needed.
-        snaked = {}
-
-        # TODO: This is shallow (only the top-level of keys).
-        #       We may need a deeper conversion.
-        for key, value in result.items():
-            snaked[to_snake_case(key)] = value
-
-        return snaked
+        return result
 
     def post_process_create(self, result):
         """

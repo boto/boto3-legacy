@@ -221,6 +221,13 @@ class ResourceDetailsTestCase(unittest.TestCase):
             }
         ])
 
+    def test_result_key_for(self):
+        # Non-existent
+        self.assertEqual(self.rd.result_key_for('notthere'), None)
+
+        # Now with actual data.
+        self.assertEqual(self.rd.result_key_for('get'), 'Preset')
+
     def test_cached(self):
         # Fake in data.
         self.rd._loaded_data = {
@@ -384,7 +391,7 @@ class ResourceTestCase(unittest.TestCase):
         # With a result key.
         self.fake_details._loaded_data = result_key_fake_data
         results = {
-            'pipe': {
+            'Pipe': {
                 'Id': '92aa36e5b',
                 'Title': 'Another pipe',
             }
@@ -392,7 +399,7 @@ class ResourceTestCase(unittest.TestCase):
         self.assertEqual(resource._data, {'id': '92aa36e5b'})
         processed = resource.full_post_process('get', results)
         self.assertEqual(processed, {
-            'pipe': {
+            'Pipe': {
                 'Id': '92aa36e5b',
                 'Title': 'Another pipe'
             }

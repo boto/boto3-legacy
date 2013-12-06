@@ -263,8 +263,8 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(self.cd.result_key_for('notthere'), None)
 
         # Now with actual data.
-        self.assertEqual(self.cd.result_key_for('create'), 'pipeline')
-        self.assertEqual(self.cd.result_key_for('each'), 'pipelines')
+        self.assertEqual(self.cd.result_key_for('create'), 'Pipeline')
+        self.assertEqual(self.cd.result_key_for('each'), 'Pipelines')
 
     def test_resource_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
@@ -477,7 +477,7 @@ class CollectionTestCase(unittest.TestCase):
 
         # Now for iteration.
         results = {
-            'pipelines': [
+            'Pipelines': [
                 {
                     'Id': '1872baf45',
                     'Title': 'A pipe',

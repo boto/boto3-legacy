@@ -145,12 +145,7 @@ class ResourceDetails(object):
         ops = self.resource_data.get('operations', {})
         op = ops.get(op_name, {})
         key = op.get('result_key', None)
-
-        if key is None:
-            return key
-
-        # Because botocore.
-        return to_snake_case(key)
+        return key
 
 
 class Resource(object):
