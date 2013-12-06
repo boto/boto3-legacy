@@ -4,10 +4,12 @@
             "resource": "Table",
             "operations": {
                 "create": {
-                    "api_name": "CreateTable"
+                    "api_name": "CreateTable",
+                    "result_key": "TableDescription"
                 },
                 "each": {
-                    "api_name": "ListTables"
+                    "api_name": "ListTables",
+                    "result_key": "TableNames"
                 }
             }
         },
@@ -21,7 +23,8 @@
                     "api_name": "BatchWriteItem"
                 },
                 "create": {
-                    "api_name": "PutItem"
+                    "api_name": "PutItem",
+                    "result_key": "Attributes"
                 }
             }
         }

@@ -4,10 +4,12 @@
             "resource": "Pipeline",
             "operations": {
                 "create": {
-                    "api_name": "CreatePipeline"
+                    "api_name": "CreatePipeline",
+                    "result_key": "Pipeline"
                 },
                 "each": {
-                    "api_name": "ListPipelines"
+                    "api_name": "ListPipelines",
+                    "result_key": "Pipelines"
                 },
                 "test_role": {
                     "api_name": "TestRole"
@@ -18,10 +20,12 @@
             "resource": "Preset",
             "operations": {
                 "create": {
-                    "api_name": "CreatePreset"
+                    "api_name": "CreatePreset",
+                    "result_key": "Prest"
                 },
                 "each": {
-                    "api_name": "ListPresets"
+                    "api_name": "ListPresets",
+                    "result_key": "Presets"
                 }
             }
         },
@@ -29,13 +33,16 @@
             "resource": "Job",
             "operations": {
                 "create": {
-                    "api_name": "CreateJob"
+                    "api_name": "CreateJob",
+                    "result_key": "Job"
                 },
                 "each_by_pipeline": {
-                    "api_name": "ListJobsByPipeline"
+                    "api_name": "ListJobsByPipeline",
+                    "result_key": "Jobs"
                 },
                 "each_by_status": {
-                    "api_name": "ListJobsByStatus"
+                    "api_name": "ListJobsByStatus",
+                    "result_key": "Jobs"
                 }
             }
         }
@@ -51,7 +58,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "ReadPipeline"
+                    "api_name": "ReadPipeline",
+                    "result_key": "Pipeline"
                 },
                 "delete": {
                     "api_name": "DeletePipeline"
@@ -78,7 +86,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "ReadPreset"
+                    "api_name": "ReadPreset",
+                    "result_key": "Preset"
                 },
                 "delete": {
                     "api_name": "DeletePreset"
@@ -96,7 +105,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "ReadJob"
+                    "api_name": "ReadJob",
+                    "result_key": "Job"
                 },
                 "cancel": {
                     "api_name": "CancelJob"

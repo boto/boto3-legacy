@@ -7,7 +7,8 @@
                     "api_name": "CreatePlatformApplication"
                 },
                 "each": {
-                    "api_name": "ListPlatformApplications"
+                    "api_name": "ListPlatformApplications",
+                    "result_key": "PlatformApplications"
                 }
             }
         },
@@ -18,7 +19,8 @@
                     "api_name": "CreatePlatformEndpoint"
                 },
                 "each_by_platform_application": {
-                    "api_name": "ListEndpointsByPlatformApplication"
+                    "api_name": "ListEndpointsByPlatformApplication",
+                    "result_key": "Endpoints"
                 }
             }
         },
@@ -29,7 +31,8 @@
                     "api_name": "CreateTopic"
                 },
                 "each": {
-                    "api_name": "ListTopics"
+                    "api_name": "ListTopics",
+                    "result_key": "Topics"
                 }
             }
         },
@@ -37,10 +40,12 @@
             "resource": "Subscription",
             "operations": {
                 "each": {
-                    "api_name": "ListSubscriptions"
+                    "api_name": "ListSubscriptions",
+                    "result_key": "Subscriptions"
                 },
                 "each_by_topic": {
-                    "api_name": "ListSubscriptionsByTopic"
+                    "api_name": "ListSubscriptionsByTopic",
+                    "result_key": "Subscriptions"
                 },
                 "create": {
                     "api_name": "Subscribe"
@@ -59,7 +64,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "GetPlatformApplicationAttributes"
+                    "api_name": "GetPlatformApplicationAttributes",
+                    "result_key": "Attributes"
                 },
                 "delete": {
                     "api_name": "DeletePlatformApplication"
@@ -80,7 +86,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "GetEndpointAttributes"
+                    "api_name": "GetEndpointAttributes",
+                    "result_key": "Attributes"
                 },
                 "delete": {
                     "api_name": "DeleteEndpoint"
@@ -100,8 +107,9 @@
                 }
             ],
             "operations": {
-                "get_topic_attributes": {
-                    "api_name": "GetTopicAttributes"
+                "get": {
+                    "api_name": "GetTopicAttributes",
+                    "result_key": "Attributes"
                 },
                 "add_permission": {
                     "api_name": "AddPermission"
@@ -131,7 +139,8 @@
             ],
             "operations": {
                 "get": {
-                    "api_name": "GetSubscriptionAttributes"
+                    "api_name": "GetSubscriptionAttributes",
+                    "result_key": "Attributes"
                 },
                 "confirm_subscription": {
                     "api_name": "ConfirmSubscription"

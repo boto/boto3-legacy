@@ -7,7 +7,8 @@
                     "api_name": "CreateBucket"
                 },
                 "each": {
-                    "api_name": "ListBuckets"
+                    "api_name": "ListBuckets",
+                    "result_key": "Buckets"
                 }
             }
         },
@@ -18,7 +19,8 @@
                     "api_name": "DeleteObjects"
                 },
                 "each": {
-                    "api_name": "ListObjects"
+                    "api_name": "ListObjects",
+                    "result_key": "Contents"
                 },
                 "create": {
                     "api_name": "PutObject"

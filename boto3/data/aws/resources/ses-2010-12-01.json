@@ -4,7 +4,8 @@
             "resource": "Identity",
             "operations": {
                 "each": {
-                    "api_name": "ListIdentities"
+                    "api_name": "ListIdentities",
+                    "result_key": "Identities"
                 },
                 "create": {
                     "api_name": "VerifyEmailIdentity"
@@ -15,7 +16,8 @@
             "resource": "VerifiedEmailAddress",
             "operations": {
                 "each": {
-                    "api_name": "ListVerifiedEmailAddresses"
+                    "api_name": "ListVerifiedEmailAddresses",
+                    "result_key": "VerifiedEmailAddresses"
                 },
                 "create": {
                     "api_name": "VerifyEmailAddress"

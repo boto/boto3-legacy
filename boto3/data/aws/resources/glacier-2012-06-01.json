@@ -7,7 +7,8 @@
                     "api_name": "CreateVault"
                 },
                 "each": {
-                    "api_name": "ListVaults"
+                    "api_name": "ListVaults",
+                    "result_key": "VaultList"
                 }
             }
         },
@@ -26,7 +27,8 @@
                     "api_name": "UploadMultipartPart"
                 },
                 "each": {
-                    "api_name": "ListMultipartUploads"
+                    "api_name": "ListMultipartUploads",
+                    "result_key": "UploadsList"
                 }
             }
         },
@@ -37,7 +39,8 @@
                     "api_name": "InitiateJob"
                 },
                 "each": {
-                    "api_name": "ListJobs"
+                    "api_name": "ListJobs",
+                    "result_key": "JobList"
                 }
             }
         }

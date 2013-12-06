@@ -4,10 +4,12 @@
             "resource": "CacheCluster",
             "operations": {
                 "create": {
-                    "api_name": "CreateCacheCluster"
+                    "api_name": "CreateCacheCluster",
+                    "result_key": "CacheCluster"
                 },
                 "each": {
-                    "api_name": "DescribeCacheClusters"
+                    "api_name": "DescribeCacheClusters",
+                    "result_key": "CacheClusters"
                 },
                 "each_reserved_cache_nodes": {
                     "api_name": "DescribeReservedCacheNodes"
@@ -24,13 +26,15 @@
             "resource": "CacheParameterGroup",
             "operations": {
                 "create": {
-                    "api_name": "CreateCacheParameterGroup"
+                    "api_name": "CreateCacheParameterGroup",
+                    "result_key": "CacheParameterGroup"
                 },
                 "describe_engine_versions": {
                     "api_name": "DescribeCacheEngineVersions"
                 },
                 "each": {
-                    "api_name": "DescribeCacheParameterGroups"
+                    "api_name": "DescribeCacheParameterGroups",
+                    "result_key": "CacheParameterGroups"
                 },
                 "describe_engine_default_parameters": {
                     "api_name": "DescribeEngineDefaultParameters"
@@ -41,10 +45,12 @@
             "resource": "CacheSecurityGroup",
             "operations": {
                 "create": {
-                    "api_name": "CreateCacheSecurityGroup"
+                    "api_name": "CreateCacheSecurityGroup",
+                    "result_key": "CacheSecurityGroup"
                 },
                 "each": {
-                    "api_name": "DescribeCacheSecurityGroups"
+                    "api_name": "DescribeCacheSecurityGroups",
+                    "result_key": "CacheSecurityGroups"
                 }
             }
         },
@@ -52,10 +58,12 @@
             "resource": "CacheSubnetGroup",
             "operations": {
                 "create": {
-                    "api_name": "CreateCacheSubnetGroup"
+                    "api_name": "CreateCacheSubnetGroup",
+                    "result_key": "CacheSubnetGroup"
                 },
                 "each": {
-                    "api_name": "DescribeCacheSubnetGroups"
+                    "api_name": "DescribeCacheSubnetGroups",
+                    "result_key": "CacheSubnetGroups"
                 }
             }
         },
@@ -63,10 +71,12 @@
             "resource": "ReplicationGroup",
             "operations": {
                 "create": {
-                    "api_name": "CreateReplicationGroup"
+                    "api_name": "CreateReplicationGroup",
+                    "result_key": "ReplicationGroup"
                 },
                 "each": {
-                    "api_name": "DescribeReplicationGroups"
+                    "api_name": "DescribeReplicationGroups",
+                    "result_key": "ReplicationGroups"
                 }
             }
         }

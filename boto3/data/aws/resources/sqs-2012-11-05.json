@@ -7,7 +7,8 @@
                     "api_name": "CreateQueue"
                 },
                 "each": {
-                    "api_name": "ListQueues"
+                    "api_name": "ListQueues",
+                    "result_key": "QueueUrls"
                 },
                 "remove_permission": {
                     "api_name": "RemovePermission"
@@ -22,6 +23,10 @@
                 },
                 "create": {
                     "api_name": "SendMessage"
+                },
+                "each": {
+                    "api_name": "ReceiveMessage",
+                    "result_key": "Messages"
                 },
                 "delete_batch": {
                     "api_name": "DeleteMessageBatch"
@@ -53,9 +58,6 @@
                 },
                 "delete": {
                     "api_name": "DeleteQueue"
-                },
-                "receive_message": {
-                    "api_name": "ReceiveMessage"
                 },
                 "set_attributes": {
                     "api_name": "SetQueueAttributes"

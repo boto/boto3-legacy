@@ -7,7 +7,8 @@
                     "api_name": "CreateCase"
                 },
                 "each": {
-                    "api_name": "DescribeCases"
+                    "api_name": "DescribeCases",
+                    "result_key": "Cases"
                 },
                 "all_services": {
                     "api_name": "DescribeServices"
@@ -39,7 +40,8 @@
                     "api_name": "AddCommunicationToCase"
                 },
                 "each": {
-                    "api_name": "DescribeCommunications"
+                    "api_name": "DescribeCommunications",
+                    "result_key": "Communications"
                 }
             }
         }
