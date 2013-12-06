@@ -17,6 +17,12 @@
         },
         "MessageCollection": {
             "resource": "Message",
+            "identifiers": [
+                {
+                    "var_name": "queue_url",
+                    "api_name": "$shape_name.QueueUrl"
+                }
+            ],
             "operations": {
                 "change_visibility_batch": {
                     "api_name": "ChangeMessageVisibilityBatch"

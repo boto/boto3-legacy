@@ -14,6 +14,12 @@
         },
         "S3ObjectCollection": {
             "resource": "S3Object",
+            "identifiers": [
+                {
+                    "var_name": "bucket",
+                    "api_name": "$shape_name.Bucket"
+                }
+            ],
             "operations": {
                 "delete_batch": {
                     "api_name": "DeleteObjects"
