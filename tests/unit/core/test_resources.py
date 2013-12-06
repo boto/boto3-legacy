@@ -1,9 +1,7 @@
-import mock
 import os
 
-from boto3.core.connection import ConnectionFactory
 from boto3.core.constants import DEFAULT_DOCSTRING
-from boto3.core.exceptions import APIVersionMismatchError
+from boto3.core.exceptions import APIVersionMismatchError, NoSuchMethod
 from boto3.core.resources import ResourceJSONLoader, ResourceDetails
 from boto3.core.resources import Resource, ResourceFactory
 from boto3.core.session import Session
@@ -248,6 +246,12 @@ class FakeConn(object):
         }
 
 
+class OopsConn(object):
+    # Used to demonstrate when no API methods are available.
+    def __init__(self, *args, **kwargs):
+        super(OopsConn, self).__init__()
+
+
 class PipeResource(Resource):
     def update_params(self, conn_method_name, params):
         params['global'] = True
@@ -258,6 +262,7 @@ class PipeResource(Resource):
         return params
 
     def post_process(self, conn_method_name, result):
+        result = result.copy()
         self.identifier = result.pop('Id')
         return result
 
@@ -325,6 +330,15 @@ class ResourceTestCase(unittest.TestCase):
             'notify': True,
         })
 
+        params['yeah'] = 'yeahyeah'
+        prepped = self.resource.full_update_params('get', params)
+        self.assertEqual(prepped, {
+            'global': True,
+            'id': '1872baf45',
+            'notify': True,
+            'yeah': 'yeahyeah',
+        })
+
     def test_full_post_process(self):
         results = {
             'Id': '1872baf45',
@@ -335,6 +349,16 @@ class ResourceTestCase(unittest.TestCase):
             'Title': 'A pipe'
         })
         self.assertEqual(self.resource.deleted, True)
+
+        # ``.get(...)`` has different behavior, in that the data gets
+        # post-processed & assigned.
+        self.assertEqual(self.resource._data, {'id': '1872baf45'})
+        processed = self.resource.full_post_process('get', results)
+        self.assertEqual(processed, {
+            'Title': 'A pipe'
+        })
+        self.assertEqual(self.resource.id, '1872baf45')
+        self.assertEqual(self.resource.title, 'A pipe')
 
 
 class ResourceFactoryTestCase(unittest.TestCase):
@@ -407,6 +431,13 @@ class ResourceFactoryTestCase(unittest.TestCase):
             'RequestId': '1234-1234-1234-1234',
             'Title': 'A pipe'
         })
+
+        # Make sure an exception is raised when the underlying connection
+        # doesn't have an analogous method.
+        sr = StubbyResource(connection=OopsConn())
+
+        with self.assertRaises(NoSuchMethod):
+            fake_pipe = sr.delete()
 
     def test_construct_for(self):
         res_class = self.rf.construct_for('test', 'Pipeline')

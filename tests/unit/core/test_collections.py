@@ -3,7 +3,7 @@ import os
 
 from boto3.core.connection import ConnectionFactory
 from boto3.core.constants import DEFAULT_DOCSTRING
-from boto3.core.exceptions import APIVersionMismatchError
+from boto3.core.exceptions import APIVersionMismatchError, NoSuchMethod
 from boto3.core.collections import ResourceJSONLoader, CollectionDetails
 from boto3.core.collections import Collection, CollectionFactory
 from boto3.core.resources import Resource, ResourceDetails
@@ -258,6 +258,14 @@ class CollectionDetailsTestCase(unittest.TestCase):
             }
         ])
 
+    def test_result_key_for(self):
+        # Non-existent
+        self.assertEqual(self.cd.result_key_for('notthere'), None)
+
+        # Now with actual data.
+        self.assertEqual(self.cd.result_key_for('create'), 'pipeline')
+        self.assertEqual(self.cd.result_key_for('each'), 'pipelines')
+
     def test_resource_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
 
@@ -285,9 +293,17 @@ class FakeConn(object):
     def create_pipeline(self, *args, **kwargs):
         return {
             'RequestId': '1234-1234-1234-1234',
-            'Id': '1872baf45',
-            'Title': 'A pipe',
+            'Pipeline': {
+                'Id': '1872baf45',
+                'Title': 'A pipe',
+            }
         }
+
+
+class OopsConn(object):
+    # Used to demonstrate when no API methods are available.
+    def __init__(self, *args, **kwargs):
+        super(OopsConn, self).__init__()
 
 
 class FakePipeResource(object):
@@ -309,12 +325,16 @@ class PipeCollection(Collection):
         return params
 
     def post_process(self, conn_method_name, result):
-        self.identifier = result.pop('Id')
+        self.identifier = result.get('Id', None)
         return result
 
     def post_process_create(self, result):
         self.created = True
         return result
+
+
+class Pipe(Resource):
+    pass
 
 
 class JobCollection(Collection):
@@ -335,6 +355,11 @@ class CollectionTestCase(unittest.TestCase):
             'test',
             'JobCollection'
         )
+        self.fake_res_details = ResourceDetails(
+            self.session,
+            'test',
+            'Pipe'
+        )
         self.fake_details._loaded_data = {
             'api_version': 'something',
             'collections': {
@@ -342,7 +367,12 @@ class CollectionTestCase(unittest.TestCase):
                     'resource': 'Pipeline',
                     'operations': {
                         'create': {
-                            'api_name': 'CreatePipe'
+                            'api_name': 'CreatePipe',
+                            'result_key': 'Pipeline'
+                        },
+                        'each': {
+                            'api_name': 'ListPipes',
+                            'result_key': 'Pipelines'
                         }
                     }
                 },
@@ -360,9 +390,25 @@ class CollectionTestCase(unittest.TestCase):
                     ],
                     'operations': {}
                 }
+            },
+            'resources': {
+                'Pipe': {
+                    'identifiers': [
+                        {
+                            'var_name': 'id',
+                            'api_name': 'Id',
+                        },
+                    ],
+                    'operations': {
+                        'delete': {
+                            'api_name': 'DeletePipe'
+                        }
+                    }
+                }
             }
         }
         self.fake_alt_details._loaded_data = self.fake_details._loaded_data
+        self.fake_res_details._loaded_data = self.fake_details._loaded_data
         self.fake_conn = FakeConn()
 
         PipeCollection._details = self.fake_details
@@ -376,6 +422,8 @@ class CollectionTestCase(unittest.TestCase):
             pipeline='fake-pipe',
             id='8716fc26a'
         )
+        Pipe._details = self.fake_res_details
+        PipeCollection.change_resource(Pipe)
 
     def test_get_identifiers(self):
         # No identifiers.
@@ -422,9 +470,28 @@ class CollectionTestCase(unittest.TestCase):
         }
         processed = self.collection.full_post_process('create', results)
         self.assertEqual(processed, {
+            'Id': '1872baf45',
             'Title': 'A pipe'
         })
         self.assertEqual(self.collection.created, True)
+
+        # Now for iteration.
+        results = {
+            'pipelines': [
+                {
+                    'Id': '1872baf45',
+                    'Title': 'A pipe',
+                },
+                {
+                    'Id': '91646aee7',
+                    'Title': 'Another pipe',
+                },
+            ],
+        }
+        pipes = self.collection.full_post_process('each', results)
+        self.assertEqual(len(pipes), 2)
+        self.assertEqual(pipes[0].id, '1872baf45')
+        self.assertEqual(pipes[1].id, '91646aee7')
 
     def build_resource(self):
         # Reach in to fake some data.
@@ -436,6 +503,15 @@ class CollectionTestCase(unittest.TestCase):
         })
         self.assertTrue(isinstance(res_class, Pipe))
         self.assertEqual(res_class.test, 'data')
+
+        # Make sure that keys get converted to snake_case.
+        res_class = self.collection.build_resource({
+            'Test': 'Data',
+            'MoreThingsHereRight': 145,
+        })
+        self.assertTrue(isinstance(res_class, Pipe))
+        self.assertEqual(res_class.test, 'Data')
+        self.assertEqual(res_class.more_things_here_right, 145)
 
 
 class CollectionFactoryTestCase(unittest.TestCase):
@@ -521,6 +597,13 @@ class CollectionFactoryTestCase(unittest.TestCase):
         fake_pipe = sr.create()
         self.assertEqual(fake_pipe.id, '1872baf45')
         self.assertEqual(fake_pipe.title, 'A pipe')
+
+        # Make sure an exception is raised when the underlying connection
+        # doesn't have an analogous method.
+        sr = StubbyCollection(connection=OopsConn())
+
+        with self.assertRaises(NoSuchMethod):
+            fake_pipe = sr.create()
 
     def test_construct_for(self):
         col_class = self.cf.construct_for('test', 'PipelineCollection')

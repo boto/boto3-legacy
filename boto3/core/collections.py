@@ -437,7 +437,7 @@ class Collection(object):
         result_key = self._details.result_key_for('create')
 
         if not result_key:
-            return result
+            return self.build_resource(result)
 
         return self.build_resource(result[result_key])
 

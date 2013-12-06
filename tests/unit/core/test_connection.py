@@ -196,6 +196,9 @@ class ConnectionFactoryTestCase(unittest.TestCase):
         # Make sure a success call doesn't throw an exception.
         cfe((None, {'success': True}))
 
+        # With an empty list of errors (S3-style success.
+        cfe((None, {'Errors': [], 'success': True}))
+
         # With a list of errors.
         with self.assertRaises(ServerError) as cm:
             cfe((None, {'Errors': [{'Message': 'Not much.'}]}))
