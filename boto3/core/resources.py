@@ -147,6 +147,28 @@ class ResourceDetails(object):
         key = op.get('result_key', None)
         return key
 
+    @property
+    @requires_loaded
+    def relations(self):
+        """
+        Returns the relation data read from the resource data.
+
+        Example data::
+
+            {
+                'name_on_the_instance_here': {
+                    'class_type': 'resource',
+                    'class': 'NameOfResource',
+                    'required': True,
+                    'rel_type': '1-M'
+                }
+            }
+
+        :returns: The relation data, if any is present
+        :rtype: dict
+        """
+        return self.resource_data.get('relations', {})
+
 
 class Resource(object):
     """
@@ -166,6 +188,9 @@ class Resource(object):
             instance itself.
         :type **kwargs: dict
         """
+        # Tracks the *built* relations (actual instances).
+        self._relations = {}
+        # Tracks the scalar data on the resource.
         self._data = {}
         self._connection = connection
 
@@ -189,11 +214,22 @@ class Resource(object):
 
     def __getattr__(self, name):
         """
-        Attempts to return instance data for a given name if available.
+        Attempts to return either the related object or instance data for a
+        given name if available.
 
         :param name: The instance data's name
         :type name: string
         """
+        # Check to see if the thing being requested is a known relation.
+        if name in self._details.relations:
+            # Check if we already have built version.
+            if not name in self._relations:
+                # There's not a previously built object.
+                # Lazily build it & assign it here.
+                self._relations[name] = self.build_relation(name)
+
+            return self._relations[name]
+
         if name in self._data:
             return self._data[name]
 
@@ -265,6 +301,75 @@ class Resource(object):
         for id_info in self._details.identifiers:
             var_name = id_info['var_name']
             self._data[var_name] = data.get(var_name)
+
+        # FIXME: This needs to likely kick off invalidating/rebuilding
+        #        relations.
+        #        For now, just remove them all. This is potentially inefficient
+        #        but is nicely lazy if we don't need them & prevents stale data
+        #        for the moment.
+        self._relations = {}
+
+    def build_relation(self, name, klass=None):
+        """
+        Constructs a related ``Resource`` or ``Collection``.
+
+        This allows for construction of classes with information prepopulated
+        from what the current instance has. This enables syntax like::
+
+            bucket = Bucket(bucket='some-bucket-name')
+
+            for obj in bucket.objects.each():
+                print(obj.key)
+
+        :param name: The name of the relation from the ResourceJSON
+        :type name: string
+
+        :param klass: (Optional) An overridable class to construct. Typically
+            only useful if you need a custom subclass used in place of what
+            boto3 provides.
+        :type klass: class
+
+        :returns: An instantiated related object
+        """
+        try:
+            rel_data = self._details.relations[name]
+        except KeyError:
+            msg = "No such relation named '{0}'.".format(name)
+            raise NoRelation(msg)
+
+        if klass is None:
+            # This is the typical case, where we're not explicitly given a
+            # class to build with. Hit the session & look up what we should
+            # be loading.
+            if rel_data['class_type'] == 'collection':
+                klass = self._details.session.get_collection(
+                    self._details.service_name,
+                    rel_data['class']
+                )
+            elif rel_data['class_type'] == 'resource':
+                klass = self._details.session.get_resource(
+                    self._details.service_name,
+                    rel_data['class']
+                )
+            else:
+                msg = "Unknown class '{0}' for '{1}'.".format(
+                    rel_data['class_type'],
+                    name
+                )
+                raise NoRelation(msg)
+
+        # Instantiate & return it.
+        kwargs = {}
+        # Just populating identifiers is enough for the 1-M case.
+        kwargs.update(self.get_identifiers())
+
+        if rel_data.get('rel_type', '1-M') == '1-1':
+            # FIXME: If it's not a collection, we might have some instance data
+            #        (i.e. ``bucket``) in ``self._data`` to populate as well.
+            #        This seems like a can of worms, so ignore for the moment.
+            pass
+
+        return klass(connection=self._connection, **kwargs)
 
     def full_update_params(self, conn_method_name, params):
         """
@@ -394,6 +499,10 @@ class Resource(object):
 
         :returns: The unmodified response data
         """
+        if not hasattr(result, 'items'):
+            # If it's not a dict, give up & just return whatever you get.
+            return result
+
         # We need to possibly drill into the response & get out the data here.
         # Check for a result key.
         result_key = self._details.result_key_for('get')
