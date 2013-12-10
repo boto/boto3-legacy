@@ -1,5 +1,5 @@
 from boto3.core.constants import DEFAULT_DOCSTRING
-from boto3.core.exceptions import NoSuchMethod
+from boto3.core.exceptions import NoSuchMethod, NoRelation
 from boto3.core.introspection import Introspection
 from boto3.core.loader import ResourceJSONLoader
 from boto3.utils.mangle import to_snake_case
