@@ -163,7 +163,7 @@ class CollectionDetails(object):
         return key
 
 
-class Collection(object):
+class Collection(six.Iterator):
     """
     A common base class for all the ``Collection`` objects.
     """
@@ -184,6 +184,8 @@ class Collection(object):
         """
         self._data = {}
         self._connection = connection
+        self._active_iter = None
+        self._active_offset = 0
 
         for key, value in kwargs.items():
             self._data[key] = value
@@ -214,6 +216,16 @@ class Collection(object):
             return self._data[name]
 
         raise AttributeError("No such attribute '{0}'".format(name))
+
+    def __iter__(self):
+        self._active_iter = self.each()
+        self._active_offset = 0
+        return iter(self)
+
+    def __next__(self):
+        res = self._active_iter[self._active_offset]
+        self._active_offset += 1
+        return res
 
     @classmethod
     def change_resource(cls, resource_class):
