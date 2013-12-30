@@ -136,10 +136,11 @@
                 }
             },
             "relations": {
-                "S3Object": {
-                    "var_name": "keys",
+                "objects": {
+                    "class_type": "collection",
+                    "class": "S3ObjectCollection",
                     "required": false,
-                    "type": "1-M"
+                    "rel_type": "1-M"
                 }
             }
         },
@@ -200,10 +201,11 @@
                 }
             },
             "relations": {
-                "Bucket": {
-                    "var_name": "bucket",
+                "bucket": {
+                    "class_type": "resource",
+                    "class": "Bucket",
                     "required": true,
-                    "type": "1-1"
+                    "rel_type": "1-1"
                 }
             }
         }

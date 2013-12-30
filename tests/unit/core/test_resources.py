@@ -2,6 +2,7 @@ import os
 
 from boto3.core.constants import DEFAULT_DOCSTRING
 from boto3.core.exceptions import APIVersionMismatchError, NoSuchMethod
+from boto3.core.exceptions import NoRelation
 from boto3.core.resources import ResourceJSONLoader, ResourceDetails
 from boto3.core.resources import Resource, ResourceFactory
 from boto3.core.session import Session
@@ -228,6 +229,26 @@ class ResourceDetailsTestCase(unittest.TestCase):
         # Now with actual data.
         self.assertEqual(self.rd.result_key_for('get'), 'Preset')
 
+    def test_relations(self):
+        # No relations.
+        alt_rd = ResourceDetails(
+            self.session,
+            'test',
+            'Job',
+            loader=self.test_loader
+        )
+        self.assertEqual(alt_rd.relations, {})
+
+        # With relations.
+        self.assertEqual(self.rd.relations, {
+            'pipelines': {
+                'class': 'PipelineCollection',
+                'class_type': 'collection',
+                'rel_type': 'M-M',
+                'required': False
+            }
+        })
+
     def test_cached(self):
         # Fake in data.
         self.rd._loaded_data = {
@@ -278,6 +299,14 @@ class PipeResource(Resource):
         return result
 
 
+class FakeJobCollection(object):
+    def __init__(self, connection, **kwargs):
+        self._data = kwargs
+
+    def get_identifiers(self):
+        return self._data
+
+
 class ResourceTestCase(unittest.TestCase):
     def setUp(self):
         super(ResourceTestCase, self).setUp()
@@ -296,6 +325,18 @@ class ResourceTestCase(unittest.TestCase):
                     'operations': {
                         'delete': {
                             'api_name': 'DeletePipe'
+                        }
+                    },
+                    'relations': {
+                        'jobs': {
+                            'class': 'JobCollection',
+                            'class_type': 'collection',
+                            'rel_type': '1-M',
+                            'required': False
+                        },
+                        'unknown': {
+                            'class': 'Something',
+                            'class_type': 'unknown',
                         }
                     }
                 }
@@ -407,6 +448,45 @@ class ResourceTestCase(unittest.TestCase):
         # Despite being nested in the response, the right data is assigned.
         self.assertEqual(resource.id, '92aa36e5b')
         self.assertEqual(resource.title, 'Another pipe')
+
+    def test_build_relation(self):
+        # For testing purposes.
+        self.session.cache.services['test'] = {
+            'collections': {
+                'JobCollection': {
+                    'default': FakeJobCollection
+                }
+            }
+        }
+
+        # With an unknown relation name.
+        with self.assertRaises(NoRelation) as cm:
+            self.resource.build_relation('nopenopenope')
+
+        self.assertTrue('No such relation' in str(cm.exception))
+
+        # With an unknown relation type.
+        with self.assertRaises(NoRelation) as cm:
+            self.resource.build_relation('unknown')
+
+        self.assertTrue('Unknown class' in str(cm.exception))
+
+        # Introspected from the data.
+        rel = self.resource.build_relation('jobs')
+        self.assertTrue(isinstance(rel, FakeJobCollection))
+        # Should have inherited some identifiers from the the parent
+        # ``self.resource``...
+        self.assertEqual(rel.get_identifiers(), {
+            'id': '1872baf45',
+        })
+
+        # If given an explicit class, build with that instead.
+        class Whatever(object):
+            def __init__(self, *args, **kwargs):
+                self._data = kwargs
+
+        rel = self.resource.build_relation('jobs', klass=Whatever)
+        self.assertTrue(isinstance(rel, Whatever))
 
 
 class ResourceFactoryTestCase(unittest.TestCase):

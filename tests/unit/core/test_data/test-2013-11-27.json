@@ -93,7 +93,14 @@
                     "api_name": "DeletePreset"
                 }
             },
-            "relations": {}
+            "relations": {
+                "pipelines": {
+                    "class_type": "collection",
+                    "class": "PipelineCollection",
+                    "required": false,
+                    "rel_type": "M-M"
+                }
+            }
         },
         "Job": {
             "shape_name": "Job",
@@ -111,8 +118,7 @@
                 "cancel": {
                     "api_name": "CancelJob"
                 }
-            },
-            "relations": {}
+            }
         }
     }
 }

@@ -51,6 +51,10 @@ class APIVersionMismatchError(BotoException):
     pass
 
 
+class NoRelation(ResourceError):
+    pass
+
+
 class ValidationError(BotoException):
     pass
 

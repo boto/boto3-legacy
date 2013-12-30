@@ -15,6 +15,7 @@ class S3IntegrationTestCase(unittest.TestCase):
 
     def test_integration(self):
         bucket_name = 'boto3-s3-resources-{0}'.format(int(time.time()))
+        key_name = 'test_key'
 
         bucket = BucketCollection(connection=self.conn).create(
             bucket=bucket_name,
@@ -32,13 +33,20 @@ class S3IntegrationTestCase(unittest.TestCase):
         time.sleep(5)
 
         self.assertTrue(isinstance(bucket, Bucket))
+        # FIXME: This should be assigned to the instance as part of the call
+        #        to ``create``.
+        #        For now, just assign it the ugly way.
+        # self.assertTrue(bucket.bucket, bucket_name)
+        bucket._data['bucket'] = bucket_name
         self.assertTrue(bucket_name in bucket.location)
 
-        obj = S3ObjectCollection(connection=self.conn).create(
+        obj = S3ObjectCollection(
+            connection=self.conn,
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
-            bucket=bucket_name,
-            key='test_key',
+            bucket=bucket_name
+        ).create(
+            key=key_name,
             body="THIS IS A TRIUMPH"
         )
         self.assertTrue(isinstance(obj, S3Object))
@@ -51,7 +59,7 @@ class S3IntegrationTestCase(unittest.TestCase):
             # FIXME: This should be passable as an object without having to
             #        pass specific data.
             bucket=bucket_name,
-            key='test_key'
+            key=key_name
         )
         # Update from the service.
         resp = obj.get()
@@ -63,6 +71,15 @@ class S3IntegrationTestCase(unittest.TestCase):
         # self.assertEqual(obj.get_content(), 'THIS IS A TRIUMPH')
 
         # Test travering relations.
-        obj = bucket.objects.get(key='test_key')
-        self.assertTrue(isinstance(obj, S3Object))
-        self.assertEqual(obj.body, 'THIS IS A TRIUMPH')
+        # FIXME: A side-effect of moving ``.get(...)`` to the instance is that
+        #        chained relation traversal is a whole lot **less** useful.
+        found = False
+
+        for rel_obj in bucket.objects.each():
+            if rel_obj.key == key_name:
+                found = True
+                break
+
+        self.assertTrue(found)
+        self.assertTrue(isinstance(rel_obj, S3Object))
+        self.assertEqual(rel_obj.e_tag, '"07366f249e11262705e4964e03873078"')
