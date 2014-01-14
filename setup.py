@@ -23,9 +23,9 @@ packages = [
 ]
 
 requires = [
-    'botocore==0.24.0',
+    'botocore>=0.24.0',
     'six>=1.4.0',
-    'jmespath==0.1.0',
+    'jmespath>=0.1.0',
     'python-dateutil>=2.1',
 ]
 
