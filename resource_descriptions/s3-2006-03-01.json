@@ -1,0 +1,165 @@
+{
+
+  "api_versions": ["2006-03-01"],
+
+  "service": {
+    "collections": {
+      "Buckets": "BucketCollection",
+      "Objects": "ObjectCollection",
+      "ObjectVersions": "ObjectVersionCollection"
+    },
+    "resources": {
+      "Bucket": "Bucket",
+      "Object": "Object",
+      "ObjectVersion": "ObjectVersion"
+    }
+  },
+
+  "resources": {
+
+    "Bucket": {
+      "shape_name": "BucketShapeName",
+      "identifiers": [
+        { "name": "Name", "type": "string" }
+      ],
+      "params": { "Name": "Bucket" },
+      "actions": {
+        "Delete":   { "operation": "DeleteBucket" },
+        "Head":     { "operation": "HeadBucket" },
+        "Location": { "operation": "GetBucketLocation" }
+      },
+      "collections": {
+        "Objects": "ObjectCollection",
+        "ObjectVersions": "ObjectVersionCollection"
+      },
+      "resources": {
+        "Acl": "BucketAcl",
+        "Cors": "BucketCors",
+        "Cors": "BucketCors",
+        "Lifecycle": "BucketLifecycle",
+        "Logging": "BucketLifecycle",
+        "Logging": "BucketLifecycle",
+        "Object": "Object",
+        "Policy": "BucketPolicy",
+        "Tagging": "BucketTagging",
+        "Website": "BucketWebsite"
+      }
+    },
+
+    "BucketAcl": {
+      "shape_name": "BucketAclShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" }
+      ],
+      "params": { "Bucket.Name": "Bucket" },
+      "load": {
+        "operation": "GetBucketAcl",
+        "jmespath": null
+      },
+      "actions": {
+        "put": { "operation": "PutBucketAcl" },
+        "get": { "operation": "GetBucketAcl" }
+      }
+    },
+
+    "BucketCors": {},
+    "BucketCors": {},
+    "BucketLifecycle": {},
+    "BucketLifecycle": {},
+    "BucketLifecycle": {},
+    "BucketPolicy": {},
+    "BucketTagging": {},
+    "BucketWebsite": {},
+
+    "Object": {
+      "shape_name": "ObjectShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Key", "type": "string" }
+      ],
+      "params": { "Bucket.Name": "Bucket", "Key": "Key" },
+      "load": {
+        "operation": "HeadObject",
+        "jmespath": null
+      },
+      "actions": {
+        "Delete":  { "operation": "DeleteObject" },
+        "Get":     { "operation": "GetObject" },
+        "Head":    { "operation": "HeadObject" },
+        "Put":     { "operation": "PutObject" }
+      },
+      "collections": {
+        "Versions": "ObjectVersionCollection"
+      },
+      "resources": {
+        "Version": "ObjectVersion"
+      }
+    },
+
+    "ObjectVersion": {
+      "shape_name": "ObjectVersionShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Object", "type": "Object" },
+        { "name": "VersionId", "type": "string" }
+      ],
+      "params": { "Bucket.Name": "Bucket", "Object.Key": "Key", "VersionId": "VersionId" },
+      "load": {
+        "operation": "HeadObject",
+        "jmespath": null
+      },
+      "actions": {
+        "Delete":  { "operation": "DeleteObject" },
+        "Get":     { "operation": "GetObject" },
+        "Head":    { "operation": "HeadObject" },
+        "Put":     { "operation": "PutObject" }
+      }
+    }
+
+  },
+
+  "collections": {
+
+    "BucketCollection": {
+      "resource": "Bucket",
+      "identifiers": [],
+      "create": {
+        "operation": "CreateBucket",
+        "jmespath": null
+      },
+      "enumerate": {
+        "operation": "ListBuckets",
+        "jmespath": "Buckets"
+      }
+    },
+
+    "ObjectCollection": {
+      "resource": "Object",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" }
+      ],
+      "params": { "Bucket.Name": "Bucket" },
+      "create": {
+        "operation": "PutObject",
+        "jmespath": null
+      },
+      "enumerate": {
+        "operation": "ListObjects",
+        "jmespath": "Contents"
+      }
+    },
+
+    "ObjectVersionCollection": {
+      "resource": "ObjectVersion",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Object", "type": "Object", "optional": true }
+      ],
+      "enumerate": {
+        "operation": "ListObjects",
+        "jmespath": "Contents"
+      }
+    }
+
+  }
+}
