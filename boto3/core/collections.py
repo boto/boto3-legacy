@@ -47,8 +47,7 @@ class CollectionDetails(object):
         return u'<{0}: {1} - {2}>'.format(
             self.__class__.__name__,
             self.service_name,
-            self.collection_name,
-            self.api_version
+            self.collection_name
         )
 
     # Kinda ugly (method within a class definition, but not static/classmethod)
@@ -98,26 +97,25 @@ class CollectionDetails(object):
 
     @property
     @requires_loaded
-    def api_version(self):
+    def api_versions(self):
         """
-        Returns the API version introspected from the collection data.
+        Returns the API versions introspected from the collection data.
         This is useful in preventing mismatching API versions between the
         client code & service.
 
         If the data has been previously accessed, a memoized version of the
-        API version is returned.
+        API versions is returned.
 
-        :returns: The service's version
+        :returns: The service's versions
         :rtype: string
         """
-        self._api_version = self._loaded_data.get('api_version', '')
-        return self._api_version
+        return self._loaded_data.get('api_versions', [])
 
     @property
-    @requires_loaded
     def resource(self):
         """
-        Returns the ``Resource`` to which this collection should be mapped.
+        Returns the ``Resource`` *name* to which this collection should be
+        mapped.
 
         If the data has been previously accessed, a memoized version of the
         resource name is returned.
@@ -128,7 +126,6 @@ class CollectionDetails(object):
         return self.collection_data.get('resource', None)
 
     @property
-    @requires_loaded
     def identifiers(self):
         """
         Returns the identifiers.
@@ -143,24 +140,53 @@ class CollectionDetails(object):
         # present on ``Collections``.
         return self.collection_data.get('identifiers', [])
 
-    @requires_loaded
-    def result_key_for(self, op_name):
+    @property
+    def create_op_name(self):
         """
-        Checks for the presence of a ``result_key``, which defines what data
-        should make up an instance.
 
-        Returns ``None`` if there is no ``result_key``.
 
-        :param op_name: The operation name to look for the ``result_key`` in.
-        :type op_name: string
-
-        :returns: The expected key to look for data within
+        :returns: The name of the operation that creates a new resource
         :rtype: string or None
         """
-        ops = self.collection_data.get('operations', {})
-        op = ops.get(op_name, {})
-        key = op.get('result_key', None)
-        return key
+        op = self.collection_data.get('create', {})
+        op_name = op.get('operation', None)
+        return op_name
+
+    @property
+    def create_jmespath_exp(self):
+        """
+
+
+        :returns: The expected expression to look for data within the response
+        :rtype: string or None
+        """
+        op = self.collection_data.get('create', {})
+        exp = op.get('jmespath', None)
+        return exp
+
+    @property
+    def enumerate_op_name(self):
+        """
+
+
+        :returns: The name of the operation that enumerates the resources
+        :rtype: string or None
+        """
+        op = self.collection_data.get('enumerate', {})
+        op_name = op.get('operation', None)
+        return op_name
+
+    @property
+    def enumerate_jmespath_exp(self):
+        """
+
+
+        :returns: The expected expression to look for data within the response
+        :rtype: string or None
+        """
+        op = self.collection_data.get('enumerate', {})
+        exp = op.get('jmespath', None)
+        return exp
 
 
 class Collection(six.Iterator):
@@ -598,7 +624,24 @@ class CollectionFactory(object):
 
     def _build_methods(self, details):
         attrs = {}
-        ops = details.collection_data.get('operations', {}).items()
+
+        # This is a mostly hardcoded set of methods. Feels like this is a design
+        # failure, but that's the JSON format.
+        ops = {}
+
+        # Guard against missing methods, adding them only if their data is
+        # present.
+        if details.create_op_name:
+            ops['create'] = {
+                'operation': details.create_op_name,
+                'jmespath': details.create_jmespath_exp,
+            }
+
+        if details.enumerate_op_name:
+            ops['enumerate'] = {
+                'operation': details.enumerate_op_name,
+                'jmespath': details.enumerate_jmespath_exp,
+            }
 
         for method_name, op_data in ops:
             attrs[method_name] = self._create_operation_method(

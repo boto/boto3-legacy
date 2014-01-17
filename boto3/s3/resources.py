@@ -33,16 +33,24 @@ BucketCollection = boto3.session.get_collection(
     's3',
     'BucketCollection'
 )
-S3ObjectCollection = boto3.session.get_collection(
+ObjectCollection = boto3.session.get_collection(
     's3',
-    'S3ObjectCollection'
+    'ObjectCollection'
+)
+ObjectVersionCollection = boto3.session.get_collection(
+    's3',
+    'ObjectVersionCollection'
 )
 Bucket = boto3.session.get_resource('s3', 'Bucket')
-S3Object = boto3.session.get_resource(
+Object = boto3.session.get_resource(
     's3',
-    'S3Object',
+    'Object',
     base_class=S3ObjectCustomizations
+)
+ObjectVersion = boto3.session.get_resource(
+    's3',
+    'ObjectVersion',
 )
 
 # Keep it on the collection, not the session-wide cached version.
-S3ObjectCollection.change_resource(S3Object)
+ObjectCollection.change_resource(Object)

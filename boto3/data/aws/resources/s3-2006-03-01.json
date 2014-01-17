@@ -1,213 +1,165 @@
 {
+
+  "api_versions": ["2006-03-01"],
+
+  "service": {
     "collections": {
-        "BucketCollection": {
-            "resource": "Bucket",
-            "operations": {
-                "create": {
-                    "api_name": "CreateBucket"
-                },
-                "each": {
-                    "api_name": "ListBuckets",
-                    "result_key": "Buckets"
-                }
-            }
-        },
-        "S3ObjectCollection": {
-            "resource": "S3Object",
-            "identifiers": [
-                {
-                    "var_name": "bucket",
-                    "api_name": "$shape_name.Bucket"
-                }
-            ],
-            "operations": {
-                "delete_batch": {
-                    "api_name": "DeleteObjects"
-                },
-                "each": {
-                    "api_name": "ListObjects",
-                    "result_key": "Contents"
-                },
-                "create": {
-                    "api_name": "PutObject"
-                }
-            }
-        }
+      "Buckets": "BucketCollection",
+      "Objects": "ObjectCollection",
+      "ObjectVersions": "ObjectVersionCollection"
     },
     "resources": {
-        "Bucket": {
-            "shape_name": "Bucket",
-            "identifiers": [
-                {
-                    "var_name": "bucket",
-                    "api_name": "$shape_name.Bucket"
-                }
-            ],
-            "operations": {
-                "get": {
-                    "api_name": "HeadBucket"
-                },
-                "put_tagging": {
-                    "api_name": "PutBucketTagging"
-                },
-                "put_versioning": {
-                    "api_name": "PutBucketVersioning"
-                },
-                "put_website": {
-                    "api_name": "PutBucketWebsite"
-                },
-                "delete": {
-                    "api_name": "DeleteBucket"
-                },
-                "delete_cors": {
-                    "api_name": "DeleteBucketCors"
-                },
-                "delete_lifecycle": {
-                    "api_name": "DeleteBucketLifecycle"
-                },
-                "delete_policy": {
-                    "api_name": "DeleteBucketPolicy"
-                },
-                "delete_tagging": {
-                    "api_name": "DeleteBucketTagging"
-                },
-                "delete_website": {
-                    "api_name": "DeleteBucketWebsite"
-                },
-                "get_acl": {
-                    "api_name": "GetBucketAcl"
-                },
-                "get_cors": {
-                    "api_name": "GetBucketCors"
-                },
-                "get_lifecycle": {
-                    "api_name": "GetBucketLifecycle"
-                },
-                "get_location": {
-                    "api_name": "GetBucketLocation"
-                },
-                "get_logging": {
-                    "api_name": "GetBucketLogging"
-                },
-                "get_notification": {
-                    "api_name": "GetBucketNotification"
-                },
-                "get_policy": {
-                    "api_name": "GetBucketPolicy"
-                },
-                "get_request_payment": {
-                    "api_name": "GetBucketRequestPayment"
-                },
-                "get_tagging": {
-                    "api_name": "GetBucketTagging"
-                },
-                "get_versioning": {
-                    "api_name": "GetBucketVersioning"
-                },
-                "get_website": {
-                    "api_name": "GetBucketWebsite"
-                },
-                "all_multipart_uploads": {
-                    "api_name": "ListMultipartUploads"
-                },
-                "all_object_versions": {
-                    "api_name": "ListObjectVersions"
-                },
-                "put_acl": {
-                    "api_name": "PutBucketAcl"
-                },
-                "put_cors": {
-                    "api_name": "PutBucketCors"
-                },
-                "put_lifecycle": {
-                    "api_name": "PutBucketLifecycle"
-                },
-                "put_logging": {
-                    "api_name": "PutBucketLogging"
-                },
-                "put_notification": {
-                    "api_name": "PutBucketNotification"
-                },
-                "put_policy": {
-                    "api_name": "PutBucketPolicy"
-                },
-                "put_request_payment": {
-                    "api_name": "PutBucketRequestPayment"
-                }
-            },
-            "relations": {
-                "objects": {
-                    "class_type": "collection",
-                    "class": "S3ObjectCollection",
-                    "required": false,
-                    "rel_type": "1-M"
-                }
-            }
-        },
-        "S3Object": {
-            "shape_name": "S3Object",
-            "identifiers": [
-                {
-                    "var_name": "bucket",
-                    "api_name": "$shape_name.Bucket"
-                },
-                {
-                    "var_name": "key",
-                    "api_name": "$shape_name.Key"
-                }
-            ],
-            "operations": {
-                "get": {
-                    "api_name": "GetObject"
-                },
-                "head": {
-                    "api_name": "HeadObject"
-                },
-                "abort_multipart_upload": {
-                    "api_name": "AbortMultipartUpload"
-                },
-                "complete_multipart_upload": {
-                    "api_name": "CompleteMultipartUpload"
-                },
-                "copy": {
-                    "api_name": "CopyObject"
-                },
-                "create_multipart_upload": {
-                    "api_name": "CreateMultipartUpload"
-                },
-                "delete": {
-                    "api_name": "DeleteObject"
-                },
-                "get_acl": {
-                    "api_name": "GetObjectAcl"
-                },
-                "get_torrent": {
-                    "api_name": "GetObjectTorrent"
-                },
-                "all_parts": {
-                    "api_name": "ListParts"
-                },
-                "put_acl": {
-                    "api_name": "PutObjectAcl"
-                },
-                "restore": {
-                    "api_name": "RestoreObject"
-                },
-                "upload_part": {
-                    "api_name": "UploadPart"
-                },
-                "upload_part_copy": {
-                    "api_name": "UploadPartCopy"
-                }
-            },
-            "relations": {
-                "bucket": {
-                    "class_type": "resource",
-                    "class": "Bucket",
-                    "required": true,
-                    "rel_type": "1-1"
-                }
-            }
-        }
+      "Bucket": "Bucket",
+      "Object": "Object",
+      "ObjectVersion": "ObjectVersion"
     }
+  },
+
+  "resources": {
+
+    "Bucket": {
+      "shape_name": "BucketShapeName",
+      "identifiers": [
+        { "name": "Name", "type": "string" }
+      ],
+      "params": { "Name": "Bucket" },
+      "actions": {
+        "Delete":   { "operation": "DeleteBucket" },
+        "Head":     { "operation": "HeadBucket" },
+        "Location": { "operation": "GetBucketLocation" }
+      },
+      "collections": {
+        "Objects": "ObjectCollection",
+        "ObjectVersions": "ObjectVersionCollection"
+      },
+      "resources": {
+        "Acl": "BucketAcl",
+        "Cors": "BucketCors",
+        "Cors": "BucketCors",
+        "Lifecycle": "BucketLifecycle",
+        "Logging": "BucketLifecycle",
+        "Logging": "BucketLifecycle",
+        "Object": "Object",
+        "Policy": "BucketPolicy",
+        "Tagging": "BucketTagging",
+        "Website": "BucketWebsite"
+      }
+    },
+
+    "BucketAcl": {
+      "shape_name": "BucketAclShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" }
+      ],
+      "params": { "Bucket.Name": "Bucket" },
+      "load": {
+        "operation": "GetBucketAcl",
+        "jmespath": null
+      },
+      "actions": {
+        "put": { "operation": "PutBucketAcl" },
+        "get": { "operation": "GetBucketAcl" }
+      }
+    },
+
+    "BucketCors": {},
+    "BucketCors": {},
+    "BucketLifecycle": {},
+    "BucketLifecycle": {},
+    "BucketLifecycle": {},
+    "BucketPolicy": {},
+    "BucketTagging": {},
+    "BucketWebsite": {},
+
+    "Object": {
+      "shape_name": "ObjectShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Key", "type": "string" }
+      ],
+      "params": { "Bucket.Name": "Bucket", "Key": "Key" },
+      "load": {
+        "operation": "HeadObject",
+        "jmespath": null
+      },
+      "actions": {
+        "Delete":  { "operation": "DeleteObject" },
+        "Get":     { "operation": "GetObject" },
+        "Head":    { "operation": "HeadObject" },
+        "Put":     { "operation": "PutObject" }
+      },
+      "collections": {
+        "Versions": "ObjectVersionCollection"
+      },
+      "resources": {
+        "Version": "ObjectVersion"
+      }
+    },
+
+    "ObjectVersion": {
+      "shape_name": "ObjectVersionShapeName",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Object", "type": "Object" },
+        { "name": "VersionId", "type": "string" }
+      ],
+      "params": { "Bucket.Name": "Bucket", "Object.Key": "Key", "VersionId": "VersionId" },
+      "load": {
+        "operation": "HeadObject",
+        "jmespath": null
+      },
+      "actions": {
+        "Delete":  { "operation": "DeleteObject" },
+        "Get":     { "operation": "GetObject" },
+        "Head":    { "operation": "HeadObject" },
+        "Put":     { "operation": "PutObject" }
+      }
+    }
+
+  },
+
+  "collections": {
+
+    "BucketCollection": {
+      "resource": "Bucket",
+      "identifiers": [],
+      "create": {
+        "operation": "CreateBucket",
+        "jmespath": null
+      },
+      "enumerate": {
+        "operation": "ListBuckets",
+        "jmespath": "Buckets"
+      }
+    },
+
+    "ObjectCollection": {
+      "resource": "Object",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" }
+      ],
+      "params": { "Bucket.Name": "Bucket" },
+      "create": {
+        "operation": "PutObject",
+        "jmespath": null
+      },
+      "enumerate": {
+        "operation": "ListObjects",
+        "jmespath": "Contents"
+      }
+    },
+
+    "ObjectVersionCollection": {
+      "resource": "ObjectVersion",
+      "identifiers": [
+        { "name": "Bucket", "type": "Bucket" },
+        { "name": "Object", "type": "Object", "optional": true }
+      ],
+      "enumerate": {
+        "operation": "ListObjects",
+        "jmespath": "Contents"
+      }
+    }
+
+  }
 }

@@ -48,8 +48,7 @@ class ResourceDetails(object):
         return u'<{0}: {1} - {2}>'.format(
             self.__class__.__name__,
             self.service_name,
-            self.resource_name,
-            self.api_version
+            self.resource_name
         )
 
     # Kinda ugly (method within a class definition, but not static/classmethod)
@@ -99,20 +98,19 @@ class ResourceDetails(object):
 
     @property
     @requires_loaded
-    def api_version(self):
+    def api_versions(self):
         """
-        Returns the API version introspected from the resource data.
+        Returns the API versions introspected from the resource data.
         This is useful in preventing mismatching API versions between the
         client code & service.
 
         If the data has been previously accessed, a memoized version of the
-        API version is returned.
+        API versions is returned.
 
-        :returns: The service's version
+        :returns: The service's versions
         :rtype: string
         """
-        self._api_version = self._loaded_data.get('api_version', '')
-        return self._api_version
+        return self._loaded_data.get('api_versions', [])
 
     @property
     @requires_loaded
@@ -128,6 +126,23 @@ class ResourceDetails(object):
         """
         return self.resource_data['identifiers']
 
+    @property
+    @requires_loaded
+    def params(self):
+        """
+        Returns the params.
+
+        If the data has been previously accessed, a memoized version of the
+        variable name is returned.
+
+        :returns: The params
+        :rtype: list
+        """
+        return self.resource_data['params']
+
+    # FIXME: This should be removed or altered to return the ``jmespath`` key.
+    #        The odd part is that ``jmespath`` is only present on the special
+    #        ``load`` key, hence the uncertainty of removal vs. alteration.
     @requires_loaded
     def result_key_for(self, op_name):
         """
@@ -149,25 +164,78 @@ class ResourceDetails(object):
 
     @property
     @requires_loaded
-    def relations(self):
+    def collections(self):
         """
-        Returns the relation data read from the resource data.
+        Returns the collections the resource should be aware of.
+
+        This is a dictionary of a key (unknown significance) & a value of the
+        ``Collection`` object it should refer to.
 
         Example data::
 
             {
-                'name_on_the_instance_here': {
-                    'class_type': 'resource',
-                    'class': 'NameOfResource',
-                    'required': True,
-                    'rel_type': '1-M'
+                "Objects": "ObjectCollection",
+                "ObjectVersions": "ObjectVersionCollection",
+            }
+
+        :returns: The collections data, if any is present
+        :rtype: dict
+        """
+        return self.resource_data.get('collections', {})
+
+    @property
+    @requires_loaded
+    def resources(self):
+        """
+        Returns the other resources the resource should be aware of.
+
+        This is a dictionary of a key (unknown significance) & a value of the
+        ``Resource`` object it should refer to.
+
+        Example data::
+
+            {
+                "Acl": "BucketAcl",
+                "Cors": "BucketCors",
+                "Cors": "BucketCors",
+                "Lifecycle": "BucketLifecycle",
+                "Logging": "BucketLifecycle",
+                "Logging": "BucketLifecycle",
+                "Object": "Object",
+                "Policy": "BucketPolicy",
+                "Tagging": "BucketTagging",
+                "Website": "BucketWebsite"
+            }
+
+        :returns: The resources data, if any is present
+        :rtype: dict
+        """
+        return self.resource_data.get('resources', {})
+
+    @property
+    @requires_loaded
+    def actions(self):
+        """
+        Returns the actions the resource can perform.
+
+        Example data::
+
+            {
+                "Delete": {
+                    "operation": "DeleteBucket"
+                },
+                "Head": {
+                    "operation": "HeadBucket"
+                },
+                "Location": {
+                    "operation": "GetBucketLocation"
                 }
             }
 
-        :returns: The relation data, if any is present
+        :returns: The actions the resource can perform
         :rtype: dict
         """
-        return self.resource_data.get('relations', {})
+        return self.resource_data.get('actions', {})
 
 
 class Resource(object):
@@ -628,24 +696,27 @@ class ResourceFactory(object):
 
     def _build_methods(self, details):
         attrs = {}
-        ops = details.resource_data.get('operations', {}).items()
 
-        for method_name, op_data in ops:
+        for action_name, action_data in details.actions.items():
+            # Convert to snake case, since everything is CamelCased.
+            method_name = to_snake_case(action_name)
+            # Create the bound function & set it on the ``attrs`` dict to be
+            # added to the constructed class.
             attrs[method_name] = self._create_operation_method(
                 method_name,
-                op_data
+                action_data
             )
 
         return attrs
 
-    def _create_operation_method(factory_self, method_name, op_data):
+    def _create_operation_method(factory_self, method_name, action_data):
         # Determine the correct name for the method.
         # This is because the method names will be standardized across
-        # resources, so we'll have to lean on the ``api_name`` to figure out
+        # resources, so we'll have to lean on the ``operation`` to figure out
         # what the correct underlying method name on the ``Connection`` should
         # be.
         # Map -> map -> unmap -> remap -> map :/
-        conn_method_name = to_snake_case(op_data['api_name'])
+        conn_method_name = to_snake_case(action_data['operation'])
 
         if not six.PY3:
             method_name = str(method_name)
