@@ -5,13 +5,10 @@
   "service": {
     "collections": {
       "Buckets": "BucketCollection",
-      "Objects": "ObjectCollection",
       "ObjectVersions": "ObjectVersionCollection"
     },
     "resources": {
-      "Bucket": "Bucket",
-      "Object": "Object",
-      "ObjectVersion": "ObjectVersion"
+      "Bucket": "Bucket"
     }
   },
 
@@ -99,11 +96,13 @@
     "ObjectVersion": {
       "shape_name": "ObjectVersionShapeName",
       "identifiers": [
-        { "name": "Bucket", "type": "Bucket" },
         { "name": "Object", "type": "Object" },
         { "name": "VersionId", "type": "string" }
       ],
-      "params": { "Bucket.Name": "Bucket", "Object.Key": "Key", "VersionId": "VersionId" },
+      "params": {
+        "Object.Bucket.Name": "Bucket",
+        "Object.Key": "Key", "VersionId": "VersionId"
+      },
       "load": {
         "operation": "HeadObject",
         "jmespath": null
