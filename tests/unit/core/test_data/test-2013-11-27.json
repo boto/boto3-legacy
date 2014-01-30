@@ -1,123 +1,174 @@
 {
+    "api_versions": [
+        "2013-11-27"
+    ],
+
+    "service": {
+        "collections": {
+            "Pipelines": "PipelineCollection",
+            "Presets": "PresetCollection",
+            "Jobs": "JobCollection"
+        },
+        "resources": {
+            "Pipeline": "Pipeline",
+            "Preset": "Preset",
+            "Job": "Job"
+        }
+    },
+
     "collections": {
         "PipelineCollection": {
             "resource": "Pipeline",
-            "operations": {
-                "create": {
-                    "api_name": "CreatePipeline",
-                    "result_key": "Pipeline"
-                },
-                "each": {
-                    "api_name": "ListPipelines",
-                    "result_key": "Pipelines"
-                },
-                "test_role": {
-                    "api_name": "TestRole"
+            "identifiers": [
+                {
+                    "name": "Bucket",
+                    "type": "Bucket"
                 }
+            ],
+            "params": {
+                "Bucket.Name": "Bucket"
+            },
+            "create": {
+              "operation": "CreatePipeline",
+              "jmespath": "Pipeline"
+            },
+            "enumerate": {
+              "operation": "ListPipelines",
+              "jmespath": "Pipelines"
             }
         },
+
         "PresetCollection": {
             "resource": "Preset",
-            "operations": {
-                "create": {
-                    "api_name": "CreatePreset",
-                    "result_key": "Prest"
-                },
-                "each": {
-                    "api_name": "ListPresets",
-                    "result_key": "Presets"
+            "identifiers": [
+                {
+                    "name": "Bucket",
+                    "type": "Bucket"
                 }
+            ],
+            "params": {
+                "Bucket.Name": "Bucket"
+            },
+            "create": {
+              "operation": "CreatePreset",
+              "jmespath": "Preset"
+            },
+            "enumerate": {
+              "operation": "ListPresets",
+              "jmespath": "Presets"
             }
         },
+
         "JobCollection": {
             "resource": "Job",
-            "operations": {
-                "create": {
-                    "api_name": "CreateJob",
-                    "result_key": "Job"
-                },
-                "each_by_pipeline": {
-                    "api_name": "ListJobsByPipeline",
-                    "result_key": "Jobs"
-                },
-                "each_by_status": {
-                    "api_name": "ListJobsByStatus",
-                    "result_key": "Jobs"
+            "identifiers": [
+                {
+                    "name": "Bucket",
+                    "type": "Bucket"
                 }
+            ],
+            "params": {
+                "Bucket.Name": "Bucket"
+            },
+            "create": {
+              "operation": "CreateJob",
+              "jmespath": "Job"
+            },
+            "enumerate": {
+              "operation": "---",
+              "jmespath": "Jobs"
             }
         }
     },
+
     "resources": {
         "Pipeline": {
             "shape_name": "Pipeline",
             "identifiers": [
                 {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
+                    "name": "Id",
+                    "type": "string"
                 }
             ],
-            "operations": {
-                "get": {
-                    "api_name": "ReadPipeline",
-                    "result_key": "Pipeline"
+            "params": {
+                "Id": "Bucket"
+            },
+            "load": {
+                "operation": "ReadPipeline",
+                "jmespath": "Pipeline"
+            },
+            "actions": {
+                "Delete": {
+                    "operation": "DeletePipeline"
                 },
-                "delete": {
-                    "api_name": "DeletePipeline"
+                "Update": {
+                    "operation": "UpdatePipeline"
                 },
-                "update": {
-                    "api_name": "UpdatePipeline"
+                "UpdateNotifications": {
+                    "operation": "UpdatePipelineNotifications"
                 },
-                "update_notifications": {
-                    "api_name": "UpdatePipelineNotifications"
-                },
-                "update_status": {
-                    "api_name": "UpdatePipelineStatus"
+                "UpdateStatus": {
+                    "operation": "UpdatePipelineStatus"
                 }
             },
-            "relations": {}
+            "collections": {
+                "Jobs": "JobCollection",
+                "ObjectVersions": "ObjectVersionCollection"
+            },
+            "resources": {}
         },
+
         "Preset": {
             "shape_name": "Preset",
             "identifiers": [
                 {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
+                    "name": "Id",
+                    "type": "string"
                 }
             ],
-            "operations": {
-                "get": {
-                    "api_name": "ReadPreset",
-                    "result_key": "Preset"
-                },
-                "delete": {
-                    "api_name": "DeletePreset"
+            "params": {
+                "Id": "Bucket"
+            },
+            "load": {
+                "operation": "ReadPreset",
+                "jmespath": "Preset"
+            },
+            "actions": {
+                "Delete": {
+                    "operation": "DeletePreset"
                 }
             },
-            "relations": {
-                "pipelines": {
-                    "class_type": "collection",
-                    "class": "PipelineCollection",
-                    "required": false,
-                    "rel_type": "M-M"
-                }
+            "collections": {
+                "Pipelines": "PipelineCollection"
+            },
+            "resources": {
+                "Pipeline": "Pipeline"
             }
         },
+
         "Job": {
             "shape_name": "Job",
             "identifiers": [
                 {
-                    "var_name": "id",
-                    "api_name": "$shape_name.Id"
+                    "name": "Id",
+                    "type": "string"
                 }
             ],
-            "operations": {
-                "get": {
-                    "api_name": "ReadJob",
-                    "result_key": "Job"
-                },
-                "cancel": {
-                    "api_name": "CancelJob"
+            "params": {
+                "Id": "Bucket"
+            },
+            "load": {
+                "operation": "ReadJob",
+                "jmespath": "Job"
+            },
+            "actions": {
+                "Delete": {
+                    "operation": "CancelJob"
                 }
+            },
+            "collections": {},
+            "resources": {
+                "Pipeline": "Pipeline"
             }
         }
     }

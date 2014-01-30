@@ -40,7 +40,6 @@ class CollectionDetails(object):
         self.service_name = service_name
         self.collection_name = collection_name
         self.loader = loader
-        self._api_version = None
         self._loaded_data = None
 
     def __str__(self):

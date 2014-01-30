@@ -194,7 +194,7 @@ class CollectionDetailsTestCase(unittest.TestCase):
             loader=self.test_loader
         )
         self.alt_cd._loaded_data = {
-            'api_version': 'something',
+            'api_versions': ['something'],
             'collections': {
                 'JobCollection': {
                     'resource': 'Job',
@@ -218,30 +218,26 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(self.cd.service_name, 'test')
         self.assertEqual(self.cd.loader, self.test_loader)
         self.assertEqual(self.cd._loaded_data, None)
-        self.assertEqual(self.cd._api_version, None)
 
     def test_service_data_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
 
         data = self.cd.service_data
-        self.assertEqual(len(data.keys()), 4)
-        self.assertTrue('api_version' in self.cd._loaded_data)
+        self.assertEqual(len(data.keys()), 6)
+        self.assertTrue('api_versions' in self.cd._loaded_data)
 
     def test_collection_data_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
 
         data = self.cd.collection_data
         self.assertEqual(len(data.keys()), 2)
-        self.assertFalse('identifier' in data)
-        self.assertTrue('operations' in data)
-        self.assertTrue('api_version' in self.cd._loaded_data)
+        self.assertFalse('identifiers' in data)
+        self.assertTrue('create' in data)
+        self.assertTrue('api_versions' in self.cd._loaded_data)
 
-    def test_api_version_uncached(self):
-        self.assertEqual(self.cd._api_version, None)
-
-        av = self.cd.api_version
-        self.assertEqual(av, '2013-11-27')
-        self.assertEqual(self.cd._api_version, '2013-11-27')
+    def test_api_versions_uncached(self):
+        av = self.cd.api_versions
+        self.assertEqual(av, ['2013-11-27'])
 
     def test_identifiers(self):
         self.assertEqual(self.cd.identifiers, [])
@@ -276,12 +272,12 @@ class CollectionDetailsTestCase(unittest.TestCase):
     def test_cached(self):
         # Fake in data.
         self.cd._loaded_data = {
-            'api_version': '20XX-MM-II',
+            'api_versions': ['20XX-MM-II'],
             'hello': 'world',
         }
 
         data = self.cd.service_data
-        av = self.cd.api_version
+        av = self.cd.api_versions
         self.assertTrue('hello' in data)
         self.assertTrue('20XX-MM-II' in av)
 

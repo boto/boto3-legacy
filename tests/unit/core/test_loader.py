@@ -91,7 +91,7 @@ class ResourceJSONLoaderTestCase(unittest.TestCase):
         self.assertEqual(len(self.test_loader._loaded_data), 0)
 
         data = self.test_loader.load('test', cached=False)
-        self.assertEqual(len(data.keys()), 4)
+        self.assertEqual(len(data.keys()), 6)
         self.assertTrue('api_version' in data)
 
         # Make sure it didn't get cached here.
@@ -109,7 +109,7 @@ class ResourceJSONLoaderTestCase(unittest.TestCase):
 
         # Note the change of calling format here (vs. above).
         data = self.test_loader.load('test')
-        self.assertEqual(len(data.keys()), 4)
+        self.assertEqual(len(data.keys()), 6)
         self.assertTrue('api_version' in data)
 
         # Make sure it **DID** get cached.

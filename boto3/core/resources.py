@@ -41,7 +41,6 @@ class ResourceDetails(object):
         self.service_name = service_name
         self.resource_name = resource_name
         self.loader = loader
-        self._api_version = None
         self._loaded_data = None
 
     def __str__(self):
@@ -139,6 +138,34 @@ class ResourceDetails(object):
         :rtype: list
         """
         return self.resource_data['params']
+
+    @property
+    @requires_loaded
+    def shape_name(self):
+        """
+        Returns the ``shape_name``.
+
+        If the data has been previously accessed, a memoized version of the
+        variable name is returned.
+
+        :returns: The shape_name
+        :rtype: string
+        """
+        return self.resource_data['shape_name']
+
+    @property
+    @requires_loaded
+    def shape(self):
+        """
+        Returns the ``shape``.
+
+        If the data has been previously accessed, a memoized version of the
+        variable name is returned.
+
+        :returns: The shape
+        :rtype: dict
+        """
+        return self.resource_data['shape']
 
     # FIXME: This should be removed or altered to return the ``jmespath`` key.
     #        The odd part is that ``jmespath`` is only present on the special
@@ -256,8 +283,6 @@ class Resource(object):
             instance itself.
         :type **kwargs: dict
         """
-        # Tracks the *built* relations (actual instances).
-        self._relations = {}
         # Tracks the scalar data on the resource.
         self._data = {}
         self._connection = connection
@@ -288,16 +313,6 @@ class Resource(object):
         :param name: The instance data's name
         :type name: string
         """
-        # Check to see if the thing being requested is a known relation.
-        if name in self._details.relations:
-            # Check if we already have built version.
-            if not name in self._relations:
-                # There's not a previously built object.
-                # Lazily build it & assign it here.
-                self._relations[name] = self.build_relation(name)
-
-            return self._relations[name]
-
         if name in self._data:
             return self._data[name]
 
@@ -311,9 +326,10 @@ class Resource(object):
         If the method has the default placeholder docstring, this will replace
         it with the docstring from the underlying connection.
         """
-        ops = self._details.resource_data['operations']
+        ops = self._details.resource_data['actions']
 
-        for method_name in ops.keys():
+        for cap_name, action_info in ops.items():
+            method_name = to_snake_case(cap_name)
             meth = getattr(self.__class__, method_name, None)
 
             if not meth:
@@ -328,7 +344,7 @@ class Resource(object):
             # method.
             # FIXME: We need to figure out a way to make this more useful, if
             #        possible.
-            api_name = ops[method_name]['api_name']
+            api_name = action_info['operation']
             conn_meth = getattr(self._connection, to_snake_case(api_name))
 
             # We need to do detection here, because Py2 treats ``.__doc__``
@@ -351,7 +367,7 @@ class Resource(object):
         data = {}
 
         for id_info in self._details.identifiers:
-            var_name = id_info['var_name']
+            var_name = to_snake_case(id_info['name'])
             data[var_name] = self._data.get(var_name)
 
         return data
@@ -367,77 +383,8 @@ class Resource(object):
         :param data: dict
         """
         for id_info in self._details.identifiers:
-            var_name = id_info['var_name']
+            var_name = to_snake_case(id_info['name'])
             self._data[var_name] = data.get(var_name)
-
-        # FIXME: This needs to likely kick off invalidating/rebuilding
-        #        relations.
-        #        For now, just remove them all. This is potentially inefficient
-        #        but is nicely lazy if we don't need them & prevents stale data
-        #        for the moment.
-        self._relations = {}
-
-    def build_relation(self, name, klass=None):
-        """
-        Constructs a related ``Resource`` or ``Collection``.
-
-        This allows for construction of classes with information prepopulated
-        from what the current instance has. This enables syntax like::
-
-            bucket = Bucket(bucket='some-bucket-name')
-
-            for obj in bucket.objects.each():
-                print(obj.key)
-
-        :param name: The name of the relation from the ResourceJSON
-        :type name: string
-
-        :param klass: (Optional) An overridable class to construct. Typically
-            only useful if you need a custom subclass used in place of what
-            boto3 provides.
-        :type klass: class
-
-        :returns: An instantiated related object
-        """
-        try:
-            rel_data = self._details.relations[name]
-        except KeyError:
-            msg = "No such relation named '{0}'.".format(name)
-            raise NoRelation(msg)
-
-        if klass is None:
-            # This is the typical case, where we're not explicitly given a
-            # class to build with. Hit the session & look up what we should
-            # be loading.
-            if rel_data['class_type'] == 'collection':
-                klass = self._details.session.get_collection(
-                    self._details.service_name,
-                    rel_data['class']
-                )
-            elif rel_data['class_type'] == 'resource':
-                klass = self._details.session.get_resource(
-                    self._details.service_name,
-                    rel_data['class']
-                )
-            else:
-                msg = "Unknown class '{0}' for '{1}'.".format(
-                    rel_data['class_type'],
-                    name
-                )
-                raise NoRelation(msg)
-
-        # Instantiate & return it.
-        kwargs = {}
-        # Just populating identifiers is enough for the 1-M case.
-        kwargs.update(self.get_identifiers())
-
-        if rel_data.get('rel_type', '1-M') == '1-1':
-            # FIXME: If it's not a collection, we might have some instance data
-            #        (i.e. ``bucket``) in ``self._data`` to populate as well.
-            #        This seems like a can of worms, so ignore for the moment.
-            pass
-
-        return klass(connection=self._connection, **kwargs)
 
     def full_update_params(self, conn_method_name, params):
         """
