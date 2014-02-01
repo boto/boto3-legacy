@@ -29,12 +29,12 @@
                 "Bucket.Name": "Bucket"
             },
             "create": {
-              "operation": "CreatePipeline",
-              "jmespath": "Pipeline"
+                "operation": "CreatePipeline",
+                "jmespath": "Pipeline"
             },
             "enumerate": {
-              "operation": "ListPipelines",
-              "jmespath": "Pipelines"
+                "operation": "ListPipelines",
+                "jmespath": "Pipelines"
             }
         },
 
@@ -50,12 +50,12 @@
                 "Bucket.Name": "Bucket"
             },
             "create": {
-              "operation": "CreatePreset",
-              "jmespath": "Preset"
+                "operation": "CreatePreset",
+                "jmespath": "Preset"
             },
             "enumerate": {
-              "operation": "ListPresets",
-              "jmespath": "Presets"
+                "operation": "ListPresets",
+                "jmespath": "Presets"
             }
         },
 
@@ -71,12 +71,12 @@
                 "Bucket.Name": "Bucket"
             },
             "create": {
-              "operation": "CreateJob",
-              "jmespath": "Job"
+                "operation": "CreateJob",
+                "jmespath": "Job"
             },
             "enumerate": {
-              "operation": "---",
-              "jmespath": "Jobs"
+                "operation": "---",
+                "jmespath": "Jobs"
             }
         }
     },

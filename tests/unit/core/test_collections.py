@@ -194,21 +194,29 @@ class CollectionDetailsTestCase(unittest.TestCase):
             loader=self.test_loader
         )
         self.alt_cd._loaded_data = {
-            'api_versions': ['something'],
+            'api_versions': [
+                'something'
+            ],
             'collections': {
                 'JobCollection': {
                     'resource': 'Job',
-                    'identifiers': [
+                    "identifiers": [
                         {
-                            'var_name': 'pipeline',
-                            'api_name': '$whatever.Pipeline',
-                        },
-                        {
-                            'var_name': 'id',
-                            'api_name': 'Id',
-                        },
+                            "name": "Bucket",
+                            "type": "Bucket"
+                        }
                     ],
-                    'operations': {}
+                    "params": {
+                        "Bucket.Name": "Bucket"
+                    },
+                    "create": {
+                        "operation": "CreateJob",
+                        "jmespath": "Job"
+                    },
+                    "enumerate": {
+                        "operation": "ListJob",
+                        "jmespath": "Jobs"
+                    }
                 }
             }
         }
@@ -230,9 +238,11 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(self.cd._loaded_data, None)
 
         data = self.cd.collection_data
-        self.assertEqual(len(data.keys()), 2)
-        self.assertFalse('identifiers' in data)
+        self.assertEqual(len(data.keys()), 5)
+        self.assertTrue('identifiers' in data)
         self.assertTrue('create' in data)
+        self.assertTrue('enumerate' in data)
+        self.assertTrue('resource' in data)
         self.assertTrue('api_versions' in self.cd._loaded_data)
 
     def test_api_versions_uncached(self):
@@ -240,27 +250,26 @@ class CollectionDetailsTestCase(unittest.TestCase):
         self.assertEqual(av, ['2013-11-27'])
 
     def test_identifiers(self):
-        self.assertEqual(self.cd.identifiers, [])
+        self.assertEqual(self.cd.identifiers, [
+            {
+                'name': 'Bucket',
+                'type': 'Bucket'
+            }
+        ])
 
         # Now with something with identifiers.
         self.assertEqual(self.alt_cd.identifiers, [
             {
-                'api_name': '$whatever.Pipeline',
-                'var_name': 'pipeline',
+                "name": "Bucket",
+                "type": "Bucket"
             },
-            {
-                'api_name': 'Id',
-                'var_name': 'id',
-            }
         ])
 
-    def test_result_key_for(self):
-        # Non-existent
-        self.assertEqual(self.cd.result_key_for('notthere'), None)
+    def test_create_jmespath_exp(self):
+        self.assertEqual(self.cd.create_jmespath_exp, 'Pipeline')
 
-        # Now with actual data.
-        self.assertEqual(self.cd.result_key_for('create'), 'Pipeline')
-        self.assertEqual(self.cd.result_key_for('each'), 'Pipelines')
+    def test_enumerate_jmespath_exp(self):
+        self.assertEqual(self.cd.enumerate_jmespath_exp, 'Pipelines')
 
     def test_resource_uncached(self):
         self.assertEqual(self.cd._loaded_data, None)
@@ -357,47 +366,56 @@ class CollectionTestCase(unittest.TestCase):
             'Pipe'
         )
         self.fake_details._loaded_data = {
-            'api_version': 'something',
+            'api_version': [
+                'something',
+            ],
             'collections': {
                 'PipeCollection': {
                     'resource': 'Pipeline',
-                    'operations': {
-                        'create': {
-                            'api_name': 'CreatePipe',
-                            'result_key': 'Pipeline'
-                        },
-                        'each': {
-                            'api_name': 'ListPipes',
-                            'result_key': 'Pipelines'
-                        }
+                    'identifiers': [],
+                    'params': {},
+                    'create': {
+                        'operation': 'CreatePipe',
+                        'jmespath': 'Pipeline'
+                    },
+                    'enumerate': {
+                        'operation': 'ListPipes',
+                        'jmespath': 'Pipelines'
                     }
                 },
                 'JobCollection': {
                     'resource': 'Job',
                     'identifiers': [
                         {
-                            'var_name': 'pipeline',
-                            'api_name': '$whatever.Pipeline',
+                            'name': 'Pipeline',
+                            'type': 'Pipeline',
                         },
                         {
-                            'var_name': 'id',
-                            'api_name': 'Id',
+                            'name': 'Id',
+                            'type': 'string',
                         },
                     ],
-                    'operations': {}
+                    'create': {
+                        'operation': 'CreateJob',
+                        'jmespath': 'Job'
+                    },
+                    'enumerate': {
+                        'operation': 'ListJobs',
+                        'jmespath': 'Jobs'
+                    }
                 }
             },
             'resources': {
                 'Pipe': {
                     'identifiers': [
                         {
-                            'var_name': 'id',
-                            'api_name': 'Id',
+                            'name': 'Pipeline',
+                            'type': 'string',
                         },
                     ],
-                    'operations': {
-                        'delete': {
-                            'api_name': 'DeletePipe'
+                    'actions': {
+                        'Delete': {
+                            'operation': 'DeletePipe'
                         }
                     }
                 }
@@ -484,7 +502,7 @@ class CollectionTestCase(unittest.TestCase):
                 },
             ],
         }
-        pipes = self.collection.full_post_process('each', results)
+        pipes = self.collection.full_post_process('enumerate', results)
         self.assertEqual(len(pipes), 2)
         self.assertEqual(pipes[0].id, '1872baf45')
         self.assertEqual(pipes[1].id, '91646aee7')
@@ -562,10 +580,9 @@ class CollectionFactoryTestCase(unittest.TestCase):
 
     def test_build_methods(self):
         attrs = self.cf._build_methods(self.cd)
-        self.assertEqual(len(attrs), 3)
+        self.assertEqual(len(attrs), 2)
         self.assertTrue('create' in attrs)
-        self.assertTrue('each' in attrs)
-        self.assertTrue('test_role' in attrs)
+        self.assertTrue('enumerate' in attrs)
 
     def test_create_operation_method(self):
         class StubbyCollection(Collection):
@@ -580,7 +597,8 @@ class CollectionFactoryTestCase(unittest.TestCase):
             )
 
         op_method = self.cf._create_operation_method('create', {
-            "api_name": "CreatePipeline"
+            "operation": "CreatePipeline",
+            "jmespath": "Pipeline",
         })
         self.assertEqual(op_method.__name__, 'create')
         self.assertEqual(op_method.__doc__, DEFAULT_DOCSTRING)

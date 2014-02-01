@@ -275,9 +275,12 @@ class Collection(six.Iterator):
         If the method has the default placeholder docstring, this will replace
         it with the docstring from the underlying connection.
         """
-        ops = self._details.collection_data['operations']
+        # Since "create/enumerate" are top-level keys, we're not drilling in
+        # the same way as with ``Resource._update_docstrings()``...
+        ops = self._details.collection_data
 
-        for method_name in ops.keys():
+        # FIXME: This may become CamelCase & need snake-casing.
+        for method_name in ['create', 'enumerate']:
             meth = getattr(self.__class__, method_name, None)
 
             if not meth:
@@ -292,7 +295,7 @@ class Collection(six.Iterator):
             # method.
             # FIXME: We need to figure out a way to make this more useful, if
             #        possible.
-            api_name = ops[method_name]['api_name']
+            api_name = ops[method_name]['operation']
             conn_meth = getattr(self._connection, to_snake_case(api_name))
 
             # We need to do detection here, because Py2 treats ``.__doc__``
@@ -315,7 +318,7 @@ class Collection(six.Iterator):
         data = {}
 
         for id_info in self._details.identifiers:
-            var_name = id_info['var_name']
+            var_name = to_snake_case(id_info['name'])
             data[var_name] = self._data.get(var_name)
 
         return data
@@ -331,7 +334,7 @@ class Collection(six.Iterator):
         :param data: dict
         """
         for id_info in self._details.identifiers:
-            var_name = id_info['var_name']
+            var_name = to_snake_case(id_info['name'])
             self._data[var_name] = data.get(var_name)
 
     def full_update_params(self, conn_method_name, params):
@@ -461,14 +464,14 @@ class Collection(six.Iterator):
         """
         # We need to possibly drill into the response & get out the data here.
         # Check for a result key.
-        result_key = self._details.result_key_for('create')
+        result_key = self._details.create_jmespath_exp
 
         if not result_key:
             return self.build_resource(result)
 
         return self.build_resource(result[result_key])
 
-    def post_process_each(self, result):
+    def post_process_enumerate(self, result):
         """
         An example of the ``post_process`` extensions, this returns a set
         of instances of the ``Resource`` fetched (rather than just a bag of
@@ -481,7 +484,7 @@ class Collection(six.Iterator):
         """
         # We need to possibly drill into the response & get out the data here.
         # Check for a result key.
-        result_key = self._details.result_key_for('each')
+        result_key = self._details.enumerate_jmespath_exp
 
         if not result_key:
             return result
@@ -642,7 +645,7 @@ class CollectionFactory(object):
                 'jmespath': details.enumerate_jmespath_exp,
             }
 
-        for method_name, op_data in ops:
+        for method_name, op_data in ops.items():
             attrs[method_name] = self._create_operation_method(
                 method_name,
                 op_data
@@ -657,7 +660,7 @@ class CollectionFactory(object):
         # what the correct underlying method name on the ``Connection`` should
         # be.
         # Map -> map -> unmap -> remap -> map :/
-        conn_method_name = to_snake_case(op_data['api_name'])
+        conn_method_name = to_snake_case(op_data['operation'])
 
         if not six.PY3:
             method_name = str(method_name)
