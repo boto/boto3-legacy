@@ -34,7 +34,7 @@ def find_version(*file_paths):
     version_match=re.search(r"^__version__ = \(([^'\",]*),\s*([^'\",]*),\s*([^'\",]*).*\)",
                             version_file, re.M)
     if version_match:
-        return version_match.group(1)
+        return "{}.{}.{}".format(version_match.group(1), version_match.group(2), version_match.group(3))
     raise RuntimeError("Unable to find version string.")
 
 packages = [
