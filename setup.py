@@ -27,6 +27,11 @@ requires = [
     'six>=1.4.0',
     'jmespath>=0.1.0',
     'python-dateutil>=2.1',
+    'bcdoc==0.12.2'
+]
+
+dependency_links = [
+    'git+https://github.com/boto/bcdoc.git@develop#egg=bcdoc'
 ]
 
 setup(
@@ -46,6 +51,7 @@ setup(
     },
     include_package_data=True,
     install_requires=requires,
+    dependency_links=dependency_links,
     license=open("LICENSE").read(),
     classifiers=[
         'Development Status :: 3 - Alpha',
