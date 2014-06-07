@@ -8,7 +8,6 @@ import os
 import re
 import sys
 import codecs
-# import boto3
 
 try:
     from setuptools import setup
@@ -58,7 +57,6 @@ dependency_links = [
 
 setup(
     name='boto3',
-    # version=boto3.get_version(),
     version=find_version('boto3', '__init__.py'),
     description='Low-level, data-driven core of boto 3.',
     long_description=open('README.rst').read(),
