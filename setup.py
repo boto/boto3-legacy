@@ -5,8 +5,9 @@ distutils/setuptools install script.
 """
 
 import os
+import re
 import sys
-import boto3
+import codecs
 
 try:
     from setuptools import setup
@@ -14,6 +15,26 @@ try:
 except ImportError:
     from distutils.core import setup
 
+
+here=os.path.abspath(os.path.dirname(__file__))
+
+
+# Read the version number from a source file.
+# Why read it, and not import?
+# see https://groups.google.com/d/topic/pypa-dev/0PkjVpcxTzQ/discussion
+def find_version(*file_paths):
+    # Open in Latin-1 so that we avoid encoding errors.
+    # Use codecs.open for Python 2 compatibility
+    with codecs.open(os.path.join(here, *file_paths), 'r', 'latin1') as f:
+        version_file=f.read()
+
+    # The version line must have the form
+    # __version__='ver'
+    version_match=re.search(r"^__version__ = \(([^'\",]*),\s*([^'\",]*),\s*([^'\",]*).*\)",
+                            version_file, re.M)
+    if version_match:
+        return "{}.{}.{}".format(version_match.group(1), version_match.group(2), version_match.group(3))
+    raise RuntimeError("Unable to find version string.")
 
 packages = [
     'boto3',
@@ -23,15 +44,20 @@ packages = [
 ]
 
 requires = [
-    'botocore==0.24.0',
+    'botocore>=0.24.0',
     'six>=1.4.0',
-    'jmespath==0.1.0',
+    'jmespath>=0.1.0',
     'python-dateutil>=2.1',
+    'bcdoc==0.12.2'
+]
+
+dependency_links = [
+    'git+https://github.com/boto/bcdoc.git@develop#egg=bcdoc'
 ]
 
 setup(
     name='boto3',
-    version=boto3.get_version(),
+    version=find_version('boto3', '__init__.py'),
     description='Low-level, data-driven core of boto 3.',
     long_description=open('README.rst').read(),
     author='Amazon Web Services',
@@ -46,6 +72,7 @@ setup(
     },
     include_package_data=True,
     install_requires=requires,
+    dependency_links=dependency_links,
     license=open("LICENSE").read(),
     classifiers=[
         'Development Status :: 3 - Alpha',
